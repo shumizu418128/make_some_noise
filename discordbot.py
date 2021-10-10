@@ -39,11 +39,6 @@ async def on_message(message: discord.Message):
         return
 
     if message.content =="s.help":
-        await message.channel.send("コマンド一覧")
-        await message.channel.send("`s.join` コマンドを打った人が居るVCチャンネルに接続")
-        await message.channel.send("`s.leave` VCチャンネルから切断")
-        await message.channel.send("`s.play countdown` 321beatboxの音声")
-        await message.channel.send("`s.play time` timeの音声")
-        await message.channel.send("`s.play kansei` 歓声")
+        await message.channel.send("コマンド一覧\n`s.join` コマンドを打った人が居るVCチャンネルに接続\n`s.leave` VCチャンネルから切断\n`s.play countdown` 321beatboxの音声\n`s.play time` timeの音声\n`s.play kansei` 歓声")
 
 client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
