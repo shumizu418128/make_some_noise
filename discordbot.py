@@ -25,6 +25,12 @@ async def on_message(message: discord.Message):
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう１度お試しください。")
         message.guild.voice_client.play(discord.FFmpegPCMAudio("time.mp3"))  
         return
+    
+    if message.content == "s.p kbbtime":
+        if message.guild.voice_client is None:
+            await message.channel.send("接続していません。VCチャンネルに接続してから、もう１度お試しください。")
+        message.guild.voice_client.play(discord.FFmpegPCMAudio("kbbtime.mp3"))  
+        return
           
     if message.content == "s.p kansei":
         if message.guild.voice_client is None:
