@@ -37,6 +37,12 @@ async def on_message(message: discord.Message):
             await message.channel.send("接続していません。")
         message.guild.voice_client.play(discord.FFmpegPCMAudio("countdown.mp3"))  
         return
+    
+    if message.content == "s.play bunka":
+        if message.guild.voice_client is None:
+            await message.channel.send("接続していません。")
+        message.guild.voice_client.play(discord.FFmpegPCMAudio("bunka.mp3"))  
+        return
 
     if message.content =="s.help":
         await message.channel.send("コマンド一覧\n`s.join` コマンドを打った人が居るVCチャンネルに接続\n`s.leave` VCチャンネルから切断\n`s.play countdown` 321beatboxの音声\n`s.play time` timeの音声\n`s.play kansei` 歓声")
