@@ -3,6 +3,8 @@ client = discord.Client()
 print("successfully started")
 @client.event
 async def on_message(message: discord.Message):
+    source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("example.mp3"), volume=0.5)
+    message.guild.voice_client.play(source)
     if message.author.bot:
         return
 
