@@ -25,35 +25,35 @@ async def on_message(message: discord.Message):
     if message.content == "s.p time":
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう１度お試しください。")
-        time = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time.mp3"), volume=0.3)
+        time = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time.mp3"), volume=0.1)
         message.guild.voice_client.play(time)  
         return
     
     if message.content == "s.p kbbtime":
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう１度お試しください。")
-        kbbtime = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("kbbtime.mp3"), volume=0.3)
+        kbbtime = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("kbbtime.mp3"), volume=0.1)
         message.guild.voice_client.play(kbbtime)  
         return
           
     if message.content == "s.p kansei":
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう１度お試しください。")
-        kansei = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("kansei.mp3"), volume=0.3)
+        kansei = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("kansei.mp3"), volume=0.1)
         message.guild.voice_client.play(kansei)  
         return
 
     if message.content == "s.p count":
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう１度お試しください。")
-        count = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("countdown.mp3"), volume=0.3)
+        count = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("countdown.mp3"), volume=0.1)
         message.guild.voice_client.play(count)  
         return
     
     if message.content == "s.p bunka":
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう１度お試しください。")
-        bunka = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("bunka.mp3"), volume=0.3)
+        bunka = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("bunka.mp3"), volume=0.1)
         message.guild.voice_client.play(bunka)  
         return
 
