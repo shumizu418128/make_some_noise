@@ -2,6 +2,8 @@ import discord
 client = discord.Client()
 print("successfully started")
 @client.event
+time = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time.mp3"), volume=0.5)
+kbbtime = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("kbbtime.mp3"), volume=0.5)
 async def on_message(message: discord.Message):
     if message.author.bot:
         return
@@ -23,31 +25,31 @@ async def on_message(message: discord.Message):
     if message.content == "s.p time":
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう１度お試しください。")
-        message.guild.voice_client.play(discord.FFmpegPCMAudio("time.mp3"))  
+        message.guild.voice_client.play(time)  
         return
     
     if message.content == "s.p kbbtime":
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう１度お試しください。")
-        message.guild.voice_client.play(discord.FFmpegPCMAudio("kbbtime.mp3"), volume=0.5)  
+        message.guild.voice_client.play(kbbtime)  
         return
           
     if message.content == "s.p kansei":
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう１度お試しください。")
-        message.guild.voice_client.play(discord.FFmpegPCMAudio("kansei.mp3"), volume=0.5)  
+        message.guild.voice_client.play(discord.FFmpegPCMAudio("kansei.mp3"))  
         return
 
     if message.content == "s.p count":
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう１度お試しください。")
-        message.guild.voice_client.play(discord.FFmpegPCMAudio("countdown.mp3"), volume=0.5)  
+        message.guild.voice_client.play(discord.FFmpegPCMAudio("countdown.mp3"))  
         return
     
     if message.content == "s.p bunka":
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう１度お試しください。")
-        message.guild.voice_client.play(discord.FFmpegPCMAudio("bunka.mp3"), volume=0.5)  
+        message.guild.voice_client.play(discord.FFmpegPCMAudio("bunka.mp3"))  
         return
 
     if message.content =="s.help":
