@@ -51,6 +51,7 @@ async def on_message(message: discord.Message):
         return
 
     if message.content =="s.help":
-        await message.channel.send("コマンド一覧\n`s.join` コマンドを打った人が居るVCチャンネルに接続\n`s.leave` VCチャンネルから切断\n`s.p count` 321beatboxの音声\n`s.p time` timeの音声\n`s.p kansei` 歓声\n`s.p bunka` 文化の人の音声")
+        await message.channel.send("コマンド一覧\n`s.join` コマンドを打った人が居るVCチャンネルに接続\n`s.leave` VCチャンネルから切断\n`s.p count` 321beatboxの音声\n
+        `s.p time` timeの音声\n`s.p kbbtime` 歓声無しtimeの音声 音源：KBB\n`s.p kansei` 歓声\n`s.p bunka` 文化の人の音声")
         await message.channel.send("bot開発者：tari3210 #9924\nコマンド追加要望やバグ等ありましたら、いつでもご連絡ください。")
 client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
