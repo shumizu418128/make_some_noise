@@ -3,7 +3,6 @@ client = discord.Client()
 print("successfully started")
 @client.event
 
-
 async def on_message(message: discord.Message):
     if message.author.bot:
         return
