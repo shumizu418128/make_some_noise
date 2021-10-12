@@ -60,7 +60,7 @@ async def on_message(message: discord.Message):
     if message.content == "s.p esh":
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう１度お試しください。")
-        bunka = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("esh.mp3"), volume=0.1)
+        bunka = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("esh.mp3"), volume=0.3)
         message.guild.voice_client.play(bunka)  
         return
 
