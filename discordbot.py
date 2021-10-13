@@ -1,4 +1,5 @@
-import discord, random
+import discord
+import random
 from time import sleep
 client = discord.Client()
 print("successfully started")
@@ -91,7 +92,7 @@ async def on_message(message: discord.Message):
         return
 
     if "めいこ" in message.content:
-        a = random.randint(1,100)
+        a = random.randint(1, 100)
         if a == 100:
             await message.channel.send("ｵﾝｷﾞｬｱｱｱｱｱｱｱｱｱｱｱｱｱ！！！！！")
         return
