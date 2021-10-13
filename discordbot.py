@@ -88,6 +88,6 @@ async def on_message(message: discord.Message):
         await message.channel.send("bot開発者：tari3210 #9924\nコマンド追加要望やバグ等ありましたら、いつでもご連絡ください。")
 
     if message.content == "s.help time":
-        await message.channel.send("タイマー利用方法\n\n`s.t`と入力した後、スペースを空けて数字を入力してください。\n例：`s.t 3` \n1から5まで数字は分単位で、それ以上の数字は秒単位でセットされます。\n例1：1分40秒にセットしたい場合 `s.t 100`\n例2：3分にセットしたい場合 `s.t 3`もしくは`s.t 180`\n\n注意：必ず整数で入力してください。")
+        await message.channel.send("タイマー利用方法\n\n`s.t`の後ろに、スペースを空けて数字を入力してください。\n例：`s.t 3` \n1から5まで数字は分単位で、それ以上の数字は秒単位でセットされます。\n例1：1分40秒にセットしたい場合 `s.t 100`\n例2：3分にセットしたい場合 `s.t 3`もしくは`s.t 180`\n\n注意：必ず整数で入力してください。")
 
 client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
