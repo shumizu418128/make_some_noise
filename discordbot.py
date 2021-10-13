@@ -50,7 +50,9 @@ async def on_message(message: discord.Message):
     if message.content == "s.p count":
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
-        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("countdown.mp3"), volume=0.1)
+        ran_int = random.randint(1, 2)
+        ran_audio = {1: "cpuntdown.mp3", 2: "cpuntdown_2.mp3"}
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.1)
         message.guild.voice_client.play(audio)
         return
 
@@ -64,7 +66,9 @@ async def on_message(message: discord.Message):
     if message.content == "s.p esh":
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
-        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("esh.mp3"), volume=0.4)
+        ran_int = random.randint(1, 2)
+        ran_audio = {1: "esh.mp3", 2: "esh_2.mp3"}
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.1)
         message.guild.voice_client.play(audio)
         return
 
