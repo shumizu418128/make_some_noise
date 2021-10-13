@@ -23,43 +23,43 @@ async def on_message(message: discord.Message):
     if message.content == "s.p time":
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
-        time = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time.mp3"), volume=0.1)
-        message.guild.voice_client.play(time)
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time.mp3"), volume=0.1)
+        message.guild.voice_client.play(audio)
         return
 
     if message.content == "s.p kbbtime":
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
-        kbbtime = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("kbbtime.mp3"), volume=0.1)
-        message.guild.voice_client.play(kbbtime)
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("kbbtime.mp3"), volume=0.1)
+        message.guild.voice_client.play(audio)
         return
 
     if message.content == "s.p kansei":
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
-        kansei = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("kansei.mp3"), volume=0.1)
-        message.guild.voice_client.play(kansei)
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("kansei.mp3"), volume=0.1)
+        message.guild.voice_client.play(audio)
         return
 
     if message.content == "s.p count":
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
-        count = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("countdown.mp3"), volume=0.1)
-        message.guild.voice_client.play(count)
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("countdown.mp3"), volume=0.1)
+        message.guild.voice_client.play(audio)
         return
 
     if message.content == "s.p bunka":
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
-        bunka = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("bunka.mp3"), volume=0.1)
-        message.guild.voice_client.play(bunka)
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("bunka.mp3"), volume=0.1)
+        message.guild.voice_client.play(audio)
         return
 
     if message.content == "s.p esh":
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
-        bunka = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("esh.mp3"), volume=0.3)
-        message.guild.voice_client.play(bunka)
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("esh.mp3"), volume=0.3)
+        message.guild.voice_client.play(audio)
         return
 
     if message.content == "s.help":
