@@ -69,7 +69,7 @@ async def on_message(message: discord.Message):
         timer = message.content.split(" ")
         try:
             timer_int = int(timer[1])
-        except:
+        except BaseException:
             await message.channel.send("入力方法が間違っています。正しい入力方法は、s.help timeと入力すると確認できます。")
         else:
             audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("countdown.mp3"), volume=0.1)
