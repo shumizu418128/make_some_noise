@@ -91,8 +91,9 @@ async def on_message(message: discord.Message):
             message.guild.voice_client.play(audio)
         return
 
-    if "めいこ" in message.content:
+    if "め" in message.content:
         a = random.randint(1, 100)
+        sleep(10)
         if a == 100:
             await message.channel.send("ｵﾝｷﾞｬｱｱｱｱｱｱｱｱｱｱｱｱｱ！！！！！")
         return
