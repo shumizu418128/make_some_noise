@@ -101,7 +101,7 @@ async def on_message(message: discord.Message):
 
     if "め" in message.content:
         a = random.randint(1, 10)
-        sleep(10)
+        sleep(1)
         if a == 1:
             await message.channel.send("ｵﾝｷﾞｬｱｱｱｱｱｱｱｱｱｱｱｱｱ！！！！！")
         return
