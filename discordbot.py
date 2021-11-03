@@ -119,12 +119,11 @@ async def on_message(message: discord.Message):
         await message.channel.send("3, 2, 1, Beatbox!")
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("countdown.mp3"), volume=0.1)
         message.guild.voice_client.play(audio)
-        sleep(4)
-        counter = 50
-        for i in range(5):
-            sleep(10)
-            await message.channel.send("残り", counter, "秒")
-            counter -= 10
+        sleep(34)
+        await message.channel.send("残り30秒")
+        sleep(20)
+        await message.channel.send("残り10秒")
+        sleep(10)
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time.mp3"), volume=0.1)
         message.guild.voice_client.play(audio)
         return
