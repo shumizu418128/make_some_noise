@@ -114,4 +114,19 @@ async def on_message(message: discord.Message):
     if message.content == "s.help time":
         await message.channel.send("タイマー利用方法\n\n`s.t`の後ろに、半角スペースを空けて数字を入力してください。\n例：`s.t 3` \n1から10まで数字は分単位で、それ以上の数字は秒単位でセットされます。\n例1：1分40秒にセットしたい場合 `s.t 100`\n例2：3分にセットしたい場合 `s.t 3`もしくは`s.t 180`\n\n注意：必ず整数で入力してください。")
         return
+#大会用設定
+    if message.content == "s.c showcase":
+        await message.channel.send("3, 2, 1, Beatbox!")
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("countdown.mp3"), volume=0.1)
+        message.guild.voice_client.play(audio)
+        sleep(4)
+        counter = 50
+        for i in range(5):
+            sleep(10)
+            await message.channel.send("残り", counter, "秒")
+            counter -= 10
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time.mp3"), volume=0.1)
+        message.guild.voice_client.play(audio)
+        return
+
 client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
