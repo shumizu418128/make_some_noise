@@ -22,7 +22,7 @@ async def on_message(message: discord.Message):
         await message.guild.voice_client.disconnect()
         await message.channel.send("切断しました。")
 
-    if message.content == "s.p time":
+    if message.content == "s.p time" or message.content == "s.time":
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
         ran_int = random.randint(1, 2)
@@ -31,14 +31,14 @@ async def on_message(message: discord.Message):
         message.guild.voice_client.play(audio)
         return
 
-    if message.content == "s.p kbbtime":
+    if message.content == "s.p kbbtime" or message.content == "s.kbbtime":
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("kbbtime.mp3"), volume=0.1)
         message.guild.voice_client.play(audio)
         return
 
-    if message.content == "s.p kansei":
+    if message.content == "s.p kansei" or message.content == "s.kansei":
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
         ran_int = random.randint(1, 2)
@@ -47,7 +47,7 @@ async def on_message(message: discord.Message):
         message.guild.voice_client.play(audio)
         return
 
-    if message.content == "s.p count":
+    if message.content == "s.p count" or message.content == "s.count":
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
         ran_int = random.randint(1, 2)
@@ -56,14 +56,14 @@ async def on_message(message: discord.Message):
         message.guild.voice_client.play(audio)
         return
 
-    if message.content == "s.p bunka":
+    if message.content == "s.p bunka" or message.content == "s.count":
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("bunka.mp3"), volume=0.1)
         message.guild.voice_client.play(audio)
         return
 
-    if message.content == "s.p esh":
+    if message.content == "s.p esh" or message.content == "s.esh":
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
         ran_int = random.randint(1, 2)
@@ -72,7 +72,7 @@ async def on_message(message: discord.Message):
         message.guild.voice_client.play(audio)
         return
 
-    if message.content == "s.p msn":
+    if message.content == "s.p msn" or message.content == "s.msn":
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("msn.mp3"), volume=0.3)
@@ -107,7 +107,7 @@ async def on_message(message: discord.Message):
         return
 
     if message.content == "s.help":
-        await message.channel.send("コマンド一覧\n`s.join` コマンドを打った人が居るVCチャンネルに接続\n`s.leave` VCチャンネルから切断\n`s.t` タイマーを利用できます。詳細はs.help timeと入力すると確認できます。\n`s.p count` 321beatboxの音声\n`s.p time` timeの音声\n`s.p kbbtime` 歓声無しtimeの音声 音源：KBB\n`s.p kansei` 歓声\n`s.p bunka` 文化の人の音声\n`s.p esh` eshの音声\n`s.p msn` make some noiseの音声")
+        await message.channel.send("コマンド一覧\n`s.join` コマンドを打った人が居るVCチャンネルに接続\n`s.leave` VCチャンネルから切断\n`s.t` タイマーを利用できます。詳細はs.help timeと入力すると確認できます。\n`s.p count or s.count` 321beatboxの音声\n`s.p time or s.time` timeの音声\n`s.p kbbtime or s.kbbtime` 歓声無しtimeの音声 音源：KBB\n`s.p kansei or s.kansei` 歓声\n`s.p bunka or s.bunka` 文化の人の音声\n`s.p esh or s.esh` eshの音声\n`s.p msn or s.msn` make some noiseの音声")
         await message.channel.send("bot開発者：tari3210 #9924\nコマンド追加要望やバグ等ありましたら、いつでもご連絡ください。")
         return
 
@@ -125,8 +125,8 @@ async def on_message(message: discord.Message):
         await message.channel.send("残り10秒")
         sleep(10)
         await message.channel.send("TIME!")
-        audio2 = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time.mp3"), volume=0.1)
-        message.guild.voice_client.play(audio2)
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time.mp3"), volume=0.1)
+        message.guild.voice_client.play(audio)
         return
 
 client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
