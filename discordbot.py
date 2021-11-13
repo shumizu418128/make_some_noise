@@ -135,7 +135,7 @@ async def on_message(message: discord.Message):
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time.mp3"), volume=0.1)
         message.guild.voice_client.play(audio)
         return
-    
+
     if message.content == "s.c2":
         await message.channel.send("Switch!")
         sleep(30)
