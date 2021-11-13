@@ -128,5 +128,15 @@ async def on_message(message: discord.Message):
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time.mp3"), volume=0.1)
         message.guild.voice_client.play(audio)
         return
+    
+    if message.content == "s.c2":
+        await message.channel.send("Switch!")
+        sleep(30)
+        await message.channel.send("残り30秒")
+        sleep(20)
+        await message.channel.send("残り10秒")
+        sleep(10)
+        await message.channel.send("TIME!")
+        return
 
 client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
