@@ -163,6 +163,5 @@ async def on_raw_reaction_add(payload):
         if role is not None:
             member = discord.utils.find(lambda m: m.id == payload.user_id, guild.members)
             await member.add_roles(role)
-    return
 
 client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
