@@ -56,7 +56,7 @@ async def on_message(message: discord.Message):
         message.guild.voice_client.play(audio)
         return
 
-    if message.content == "s.p bunka" or message.content == "s.count":
+    if message.content == "s.p bunka" or message.content == "s.bunka":
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("bunka.mp3"), volume=0.1)
@@ -100,7 +100,7 @@ async def on_message(message: discord.Message):
         return
 
     if "め" in message.content:
-        a = random.randint(1, 200)
+        a = random.randint(1, 100)
         sleep(1)
         if a == 1:
             await message.channel.send("ｵﾝｷﾞｬｱｱｱｱｱｱｱｱｱｱｱｱｱ！！！！！")
