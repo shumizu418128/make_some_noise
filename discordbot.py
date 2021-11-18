@@ -155,12 +155,14 @@ async def on_message(message: discord.Message):
 
 @client.event
 async def on_raw_reaction_add(payload):
-    channel = client.get_channel(payload.channel_id)
-    if channel.id == "910831992734625812":
-        if str(payload.emoji) == '✅':
-            guild = client.get_guild(payload.guild_id)
-            member = guild.get_member(payload.user_id)
-            role = guild.get_role("910811775082057768")
+    if payload.message_id == "910841121767325716":
+        print(payload.emoji.name)
+        guild_id = payload.guild_id
+        guild = discord.utils.find(lambda g: g.id == guild_id, client.guilds)
+        role = "910811775082057768"
+        if role is not None:
+            member = discord.utils.find(lambda m: m.id == payload.user_id, guild.members)
             await member.add_roles(role)
+    return
 
 client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
