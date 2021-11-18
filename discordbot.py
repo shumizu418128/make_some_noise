@@ -3,6 +3,8 @@ import random
 from time import sleep
 client = discord.Client()
 print("successfully started")
+id_roll = ""
+emoji = "✅"
 @client.event
 async def on_message(message: discord.Message):
     if message.author.bot:
@@ -151,6 +153,25 @@ async def on_message(message: discord.Message):
         await message.channel.send("1")
         sleep(1)
         await message.channel.send("TIME!")
+        return
+
+@client.event
+async def on_ready():
+    channel = client.get_channel("910831992734625812")
+    message = await channel.send("✅を押すと役職「動画まとめ班」が付与されます。")
+    await message.add_reaction("✅")
+    return
+
+@client.event
+async def on_reaction_add(reaction, author):
+    if author == client.user:
+        return
+
+    #押されたリアクションがチェックマークの絵文字かどうかを判定
+    if reaction.emoji == "✅":
+        role = author.guild.get_role("910811775082057768")
+        #Memberオブジェクトのadd_roles()メソッドを用いて役職を付与します
+        await author.add_roles(role)
         return
 
 client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
