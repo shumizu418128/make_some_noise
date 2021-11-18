@@ -153,14 +153,14 @@ async def on_message(message: discord.Message):
         await message.channel.send("TIME!")
         return
 
-@client.event 
+@client.event
 async def on_raw_reaction_add(payload):
-   channel = client.get_channel(payload.channel_id)
-   if channel.id == "910831992734625812":
-       if str(payload.emoji) == '✅':
-           guild = client.get_guild(payload.guild_id)
-           member = guild.get_member(payload.user_id)
-           role = guild.get_role("910811775082057768")
-           await member.add_roles(role)
+    channel = client.get_channel(payload.channel_id)
+    if channel.id == "910831992734625812":
+        if str(payload.emoji) == '✅':
+            guild = client.get_guild(payload.guild_id)
+            member = guild.get_member(payload.user_id)
+            role = guild.get_role("910811775082057768")
+            await member.add_roles(role)
 
 client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
