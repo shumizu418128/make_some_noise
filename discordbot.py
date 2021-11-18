@@ -155,7 +155,7 @@ async def on_message(message: discord.Message):
 
 @client.event
 async def on_raw_reaction_add(payload):
-    if payload.message_id == "910841121767325716":
+    if payload.message_id == "910831992734625812":
         print(payload.emoji.name)
         guild_id = payload.guild_id
         guild = discord.utils.find(lambda g: g.id == guild_id, client.guilds)
