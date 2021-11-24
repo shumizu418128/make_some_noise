@@ -99,7 +99,7 @@ async def on_message(message: discord.Message):
             message.guild.voice_client.play(audio)
         return
 
-    if message.content is not None:
+    if "め" in message.content:
         a = random.randint(1, 10000)
         sleep(2)
         if a == 1:
