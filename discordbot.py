@@ -136,21 +136,4 @@ async def on_message(message: discord.Message):
         message.guild.voice_client.play(audio)
         return
 
-    if message.content == "s.c2":
-        await message.channel.send("Switch!")
-        sleep(30)
-        await message.channel.send("残り30秒")
-        sleep(10)
-        sleep(10)
-        await message.channel.send("残り10秒")
-        sleep(7)
-        await message.channel.send("3")
-        sleep(1)
-        await message.channel.send("2")
-        sleep(1)
-        await message.channel.send("1")
-        sleep(1)
-        await message.channel.send("TIME!")
-        return
-
 client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
