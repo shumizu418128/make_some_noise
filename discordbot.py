@@ -90,8 +90,8 @@ async def on_message(message: discord.Message):
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
             return
-        ran_int = random.randint(1, 2)
-        ran_audio = {1: "dismuch.mp3", 2: "dismuch_2.mp3"}
+        ran_int = random.randint(1, 3)
+        ran_audio = {1: "dismuch.mp3", 2: "dismuch_2.mp3", 3: "dismuch_3.mp3"}
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.5)
         message.guild.voice_client.play(audio)
         return
