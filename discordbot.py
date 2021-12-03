@@ -118,9 +118,9 @@ async def on_message(message: discord.Message):
                     sleep(1)
             else:
                 counter = 10
-                for i in range(timer_int*5):
+                for i in range(timer_int * 5):
                     sleep(10)
-                    await message.channel.send(str(counter)+"秒経過")
+                    await message.channel.send(str(counter) + "秒経過")
                     counter += 10
                 sleep(10)
             await message.channel.send("TIME!")
@@ -193,19 +193,19 @@ async def on_message(message: discord.Message):
     if "s.battle" in message.content:
         names = [(j) for j in message.content.split()]
         names.remove("s.battle")
-        num = np.arange(0,len(names))
+        num = np.arange(0, len(names))
         np.random.shuffle(num)
         count, count2 = 0, 1
         await message.channel.send("処理に時間がかかります。\n「処理終了」と表示されるまで **何も書き込まず** お待ちください。\n対戦カード：")
         while count < len(names):
-            await message.channel.send("第"+str(count2)+"試合："+names[num[count]]+" VS "+names[num[count+1]])
+            await message.channel.send("第"+str(count2) + "試合："+names[num[count]] + " VS "+names[num[count + 1]])
             count += 2
             count2 += 1
         list = []
         for i in range(len(names)):
             print1 = str(names[num[i]])
             list.append(print1)
-        list=', '.join(list)
-        await message.channel.send("トーナメント表書き込み順：\n"+list+"\n\n処理終了")
+        list = ', '.join(list)
+        await message.channel.send("トーナメント表書き込み順：\n" + list + "\n\n処理終了")
 
 client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
