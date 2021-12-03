@@ -107,13 +107,20 @@ async def on_message(message: discord.Message):
             await message.channel.send("入力方法が間違っています。正しい入力方法は、s.help timeと入力すると確認できます。")
             return
         else:
+            await message.channel.send("3, 2, 1, Beatbox!")
             audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("countdown.mp3"), volume=0.1)
             message.guild.voice_client.play(audio)
             sleep(4)
+            i = 0
             if timer_int > 10:
-                sleep(timer_int)
+                for i in range(timer_int):
+                    sleep(1)
             else:
-                sleep(timer_int * 60)
+                counter = 10
+                for i in range(timer_int*6):
+                    sleep(10)
+                    await message.channel.send(str(counter)+"秒経過")
+                    counter += 10
             audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time.mp3"), volume=0.1)
             message.guild.voice_client.play(audio)
             return
