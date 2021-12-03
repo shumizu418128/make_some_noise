@@ -198,7 +198,7 @@ async def on_message(message: discord.Message):
         count, count2 = 0, 1
         await message.channel.send("処理に時間がかかります。\n「処理終了」と表示されるまで **何も書き込まず** お待ちください。\n対戦カード：")
         while count < len(names):
-            await message.channel.send("第"+str(count2) + "試合："+names[num[count]] + " VS "+names[num[count + 1]])
+            await message.channel.send("第" + str(count2) + "試合：" + names[num[count]] + " VS "+names[num[count + 1]])
             count += 2
             count2 += 1
         list = []
