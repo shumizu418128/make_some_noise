@@ -28,7 +28,7 @@ async def on_message(message: discord.Message):
             return
         ran_int = random.randint(1, 2)
         ran_audio = {1: "time.mp3", 2: "time_2.mp3"}
-        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.1)
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
         message.guild.voice_client.play(audio)
         return
 
@@ -36,7 +36,7 @@ async def on_message(message: discord.Message):
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
             return
-        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("kbbtime.mp3"), volume=0.1)
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("kbbtime.mp3"), volume=0.2)
         message.guild.voice_client.play(audio)
         return
 
@@ -46,7 +46,7 @@ async def on_message(message: discord.Message):
             return
         ran_int = random.randint(1, 2)
         ran_audio = {1: "kansei.mp3", 2: "kansei_2.mp3"}
-        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.1)
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
         message.guild.voice_client.play(audio)
         return
 
@@ -56,7 +56,7 @@ async def on_message(message: discord.Message):
             return
         ran_int = random.randint(1, 2)
         ran_audio = {1: "countdown.mp3", 2: "countdown_2.mp3"}
-        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.1)
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
         message.guild.voice_client.play(audio)
         return
 
@@ -64,7 +64,7 @@ async def on_message(message: discord.Message):
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
             return
-        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("bunka.mp3"), volume=0.1)
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("bunka.mp3"), volume=0.2)
         message.guild.voice_client.play(audio)
         return
 
@@ -74,7 +74,7 @@ async def on_message(message: discord.Message):
             return
         ran_int = random.randint(1, 2)
         ran_audio = {1: "esh.mp3", 2: "esh_2.mp3"}
-        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.1)
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
         message.guild.voice_client.play(audio)
         return
 
@@ -108,7 +108,7 @@ async def on_message(message: discord.Message):
             return
         else:
             await message.channel.send("3, 2, 1, Beatbox!")
-            audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("countdown.mp3"), volume=0.1)
+            audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("countdown.mp3"), volume=0.2)
             message.guild.voice_client.play(audio)
             sleep(4)
             i = 0
@@ -123,7 +123,7 @@ async def on_message(message: discord.Message):
                     counter += 10
                 sleep(10)
             await message.channel.send("TIME!")
-            audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time.mp3"), volume=0.1)
+            audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time.mp3"), volume=0.2)
             message.guild.voice_client.play(audio)
             return
 
