@@ -161,6 +161,9 @@ async def on_message(message: discord.Message):
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time.mp3"), volume=0.1)
         message.guild.voice_client.play(audio)
         await message.channel.send("TIME!")
+        sleep(5)
+        await message.guild.voice_client.disconnect()
+        await message.channel.send("ss.join")
         return
 
     if message.content == "s.c2":
