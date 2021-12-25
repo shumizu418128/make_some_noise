@@ -94,7 +94,7 @@ async def on_message(message: discord.Message):
         message.guild.voice_client.play(audio)
         return
 
-    if "s.t" in message.content:
+    if message.content.startswith("s.t"):
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
             return
@@ -126,7 +126,7 @@ async def on_message(message: discord.Message):
             return
 
     if "め" in message.content:
-        a = random.randint(1, 100)
+        a = random.randint(1, 10)
         sleep(2)
         if a == 1:
             await message.channel.send("ｵﾝｷﾞｬｱｱｱｱｱｱｱｱｱｱｱｱｱ！！！！！")
