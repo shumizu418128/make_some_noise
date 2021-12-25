@@ -4,7 +4,7 @@ from time import sleep
 client = discord.Client()
 print("successfully started")
 @client.event
-async def on_message(message: discord.Message):
+async def on_message(message):
 
     if message.content == "s.join":
         if message.author.voice is None:
