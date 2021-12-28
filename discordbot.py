@@ -125,13 +125,6 @@ async def on_message(message):
             message.guild.voice_client.play(audio)
             return
 
-    if "め" in message.content:
-        a = random.randint(1, 10)
-        sleep(2)
-        if a == 1:
-            await message.channel.send("ｵﾝｷﾞｬｱｱｱｱｱｱｱｱｱｱｱｱｱ！！！！！")
-        return
-
     if message.content == "s.help":
         await message.channel.send("コマンド一覧\n`s.join` コマンドを打った人が居るVCチャンネルに接続\n`s.leave` VCチャンネルから切断\n`s.t` タイマーを利用できます。詳細はs.help timeと入力すると確認できます。\n`s.p count or s.count` 321beatboxの音声\n`s.p time or s.time` timeの音声\n`s.p kbbtime or s.kbbtime` 歓声無しtimeの音声 音源：KBB\n`s.p kansei or s.kansei` 歓声\n`s.p bunka or s.bunka` 文化の人の音声\n`s.p esh or s.esh` eshの音声\n`s.p msn or s.msn` make some noiseの音声")
         await message.channel.send("bot開発者：tari3210 #9924\nコマンド追加要望やバグ等ありましたら、いつでもご連絡ください。")
@@ -178,6 +171,13 @@ async def on_message(message):
         await message.channel.send("残り10秒")
         sleep(10)
         await message.channel.send("TIME!")
+        return
+
+    if len(message.content) > 10:
+        a = random.randint(1, 100)
+        sleep(2)
+        if a == 1:
+            await message.channel.send("ｵﾝｷﾞｬｱｱｱｱｱｱｱｱｱｱｱｱｱ！！！！！")
         return
 
 client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
