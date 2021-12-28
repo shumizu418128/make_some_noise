@@ -138,7 +138,7 @@ async def on_message(message):
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
             return
-        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("countdown.mp3"), volume=0.3)
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("countdown.mp3"), volume=0.5)
         await message.channel.send("3, 2, 1, Beatbox!")
         message.guild.voice_client.play(audio)
         sleep(3)
@@ -151,7 +151,7 @@ async def on_message(message):
         sleep(10)
         await message.channel.send("残り10秒")
         sleep(10)
-        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time.mp3"), volume=0.1)
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time.mp3"), volume=0.5)
         message.guild.voice_client.play(audio)
         await message.channel.send("TIME!")
         sleep(5)
