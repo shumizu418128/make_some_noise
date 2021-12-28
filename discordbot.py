@@ -72,7 +72,7 @@ async def on_message(message):
             return
         ran_int = random.randint(1, 2)
         ran_audio = {1: "esh.mp3", 2: "esh_2.mp3"}
-        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.4)
         message.guild.voice_client.play(audio)
         return
 
