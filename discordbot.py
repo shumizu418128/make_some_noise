@@ -174,7 +174,7 @@ async def on_message(message):
         return
 
     if len(message.content) > 10:
-        a = random.randint(1, 100)
+        a = random.randint(1, 200)
         sleep(2)
         if a == 1:
             await message.channel.send("ｵﾝｷﾞｬｱｱｱｱｱｱｱｱｱｱｱｱｱ！！！！！")
