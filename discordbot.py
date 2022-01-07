@@ -173,6 +173,24 @@ async def on_message(message):
         await message.channel.send("TIME!")
         return
 
+    if message.content.startswith("s.battle"):
+        names = [(j) for j in message.content.split()]
+        names.remove("s.battle")
+        random.shuffle(names)
+        count, count2 = 0, 1
+        await message.channel.send("処理に時間がかかります。\n「処理終了」と表示されるまで **何も書き込まず** お待ちください。\n対戦カード：")
+        while count < len(names):
+            await message.channel.send("第" + str(count2) + "試合：" + names[count] + " VS " + names[count + 1])
+            count += 2
+            count2 += 1
+        list = []
+        for i in range(len(names)):
+            print1 = str(names[i])
+            list.append(print1)
+        list = ', '.join(list)
+        await message.channel.send("トーナメント表書き込み順（上から）：\n" + list + "\n\n――――――処理終了――――――")
+        return
+
     if len(message.content) > 10:
         a = random.randint(1, 200)
         sleep(2)
