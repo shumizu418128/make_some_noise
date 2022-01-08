@@ -84,6 +84,14 @@ async def on_message(message):
         message.guild.voice_client.play(audio)
         return
 
+    if message.content == "s.p olala" or message.content == "s.olala":
+        if message.guild.voice_client is None:
+            await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
+            return
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("olala.mp3"), volume=0.4)
+        message.guild.voice_client.play(audio)
+        return
+
     if message.content == "s.p dismuch" or message.content == "s.dismuch":
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
