@@ -182,22 +182,61 @@ async def on_message(message):
         return
 
     if message.content.startswith("s.battle"):
-        names = [(j) for j in message.content.split()]
-        names.remove("s.battle")
-        random.shuffle(names)
-        count, count2 = 0, 1
-        await message.channel.send("処理に時間がかかります。\n「処理終了」と表示されるまで **何も書き込まず** お待ちください。\n対戦カード：")
-        while count < len(names):
-            await message.channel.send("第" + str(count2) + "試合：" + names[count] + " VS " + names[count + 1])
-            count += 2
-            count2 += 1
-        list = []
-        for i in range(len(names)):
-            print1 = str(names[i])
-            list.append(print1)
-        list = ', '.join(list)
-        await message.channel.send("トーナメント表書き込み順（上から）：\n" + list + "\n\n――――――処理終了――――――")
-        return
+        if message.guild.voice_client is None:
+            await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
+            return
+        await message.channel.send("5秒後にスタートします。\n\nAre you ready??")
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("countdown.mp3"), volume=0.5)
+        await message.channel.send("3, 2, 1, Beatbox!")
+        message.guild.voice_client.play(audio)
+        sleep(10)
+        sleep(10)
+        await message.channel.send("Round1:残り40秒")
+        sleep(10)
+        sleep(10)
+        await message.channel.send("Round1:残り20秒")
+        sleep(10)
+        await message.channel.send("残り10秒")
+        sleep(10)
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("round2switch.mp3"), volume=0.5)
+        await message.channel.send("TIME!\nRound2 SWITCH!")
+        message.guild.voice_client.play(audio)
+        sleep(3)
+        sleep(10)
+        sleep(10)
+        await message.channel.send("Round2:残り40秒")
+        sleep(10)
+        sleep(10)
+        await message.channel.send("Round2:残り20秒")
+        sleep(10)
+        await message.channel.send("残り10秒")
+        sleep(10)
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("round3switch.mp3"), volume=0.5)
+        await message.channel.send("TIME!\nRound3 SWITCH!")
+        message.guild.voice_client.play(audio)
+        sleep(3)
+        sleep(10)
+        sleep(10)
+        await message.channel.send("Round3:残り40秒")
+        sleep(10)
+        sleep(10)
+        await message.channel.send("Round3:残り20秒")
+        sleep(10)
+        await message.channel.send("残り10秒")
+        sleep(10)
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("round4switch.mp3"), volume=0.5)
+        await message.channel.send("TIME!\nRound4 SWITCH!")
+        message.guild.voice_client.play(audio)
+        sleep(3)
+        sleep(10)
+        sleep(10)
+        await message.channel.send("Round4:残り40秒")
+        sleep(10)
+        sleep(10)
+        await message.channel.send("Round4:残り20秒")
+        sleep(10)
+        await message.channel.send("残り10秒")
+        sleep(10)
 
     if len(message.content) > 10:
         a = random.randint(1, 200)
