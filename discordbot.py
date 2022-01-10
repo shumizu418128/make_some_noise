@@ -237,6 +237,10 @@ async def on_message(message):
         sleep(10)
         await message.channel.send("残り10秒")
         sleep(10)
+        await message.channel.send("TIME!")
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time.mp3"), volume=0.2)
+        message.guild.voice_client.play(audio)
+        return
 
     if len(message.content) > 10:
         a = random.randint(1, 200)
