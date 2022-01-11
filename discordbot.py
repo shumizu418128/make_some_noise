@@ -1,11 +1,13 @@
 import discord
 import random
 from time import sleep
-client = discord.Client()
+intents = discord.Intents.all()  # デフォルトのIntentsオブジェクトを生成
+intents.typing = False  # typingを受け取らないように
+client = discord.Client(intents=intents)
 print("successfully started")
+
 @client.event
 async def on_message(message):
-
     if message.content == "s.join":
         if message.author.voice is None:
             await message.channel.send("VCチャンネルに接続してから、もう一度お試しください。")
@@ -185,11 +187,12 @@ async def on_message(message):
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
             return
-        await message.channel.send("5秒後にスタートします。\n\nAre you ready??")
+        await message.channel.send("1minute 2round\n5秒後にスタートします。\n\nAre you ready??")
         sleep(5)
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("countdown.mp3"), volume=0.5)
         await message.channel.send("3, 2, 1, Beatbox!")
         message.guild.voice_client.play(audio)
+        sleep(3)
         sleep(10)
         sleep(10)
         await message.channel.send("Round1:残り40秒")
