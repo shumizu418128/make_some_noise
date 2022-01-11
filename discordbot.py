@@ -130,7 +130,8 @@ async def on_message(message):
                     await message.channel.send(str(counter) + "秒経過")
                     counter += 10
                 sleep(10)
-            await message.channel.send("TIME!")
+            embed = discord.Embed(title="TIME!")
+            await message.channel.send(embed=embed)
             audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time.mp3"), volume=0.2)
             message.guild.voice_client.play(audio)
             return
