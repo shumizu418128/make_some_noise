@@ -361,12 +361,6 @@ async def on_message(message):
         await message.channel.send(embed=embed)
         voice_channel = client.get_channel(930446857660928031)
         await voice_channel.connect(reconnect=True)
-        if message.author.voice is not None:
-            try:
-                await message.author.voice.channel.connect(reconnect=True)
-            except discord.errors.ClientException:
-                await message.guild.voice_client.disconnect()
-                await message.author.voice.channel.connect(reconnect=True)
         return
 
     if len(message.content) > 10:
