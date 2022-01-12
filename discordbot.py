@@ -276,6 +276,15 @@ async def on_message(message):
         embed = discord.Embed(title="TIME!")
         await message.channel.send(embed=embed)
         message.guild.voice_client.play(audio)
+        embed = discord.Embed(title="投票箱", description="`1st:`%s\n`2nd:`%s\n\n投票しても何も起こりませんが、ぜひ気に入ったBeatboxerさんに1票をあげてみてください。" % (names[1], names[2]))
+        message3 = await message.channel.send(embed=embed)
+        await message3.add_reaction("1⃣")
+        await message3.add_reaction("2⃣")
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("msn.mp3"), volume=0.5)
+        await sleep(3)
+        message.guild.voice_client.play(audio)
+        message4 = await message.channel.send("make some noise for the battle!\ncome on!!")
+        await message4.add_reaction("🔥")
         return
 
     if message.content.startswith("s.role"):
@@ -332,14 +341,15 @@ async def on_message(message):
             return
         counter = 1
         counter2 = 0
-        embed = discord.Embed(title="抽選結果", color=0xff9900)
+        pin = random.randint(10000, 99999)
+        embed = discord.Embed(title="抽選結果", description="識別番号:%d" % (pin), color=0xff9900)
         while counter2 + 2 <= len(playerlist):
-            embed.add_field(name="Match%s" % (str(counter)), value="%s vs %s" % (playerlist[counter2], playerlist[counter2 + 1]), inline=False)
+            embed.add_field(name="Match%s" % (str(counter)), value="%s `1st` vs %s `2nd`" % (playerlist[counter2], playerlist[counter2 + 1]), inline=False)
             counter += 1
             counter2 += 2
         if len(playerlist) % 2 == 1:
             await message.channel.send("参加人数が奇数でした。\n" + playerlist[0] + " さんの対戦が2回行われます。")
-            embed.add_field(name="Match%s" % (str(counter)), value="%s vs %s" % (playerlist[0], playerlist[-1]), inline=False)
+            embed.add_field(name="Match%s" % (str(counter)), value="%s `1st` vs %s `2nd`" % (playerlist[0], playerlist[-1]), inline=False)
         await message.channel.send(embed=embed)
         channel2 = client.get_channel(930767329137143839)
         embed.title = "対戦カード"
