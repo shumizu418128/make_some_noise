@@ -198,11 +198,29 @@ async def on_message(message):
         await message.channel.send(embed=embed)
         return
 
+    if message.content.startswith("s.order"):
+        names = [(j) for j in message.content.split()]
+        names.remove("s.order")
+        random.shuffle(names)
+        count, count2 = 0, 1
+        await message.channel.send("処理に時間がかかります。\n「処理終了」と表示されるまで **何も書き込まず** お待ちください。\n対戦カード：")
+        while count < len(names):
+            await message.channel.send("第" + str(count2) + "試合：" + names[count] + " VS " + names[count + 1])
+            count += 2
+            count2 += 1
+        list = []
+        for i in names:
+            list.append(i)
+        list = ', '.join(list)
+        await message.channel.send("トーナメント表書き込み順（上から）：\n" + list + "\n\n――――――処理終了――――――")
+        return
+
     if message.content.startswith("s.battle"):
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
             return
-        await message.channel.send("1minute 2round\n5秒後にスタートします。\n\nAre you ready??")
+        names = [(j) for j in message.content.split()]
+        await message.channel.send(names[1]+"さん(1st) vs "+names[2]+"さん(2nd)\n\n1分・2ラウンドずつ\n1 minute, 2 rounds each\n\n5秒後にスタートします。\nAre you ready??")
         sleep(5)
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("countdown.mp3"), volume=0.5)
         await message.channel.send("3, 2, 1, Beatbox!")
@@ -272,6 +290,78 @@ async def on_message(message):
         embed = discord.Embed(title="TIME!")
         await message.channel.send(embed=embed)
         message.guild.voice_client.play(audio)
+        return
+
+    if message.content.startswith("ss.role"):
+        input_id = [(j) for j in message.content.split()]
+        try:
+            role = message.guild.get_role(int(input_id[1]))
+        except ValueError:
+            await message.channel.send("Error: type ID")
+            return
+        else:
+            try:
+                role_member = role.members
+            except AttributeError:
+                await message.channel.send("Error: Role not found")
+                return
+            else:
+                for member in role_member:
+                    await message.channel.send(member.display_name)
+                await message.channel.send("---finish---")
+                return
+
+    if message.content == "s.entry":
+        role = message.guild.get_role(930368130906218526) #test role
+        role_member = role.members
+        await message.channel.send("処理中...")
+        for member in role_member:
+            print(member.display_name + " をロールから削除")
+            await member.remove_roles(role)
+        channel = client.get_channel(930446820839157820) #test category エントリー
+        message2 = await channel.fetch_message(930448529787351130) #carl-botのメッセージ エントリー開始用
+        await message2.clear_reaction("✅")
+        await message2.add_reaction("✅")
+        await message.channel.send("処理完了")
+        embed = discord.Embed(title="受付開始", description="ただいまより参加受付を開始します。\n専用テキストチャンネルにてエントリーを行ってください。", color=0x00bfff)
+        await message.channel.send(embed=embed)
+        return
+
+    if message.content == "s.start":
+        channel = client.get_channel(930446820839157820) #test category エントリー
+        message2 = await channel.fetch_message(930448529787351130) #carl-botのメッセージ エントリーメッセージのリアクションクリア
+        await message2.clear_reaction("✅")
+        role = message.guild.get_role(930368130906218526) #test role
+        role_member = role.members
+        playerlist = []
+        for member in role_member:
+            playerlist.append(member.display_name)
+        random.shuffle(playerlist)
+        if len(playerlist) < 2:
+            embed = discord.Embed(title="Error", description="参加者が不足しています。", color=0xff0000)
+            await message.channel.send(embed=embed)
+            return
+        counter = 1
+        counter2 = 0
+        embed = discord.Embed(title="抽選結果", color=0xff9900)
+        while counter2 + 2 <= len(playerlist):
+            embed.add_field(name="Match%s" % (str(counter)), value="%s vs %s" % (playerlist[counter2], playerlist[counter2 + 1]), inline=False)
+            counter += 1
+            counter2 += 2
+        if len(playerlist) % 2 == 1:
+            await message.channel.send("参加人数が奇数でした。\n" + playerlist[0] + " さんの対戦が2回行われます。")
+            embed.add_field(name="Match%s" % (str(counter)), value="%s vs %s" % (playerlist[0], playerlist[-1]), inline=False)
+        await message.channel.send(embed=embed)
+        voice_channel = client.get_channel(930446857660928031)
+        await voice_channel.connect(reconnect=True)
+        if message.author.voice != None:
+            try:
+                await message.author.voice.channel.connect(reconnect=True)
+                return
+            except discord.errors.ClientException:
+                await message.guild.voice_client.disconnect()
+                await message.author.voice.channel.connect(reconnect=True)
+                return
         return
 
     if len(message.content) > 10:
