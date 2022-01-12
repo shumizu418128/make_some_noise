@@ -292,7 +292,7 @@ async def on_message(message):
         message.guild.voice_client.play(audio)
         return
 
-    if message.content.startswith("ss.role"):
+    if message.content.startswith("s.role"):
         input_id = [(j) for j in message.content.split()]
         try:
             role = message.guild.get_role(int(input_id[1]))
