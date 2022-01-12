@@ -220,7 +220,7 @@ async def on_message(message):
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
             return
         names = [(j) for j in message.content.split()]
-        await message.channel.send(names[1]+"さん(1st) vs "+names[2]+"さん(2nd)\n\n1分・2ラウンドずつ\n1 minute, 2 rounds each\n\n5秒後にスタートします。\nAre you ready??")
+        await message.channel.send(names[1] + "さん(1st) vs " + names[2] + "さん(2nd)\n\n1分・2ラウンドずつ\n1 minute, 2 rounds each\n\n5秒後にスタートします。\nAre you ready??")
         sleep(5)
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("countdown.mp3"), volume=0.5)
         await message.channel.send("3, 2, 1, Beatbox!")
@@ -312,14 +312,14 @@ async def on_message(message):
                 return
 
     if message.content == "s.entry":
-        role = message.guild.get_role(930368130906218526) #test role
+        role = message.guild.get_role(930368130906218526)  # test role
         role_member = role.members
         await message.channel.send("処理中...")
         for member in role_member:
             print(member.display_name + " をロールから削除")
             await member.remove_roles(role)
-        channel = client.get_channel(930446820839157820) #test category エントリー
-        message2 = await channel.fetch_message(930448529787351130) #carl-botのメッセージ エントリー開始用
+        channel = client.get_channel(930446820839157820)  # test category エントリー
+        message2 = await channel.fetch_message(930448529787351130)  # carl-botのメッセージ エントリー開始用
         await message2.clear_reaction("✅")
         await message2.add_reaction("✅")
         await message.channel.send("処理完了")
@@ -328,10 +328,10 @@ async def on_message(message):
         return
 
     if message.content == "s.start":
-        channel = client.get_channel(930446820839157820) #test category エントリー
-        message2 = await channel.fetch_message(930448529787351130) #carl-botのメッセージ エントリーメッセージのリアクションクリア
+        channel = client.get_channel(930446820839157820)  # test category エントリー
+        message2 = await channel.fetch_message(930448529787351130)  # carl-botのメッセージ エントリーメッセージのリアクションクリア
         await message2.clear_reaction("✅")
-        role = message.guild.get_role(930368130906218526) #test role
+        role = message.guild.get_role(930368130906218526)  # test role
         role_member = role.members
         playerlist = []
         for member in role_member:
@@ -354,10 +354,9 @@ async def on_message(message):
         await message.channel.send(embed=embed)
         voice_channel = client.get_channel(930446857660928031)
         await voice_channel.connect(reconnect=True)
-        if message.author.voice != None:
+        if message.author.voice is not None:
             try:
                 await message.author.voice.channel.connect(reconnect=True)
-                return
             except discord.errors.ClientException:
                 await message.guild.voice_client.disconnect()
                 await message.author.voice.channel.connect(reconnect=True)
