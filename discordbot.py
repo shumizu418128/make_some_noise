@@ -342,6 +342,7 @@ async def on_message(message):
             embed.add_field(name="Match%s" % (str(counter)), value="%s vs %s" % (playerlist[0], playerlist[-1]), inline=False)
         await message.channel.send(embed=embed)
         channel2 = client.get_channel(930767329137143839)
+        embed.title = "対戦カード"
         await channel2.send(embed=embed)
         if message.guild.voice_client is not None:
             await message.guild.voice_client.disconnect()
