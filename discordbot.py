@@ -215,7 +215,7 @@ async def on_message(message):
             await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
             return
         names = [(j) for j in message.content.split()]
-        if len(names) is not 3:
+        if len(names) != 3:
             await message.channel.send("Error: 入力方法が間違っています。")
             return
         await message.channel.send(names[1] + "さん(1st) vs " + names[2] + "さん(2nd)\n\n1分・2ラウンドずつ\n1 minute, 2 rounds each\n\n5秒後にスタートします。\nAre you ready??")
