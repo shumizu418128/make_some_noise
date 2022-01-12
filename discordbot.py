@@ -307,9 +307,11 @@ async def on_message(message):
                 return
 
     if message.content == "s.start":
+        await message.channel.send("処理中...")
+        channel0 = client.get_channel(930767329137143839)
+        await channel0.purge()
         role = message.guild.get_role(930368130906218526)  # test role
         role_member = role.members
-        await message.channel.send("処理中...")
         for member in role_member:
             print(member.display_name + " をロールから削除")
             await member.remove_roles(role)
@@ -318,7 +320,7 @@ async def on_message(message):
         await message2.clear_reaction("✅")
         await message2.add_reaction("✅")
         await message.channel.send("処理完了")
-        embed = discord.Embed(title="受付開始", description="ただいまより参加受付を開始します。\n専用テキストチャンネルにてエントリーを行ってください。\n\n1分後に締め切ります。", color=0x00bfff)
+        embed = discord.Embed(title="受付開始", description="ただいまより参加受付を開始します。\n専用テキストチャンネルにてエントリーを行ってください。", color=0x00bfff)
         await message.channel.send(embed=embed)
         for i in range(3):
             await sleep(10)
