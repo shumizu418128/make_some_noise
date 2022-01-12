@@ -359,6 +359,8 @@ async def on_message(message):
             await message.channel.send("参加人数が奇数でした。\n" + playerlist[0] + " さんの対戦が2回行われます。")
             embed.add_field(name="Match%s" % (str(counter)), value="%s vs %s" % (playerlist[0], playerlist[-1]), inline=False)
         await message.channel.send(embed=embed)
+        if message.guild.voice_client is not None:
+            await message.guild.voice_client.disconnect()
         voice_channel = client.get_channel(930446857660928031)
         await voice_channel.connect(reconnect=True)
         return
