@@ -12,8 +12,13 @@ async def on_message(message):
         if message.author.voice is None:
             await message.channel.send("VCチャンネルに接続してから、もう一度お試しください。")
             return
-        await message.author.voice.channel.connect()
-        await message.channel.send("接続しました。")
+        try:
+            await message.author.voice.channel.connect(reconnect=True)
+        except discord.errors.ClientException:
+            await message.channel.send("既に接続しています。\nチャンネルを移動させたい場合、一度切断してからもう一度お試しください。")
+        else:
+            await message.channel.send("接続しました。")
+            return
 
     if message.content == "s.leave":
         if message.guild.voice_client is None:
@@ -21,6 +26,7 @@ async def on_message(message):
             return
         await message.guild.voice_client.disconnect()
         await message.channel.send("切断しました。")
+        return
 
     if message.content == "s.p time" or message.content == "s.time":
         if message.guild.voice_client is None:
