@@ -244,18 +244,18 @@ async def on_message(message):
         await sleep(2)
         for i in range(4):
             await sleep(20)
-            embed = discord.Embed(title="残り40秒", description="Round%s" % (str(i+1)), color=0x00ff00)
+            embed = discord.Embed(title="残り40秒", description="Round%s" % (str(i + 1)), color=0x00ff00)
             await message.channel.send(embed=embed)
             await sleep(20)
-            embed = discord.Embed(title="残り20秒", description="Round%s" % (str(i+1)), color=0xffff00)
+            embed = discord.Embed(title="残り20秒", description="Round%s" % (str(i + 1)), color=0xffff00)
             await message.channel.send(embed=embed)
             await sleep(10)
-            embed = discord.Embed(title="残り10秒", description="Round%s" % (str(i+1)), color=0xff0000)
+            embed = discord.Embed(title="残り10秒", description="Round%s" % (str(i + 1)), color=0xff0000)
             await message.channel.send(embed=embed)
             await sleep(10)
             if i < 3:
-                audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("round%sswitch.mp3" % (str(i+2))), volume=1.5)
-                await message.channel.send("----------\n\nTIME!\nRound%s SWITCH!\n\n----------" % (str(i+2)))
+                audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("round%sswitch.mp3" % (str(i + 2))), volume=1.5)
+                await message.channel.send("----------\n\nTIME!\nRound%s SWITCH!\n\n----------" % (str(i + 2)))
                 message.guild.voice_client.play(audio)
                 await sleep(3)
             elif i == 3:
