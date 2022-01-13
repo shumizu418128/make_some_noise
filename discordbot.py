@@ -1,5 +1,6 @@
 import discord
 import random
+import datetime
 from asyncio import sleep
 intents = discord.Intents.all()  # デフォルトのIntentsオブジェクトを生成
 intents.typing = False  # typingを受け取らないように
@@ -331,8 +332,9 @@ async def on_message(message):
             return
         counter = 1
         counter2 = 0
-        pin = random.randint(10000, 99999)
-        embed = discord.Embed(title="抽選結果", description="識別番号:%d" % (pin), color=0xff9900)
+        dt_now = datetime.datetime.now()
+        date = str(dt_now.strftime('%m月%d日 %H:%M'))
+        embed = discord.Embed(title="抽選結果", description="%d" % (date), color=0xff9900)
         while counter2 + 2 <= len(playerlist):
             embed.add_field(name="Match%s" % (str(counter)), value="%s `1st` vs %s `2nd`" % (playerlist[counter2], playerlist[counter2 + 1]), inline=False)
             counter += 1
