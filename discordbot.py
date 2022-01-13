@@ -238,10 +238,11 @@ async def on_message(message):
             return
         await message.channel.send(names[1] + "さん(1st) vs " + names[2] + "さん(2nd)\n\n1分・2ラウンドずつ\n1 minute, 2 rounds each\n\n5秒後にスタートします。\nAre you ready??")
         await sleep(5)
-        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("countdown.mp3"), volume=0.5)
-        await message.channel.send("3, 2, 1, Beatbox!")
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("battle_start.mp3"), volume=0.5)
         message.guild.voice_client.play(audio)
-        await sleep(23)
+        await sleep(12)
+        await message.channel.send("3, 2, 1, Beatbox!")
+        await sleep(22)
         embed = discord.Embed(title="残り40秒", description="Round1", color=0x00ff00)
         await message.channel.send(embed=embed)
         await sleep(20)
@@ -388,10 +389,5 @@ async def on_message(message):
         if a == 1:
             await message.channel.send("ｵﾝｷﾞｬｱｱｱｱｱｱｱｱｱｱｱｱｱ！！！！！")
         return
-
-    if message.content == "a":
-        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("battle_start.mp3"), volume=0.2)
-        message.guild.voice_client.play(audio)
-        print("success")
 
 client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
