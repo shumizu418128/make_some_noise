@@ -230,8 +230,8 @@ async def on_message(message):
 
     if message.content.startswith("s.battle"):
         if message.guild.voice_client is None:
-            await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
-            return
+            voice_channel = client.get_channel(930446857660928031)
+            await voice_channel.connect(reconnect=True)
         names = [(j) for j in message.content.split()]
         if len(names) != 3:
             await message.channel.send("Error: 入力方法が間違っています。")
