@@ -7,6 +7,24 @@ client = discord.Client(intents=intents)
 print("successfully started")
 
 @client.event
+async def on_member_update(before, after):
+    if str(before.roles) != str(after.roles):
+        check_role_before = before.roles
+        check_role_after = after.roles
+        id_list_before = []
+        id_list_after = []
+        for id in check_role_before:
+            id_list_before.append(id.id)
+        for id in check_role_after:
+            id_list_after.append(id.id)
+        channel = client.get_channel(930447365536612353)  # test-進行
+        if 930368130906218526 in id_list_after and 930368130906218526 not in id_list_before:
+            await channel.send(f"{after.mention}\nエントリーを受け付けました\nentry granted")
+        if 930368130906218526 in id_list_before and 930368130906218526 not in id_list_after:
+            await channel.send(f"{after.mention}\nエントリーを取り消しました\nentry canceled")
+        return
+
+@client.event
 async def on_message(message):
     if message.content == "s.join":
         if message.author.voice is None:
@@ -324,10 +342,12 @@ async def on_message(message):
         await message.channel.send(embed=embed)
         for i in range(3):
             await sleep(10)
-        await message.channel.send("あと30秒で締め切ります。")
+        embed = discord.Embed(title="あと30秒で締め切ります", color=0xffff00)
+        await message.channel.send(embed=embed)
         print("あと30秒で締め切ります。")
         await sleep(20)
-        await message.channel.send("締め切り10秒前")
+        embed = discord.Embed(title="締め切り10秒前", color=0xff0000)
+        await message.channel.send(embed=embed)
         print("締め切り10秒前")
         await sleep(10)
         await message2.clear_reaction("✅")
