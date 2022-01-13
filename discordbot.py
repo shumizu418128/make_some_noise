@@ -334,6 +334,8 @@ async def on_message(message):
         counter2 = 0
         dt_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
         date = str(dt_now.strftime('%m月%d日 %H:%M'))
+        if date[3] == "0":
+            date = date[:2] + date[4:]
         if date[0] == "0":
             date = date[1:]
         embed = discord.Embed(title="抽選結果", description="%s" % (date), color=0xff9900)
