@@ -332,8 +332,10 @@ async def on_message(message):
             return
         counter = 1
         counter2 = 0
-        dt_now = datetime.datetime.now()
+        dt_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
         date = str(dt_now.strftime('%m月%d日 %H:%M'))
+        if date[0] == "0":
+            date = date.lstrip
         embed = discord.Embed(title="抽選結果", description="%s" % (date), color=0xff9900)
         while counter2 + 2 <= len(playerlist):
             embed.add_field(name="Match%s" % (str(counter)), value="%s `1st` vs %s `2nd`" % (playerlist[counter2], playerlist[counter2 + 1]), inline=False)
