@@ -20,8 +20,6 @@ async def on_member_update(before, after):
         channel = client.get_channel(930447365536612353)  # test-進行
         if 930368130906218526 in id_list_after and 930368130906218526 not in id_list_before:  # test-role
             await channel.send(f"{after.mention}\nエントリーを受け付けました\nentry completed")
-        if 930368130906218526 in id_list_before and 930368130906218526 not in id_list_after:
-            await channel.send(f"{after.mention}\nエントリーを取り消しました\nentry canceled")
         return
 
 @client.event
