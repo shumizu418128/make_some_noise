@@ -338,7 +338,7 @@ async def on_message(message):
         await message2.clear_reaction("✅")
         await message2.add_reaction("✅")
         await message.channel.send("処理完了")
-        embed = discord.Embed(title="受付開始", description="ただいまより参加受付を開始します。\n専用テキストチャンネルにてエントリーを行ってください。", color=0x00bfff)
+        embed = discord.Embed(title="受付開始", description="ただいまより参加受付を開始します。\n%sにてエントリーを行ってください。\nentry now accepting at %s" % (channel.mention, channel.mention), color=0x00bfff)
         await message.channel.send(embed=embed)
         for i in range(3):
             await sleep(10)
@@ -351,7 +351,7 @@ async def on_message(message):
         print("締め切り10秒前")
         await sleep(10)
         await message2.clear_reaction("✅")
-        await message.channel.send("参加受付を締め切りました。\n\n処理中... しばらくお待ちください")
+        await message.channel.send("参加受付を締め切りました。\nentry closed\n\n処理中... しばらくお待ちください")
         role_member = role.members
         playerlist = []
         for member in role_member:
