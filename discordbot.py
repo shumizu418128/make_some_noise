@@ -295,7 +295,7 @@ async def on_message(message):
         embed = discord.Embed(title="TIME!")
         await message.channel.send(embed=embed)
         message.guild.voice_client.play(audio)
-        embed = discord.Embed(title="投票箱", description="`1st:`%s\n`2nd:`%s\n\n投票しても何も起こりませんが、ぜひ気に入ったBeatboxerさんに1票をあげてみてください。" % (names[1], names[2]))
+        embed = discord.Embed(title="投票箱", description="`1st:`%s\n`2nd:`%s\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。" % (names[1], names[2]))
         message3 = await message.channel.send(embed=embed)
         await message3.add_reaction("1⃣")
         await message3.add_reaction("2⃣")
