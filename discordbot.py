@@ -378,10 +378,10 @@ async def on_message(message):
         await channel0.send(embed=embed)
         if message.author.voice is not None:
             await message.author.voice.channel.connect(reconnect=True)
-        #if message.guild.voice_client is not None:
-            #await message.guild.voice_client.disconnect()
-        #channel2 = client.get_channel(   )  # VC battle stadium
-        #await channel2.connect(reconnect=True)
+    #    if message.guild.voice_client is not None:
+        #    await message.guild.voice_client.disconnect()
+    #    channel2 = client.get_channel(   )  # VC battle stadium
+    #    await channel2.connect(reconnect=True)
         return
 
     if "s." not in message.content:
