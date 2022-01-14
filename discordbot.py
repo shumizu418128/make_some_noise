@@ -333,7 +333,7 @@ async def on_message(message):
         counter = 1
         counter2 = 0
         dt_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
-        date = str(dt_now.strftime('%m月%d日 %H:%M'))
+        date = str(dt_now.strftime('%m月%d日 %H:%M')) + " JST"
         if date[3] == "0":
             date = date[:2] + date[4:]
         if date[0] == "0":
