@@ -349,10 +349,6 @@ async def on_message(message):
         await message.channel.send(embed=embed)
         embed.title = "対戦カード"
         await channel0.send(embed=embed)
-        if message.guild.voice_client is not None:
-            await message.guild.voice_client.disconnect()
-        voice_channel = client.get_channel(930446857660928031)  # vcチャンネル ステージではない
-        await voice_channel.connect(reconnect=True)
         return
 
     if len(message.content) > 10:
