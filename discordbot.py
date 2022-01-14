@@ -364,4 +364,11 @@ async def on_message(message):
             await message.channel.send("ｵﾝｷﾞｬｱｱｱｱｱｱｱｱｱｱｱｱｱ！！！！！")
         return
 
+    if "s." not in message.content:
+        if message.author.bot:
+            return
+        elif message.channel.id == 930447365536612353:
+            await message.delete(delay=1)
+            return
+
 client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
