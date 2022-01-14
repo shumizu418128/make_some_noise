@@ -351,8 +351,8 @@ async def on_message(message):
         await channel0.send(embed=embed)
         if message.guild.voice_client is not None:
             await message.guild.voice_client.disconnect()
-        channel2 = client.get_channel(930446857660928031)  # VC battle stadium
-        await channel2.connect(reconnect=True)
+        #channel2 = client.get_channel(   )  # VC battle stadium
+        #await channel2.connect(reconnect=True)
         return
 
     if len(message.content) > 10:
