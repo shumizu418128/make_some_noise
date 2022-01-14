@@ -295,15 +295,15 @@ async def on_message(message):
 
     if message.content == "s.start":
         await message.channel.send("処理中...")
-        channel0 = client.get_channel(930767329137143839)
+        channel0 = client.get_channel(930767329137143839)  # 対戦表
         await channel0.purge()
         role = message.guild.get_role(930368130906218526)  # test role
         role_member = role.members
         for member in role_member:
             print(member.display_name + " をロールから削除")
             await member.remove_roles(role)
-        channel = client.get_channel(930446820839157820)  # test category エントリー
-        message2 = await channel.fetch_message(930448529787351130)  # carl-botのメッセージ エントリー開始用
+        channel = client.get_channel(930446820839157820)  # 参加
+        message2 = await channel.fetch_message(931390284976242710)  # carl-botのメッセージ エントリー開始用
         await message2.clear_reaction("✅")
         await message2.add_reaction("✅")
         await message.channel.send("処理完了")
@@ -347,12 +347,11 @@ async def on_message(message):
             await message.channel.send("参加人数が奇数でした。\n" + playerlist[0] + " さんの対戦が2回行われます。")
             embed.add_field(name="Match%s" % (str(counter)), value="%s `1st` vs %s `2nd`" % (playerlist[0], playerlist[-1]), inline=False)
         await message.channel.send(embed=embed)
-        channel2 = client.get_channel(930767329137143839)
         embed.title = "対戦カード"
-        await channel2.send(embed=embed)
+        await channel0.send(embed=embed)
         if message.guild.voice_client is not None:
             await message.guild.voice_client.disconnect()
-        voice_channel = client.get_channel(930446857660928031)
+        voice_channel = client.get_channel(930446857660928031)  # vcチャンネル ステージではない
         await voice_channel.connect(reconnect=True)
         return
 
