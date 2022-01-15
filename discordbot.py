@@ -396,4 +396,8 @@ async def on_message(message):
                 await message.channel.send("ｵﾝｷﾞｬｱｱｱｱｱｱｱｱｱｱｱｱｱ！！！！！")
         return
 
+    if len(message.content) > 0 and message.channel.id == 930767329137143839:
+        await message.delete(delay=1)
+        return
+
 client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
