@@ -25,6 +25,12 @@ async def on_member_update(before, after):
 
 @client.event
 async def on_message(message):
+    if len(message.content) > 0 and message.channel.id == 930767329137143839:
+        if message.author.bot:
+            return
+        await message.delete(delay=1)
+        return
+
     if message.content == "s.join":
         if message.author.voice is None:
             await message.channel.send("VCチャンネルに接続してから、もう一度お試しください。")
@@ -394,10 +400,6 @@ async def on_message(message):
             await sleep(2)
             if a == 1:
                 await message.channel.send("ｵﾝｷﾞｬｱｱｱｱｱｱｱｱｱｱｱｱｱ！！！！！")
-        return
-
-    if len(message.content) > 0 and message.channel.id == 930767329137143839:
-        await message.delete(delay=1)
         return
 
 client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
