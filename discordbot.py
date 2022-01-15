@@ -330,7 +330,7 @@ async def on_message(message):
             print(member.display_name + " をロールから削除")
             await member.remove_roles(role)
         channel = client.get_channel(930446820839157820)  # 参加
-        message2 = await channel.fetch_message(931390284976242710)  # carl-botのメッセージ エントリー開始用
+        message2 = await channel.fetch_message(931879656213319720)  # carl-botのメッセージ エントリー開始用
         await message2.clear_reaction("✅")
         await message2.add_reaction("✅")
         await message.channel.send("処理完了")
