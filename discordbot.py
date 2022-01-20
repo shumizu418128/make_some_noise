@@ -202,9 +202,9 @@ async def on_message(message):
         return
 
     if message.content == "s.c":
+        await message.delete(delay=1)
         if message.guild.voice_client is None:
-            await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
-            return
+            await message.author.voice.channel.connect(reconnect=True)
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("countdown.mp3"), volume=0.5)
         await message.channel.send("3, 2, 1, Beatbox!")
         message.guild.voice_client.play(audio)
@@ -225,6 +225,9 @@ async def on_message(message):
         return
 
     if message.content == "s.c2":
+        await message.delete(delay=1)
+        if message.guild.voice_client is None:
+            await message.author.voice.channel.connect(reconnect=True)
         await message.channel.send("タイマースタート!")
         await sleep(20)
         embed = discord.Embed(title="残り40秒", color=0x00ff00)
