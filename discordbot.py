@@ -417,7 +417,7 @@ async def on_message(message):
             counter += 1
             counter2 += 2
         if len(playerlist) % 2 == 1:
-            await message.channel.send("参加人数が奇数でした。\n" + role_member[0].mention + " さんの対戦が2回行われます。")
+            await message.channel.send("参加人数が奇数でした。\n" + playerlist[0] + " さんの対戦が2回行われます。")
             embed.add_field(name="Match%s" % (str(counter)), value="%s `1st` vs %s `2nd`" % (playerlist[-1], playerlist[0]), inline=False)
         await message.channel.send(embed=embed)
         embed.title = "対戦カード"
