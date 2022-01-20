@@ -222,9 +222,6 @@ async def on_message(message):
         message.guild.voice_client.play(audio)
         embed = discord.Embed(title="TIME!")
         await message.channel.send(embed=embed)
-        await sleep(5)
-        await message.guild.voice_client.disconnect()
-        await message.channel.send("ss.join")
         return
 
     if message.content == "s.c2":
