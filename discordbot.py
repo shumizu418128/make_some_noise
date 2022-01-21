@@ -18,9 +18,12 @@ async def on_member_update(before, after):
             id_list_before.append(id.id)
         for id in check_role_after:
             id_list_after.append(id.id)
-        channel = client.get_channel(930447365536612353)  # test-進行
-        if 930368130906218526 in id_list_after and 930368130906218526 not in id_list_before:  # test-role
-            await channel.send(f"{after.mention}\nエントリーを受け付けました\nentry completed")
+        channel = client.get_channel(930447365536612353)  # bot
+        if 930368130906218526 in id_list_after and 930368130906218526 not in id_list_before:  # battle stadium
+            notice = await channel.send(f"{after.mention}\nエントリーを受け付けました\nentry completed")
+        if 930368130906218526 in id_list_before and 930368130906218526 not in id_list_after:  # battle stadium
+            notice = await channel.send(f"{after.mention}\nエントリーを取り消しました\nentry canceled")
+        await notice.delete(delay=5)
         return
 
 @client.event
@@ -370,7 +373,7 @@ async def on_message(message):
         await message.channel.send("処理中...")
         channel0 = client.get_channel(930767329137143839)  # 対戦表
         await channel0.purge()
-        role = message.guild.get_role(930368130906218526)  # test role
+        role = message.guild.get_role(930368130906218526)  # battle stadium
         role_member = role.members
         for member in role_member:
             print(member.display_name + " をロールから削除")
@@ -422,6 +425,7 @@ async def on_message(message):
         await message.channel.send(embed=embed)
         embed.title = "対戦カード"
         await channel0.send(embed=embed)
+        await channel0.send(role.mention)
         if message.author.voice is not None:
             await message.author.voice.channel.connect(reconnect=True)
     #    if message.guild.voice_client is not None:
