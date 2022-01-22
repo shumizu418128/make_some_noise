@@ -273,7 +273,7 @@ async def on_message(message):
         message.guild.voice_client.play(audio)
         await sleep(12)
         await message.channel.send("3, 2, 1, Beatbox!")
-        await sleep(2)
+        await sleep(3)
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("bunka.mp3"), volume=0)
         for i in range(4):
             await sleep(3)
@@ -282,7 +282,7 @@ async def on_message(message):
             except AttributeError:
                 await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection")
                 return
-            await sleep(7)
+            await sleep(6)
             try:
                 message.guild.voice_client.play(audio)
             except AttributeError:
@@ -422,8 +422,9 @@ async def on_message(message):
             embed.add_field(name="Match%s" % (str(counter)), value="%s `1st` vs %s `2nd`" % (playerlist[-1], playerlist[0]), inline=False)
         await message.channel.send(embed=embed)
         embed.title = "対戦カード"
+        bbx_mic = client.get_channel(931781522808262756)
+        await channel0.send("%s\n %s を確認して、マイク設定を行ってからの参加をお願いします。" % (role.mention, bbx_mic.mention))
         await channel0.send(embed=embed)
-        await channel0.send(role.mention)
         if message.author.voice is not None:
             await message.author.voice.channel.connect(reconnect=True)
     #    if message.guild.voice_client is not None:
