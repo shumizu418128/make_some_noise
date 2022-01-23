@@ -21,7 +21,15 @@ async def on_member_update(before, after):
         channel = client.get_channel(930447365536612353)  # bot
         if 930368130906218526 in id_list_after and 930368130906218526 not in id_list_before:  # battle stadium
             notice = await channel.send(f"{after.mention}\nエントリーを受け付けました\nentry completed")
-        await notice.delete(delay=5)
+            await notice.delete(delay=5)
+        if 920320926887862323 in id_list_after and 920320926887862323 not in id_list_before:  # A部門ビト森杯
+            await channel.send(f"{after.mention}\nビト森杯A部門\nエントリーを受け付けました\nentry completed")
+        if 920320926887862323 in id_list_before and 920320926887862323 not in id_list_after:  # A部門ビト森杯
+            await channel.send(f"{after.mention}\nビト森杯A部門\nエントリーを取り消しました\nentry canceled")
+        if 920321241976541204 in id_list_after and 920321241976541204 not in id_list_before:  # B部門ビト森杯
+            await channel.send(f"{after.mention}\nビト森杯A部門\nエントリーを受け付けました\nentry completed")
+        if 920321241976541204 in id_list_before and 920321241976541204 not in id_list_after:  # B部門ビト森杯
+            await channel.send(f"{after.mention}\nビト森杯A部門\nエントリーを取り消しました\nentry canceled")
         return
 
 @client.event
