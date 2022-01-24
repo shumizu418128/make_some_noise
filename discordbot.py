@@ -8,6 +8,16 @@ client = discord.Client(intents=intents)
 print("successfully started")
 
 @client.event
+async def on_voice_state_update(member, before, after):
+    guild = client.get_guild(864475338340171786)  # サーバーID
+    role = guild.get_role(935073171462307881)  # in a vc
+    if before.channel is None and after.channel is not None:
+        await member.add_roles(role)
+    if before.channel is not None and after.channel is None:
+        await member.remove_roles(role)
+    return
+
+@client.event
 async def on_member_update(before, after):
     if str(before.roles) != str(after.roles):
         check_role_before = before.roles
@@ -384,16 +394,20 @@ async def on_message(message):
         for member in role_member:
             print(member.display_name + " をロールから削除")
             await member.remove_roles(role)
-        channel = client.get_channel(930446820839157820)  # 参加
-        message2 = await channel.fetch_message(931879656213319720)  # carl-botのメッセージ エントリー開始用
+        channel1 = client.get_channel(930446820839157820)  # 参加
+        message2 = await channel1.fetch_message(931879656213319720)  # carl-botのメッセージ エントリー開始用
         await message2.clear_reaction("✅")
         await message2.add_reaction("✅")
         await message.channel.send("処理完了")
-        embed = discord.Embed(title="受付開始", description="ただいまより参加受付を開始します。\n%sにてエントリーを行ってください。\nentry now accepting at %s" % (channel.mention, channel.mention), color=0x00bfff)
+        embed = discord.Embed(title="受付開始", description="ただいまより参加受付を開始します。\n%sにてエントリーを行ってください。\nentry now accepting at %s" % (channel1.mention, channel1.mention), color=0x00bfff)
         await message.channel.send(embed=embed)
+        role_vc = message.guild.get_role(935073171462307881)  # in a vc
+        bbx_mic = client.get_channel(931781522808262756)  # bbxマイク設定
+        await message.channel.send("%s\nエントリー後に、 %s を確認して、マイク設定を行ってください。" % (role_vc.mention, bbx_mic.mention))
         await sleep(30)
         embed = discord.Embed(title="あと30秒で締め切ります", color=0xffff00)
         await message.channel.send(embed=embed)
+        await message.channel.send(role_vc.mention)
         print("あと30秒で締め切ります。")
         await sleep(20)
         embed = discord.Embed(title="締め切り10秒前", color=0xff0000)
@@ -425,19 +439,14 @@ async def on_message(message):
             counter += 1
             counter2 += 2
         if len(playerlist) % 2 == 1:
-            await message.channel.send("--------------------\n\n参加人数が奇数でした。\n" + playerlist[0] + " さんの対戦が2回行われます。\n\n--------------------")
+            await message.channel.send("----------------------------------------\n\n参加人数が奇数でした。\n" + playerlist[0] + " さんの対戦が2回行われます。")
             embed.add_field(name="Match%s" % (str(counter)), value="%s `1st` vs %s `2nd`" % (playerlist[-1], playerlist[0]), inline=False)
         await message.channel.send(embed=embed)
         embed.title = "対戦カード"
-        bbx_mic = client.get_channel(931781522808262756)
         await channel0.send("%s\n %s を確認して、マイク設定を行ってからの参加をお願いします。" % (role.mention, bbx_mic.mention))
         await channel0.send(embed=embed)
         if message.author.voice is not None:
             await message.author.voice.channel.connect(reconnect=True)
-    #    if message.guild.voice_client is not None:
-        #    await message.guild.voice_client.disconnect()
-    #    channel2 = client.get_channel(   )  # VC battle stadium
-    #    await channel2.connect(reconnect=True)
         return
 
     if "s." not in message.content:
