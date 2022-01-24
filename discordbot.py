@@ -13,9 +13,10 @@ async def on_voice_state_update(member, before, after):
     role = guild.get_role(935073171462307881)  # in a vc
     if before.channel is None and after.channel is not None:
         await member.add_roles(role)
+        return
     if before.channel is not None and after.channel is None:
         await member.remove_roles(role)
-    return
+        return
 
 @client.event
 async def on_member_update(before, after):
