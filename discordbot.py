@@ -198,11 +198,10 @@ async def on_message(message):
                     await sleep(1)
             else:
                 counter = 10
-                for i in range(timer_int * 5):
+                for i in range(timer_int * 6):
                     await sleep(10)
                     await message.channel.send(str(counter) + "秒経過")
                     counter += 10
-                await sleep(10)
             embed = discord.Embed(title="TIME!")
             await message.channel.send(embed=embed)
             audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time.mp3"), volume=0.2)
