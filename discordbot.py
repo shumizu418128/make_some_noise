@@ -391,8 +391,7 @@ async def on_message(message):
         await message.channel.send("処理完了")
         embed = discord.Embed(title="受付開始", description="ただいまより参加受付を開始します。\n%sにてエントリーを行ってください。\nentry now accepting at %s" % (channel.mention, channel.mention), color=0x00bfff)
         await message.channel.send(embed=embed)
-        for i in range(3):
-            await sleep(10)
+        await sleep(30)
         embed = discord.Embed(title="あと30秒で締め切ります", color=0xffff00)
         await message.channel.send(embed=embed)
         print("あと30秒で締め切ります。")
