@@ -403,7 +403,8 @@ async def on_message(message):
         await message.channel.send(embed=embed)
         role_vc = message.guild.get_role(935073171462307881)  # in a vc
         bbx_mic = client.get_channel(931781522808262756)  # bbxマイク設定
-        await message.channel.send("%s\nエントリー後に、 %s を確認して、マイク設定を行ってください。" % (role_vc.mention, bbx_mic.mention))
+        notice = await channel1.send("%s\nエントリー後に、 %s を確認して、マイク設定を行ってください。" % (role_vc.mention, bbx_mic.mention))
+        await notice.delete(delay=60)
         await sleep(30)
         embed = discord.Embed(title="あと30秒で締め切ります", color=0xffff00)
         await message.channel.send(embed=embed)
