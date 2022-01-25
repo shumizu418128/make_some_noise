@@ -441,11 +441,12 @@ async def on_message(message):
             counter2 += 2
         if len(playerlist) % 2 == 1:
             await message.channel.send("----------------------------------------\n\n参加人数が奇数でした。\n" + playerlist[0] + " さんの対戦が2回行われます。")
+            await channel0.send("参加人数が奇数でした。\n" + playerlist[0] + " さんの対戦が2回行われます。")
             embed.add_field(name="Match%s" % (str(counter)), value="%s `1st` vs %s `2nd`" % (playerlist[-1], playerlist[0]), inline=False)
         await message.channel.send(embed=embed)
         embed.title = "対戦カード"
-        await channel0.send("%s\n %s を確認して、マイク設定を行ってからの参加をお願いします。" % (role.mention, bbx_mic.mention))
         await channel0.send(embed=embed)
+        await channel0.send("%s\n %s を確認して、マイク設定を行ってからの参加をお願いします。" % (role.mention, bbx_mic.mention))
         if message.author.voice is not None:
             await message.author.voice.channel.connect(reconnect=True)
         return
