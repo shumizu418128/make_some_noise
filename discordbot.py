@@ -45,7 +45,7 @@ async def on_member_update(before, after):
 
 @client.event
 async def on_message(message):
-    if len(message.content) > 0 and message.channel.id == 930767329137143839:
+    if message.channel.id == 930767329137143839:
         if message.author.bot:
             return
         await message.delete(delay=1)
