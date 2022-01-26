@@ -286,7 +286,7 @@ async def on_message(message):
         if len(names) != 3:
             await message.channel.send("Error: 入力方法が間違っています。")
             return
-        names.remove("ss.battle")
+        names.remove("s.battle")
         await message.channel.send(names[0] + "さん `1st` vs " + names[1] + "さん `2nd`\n\n1分・2ラウンドずつ\n1 minute, 2 rounds each\n\nAre you ready??")
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("battle_start.mp3"), volume=0.5)
         message.guild.voice_client.play(audio)
@@ -391,7 +391,7 @@ async def on_message(message):
         await message.channel.send("処理中...")
         stage_channel = client.get_channel(931462636019802123)  # ステージ
         try:
-            await stage_channel.create_instance(topic="test")
+            await stage_channel.create_instance(topic="battle stadium")
         except discord.errors.HTTPException:
             pass
         try:
