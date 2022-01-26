@@ -387,6 +387,19 @@ async def on_message(message):
 
     if message.content == "s.start":
         await message.channel.send("処理中...")
+        stage_channel = client.get_channel(931462636019802123)  # ステージ
+        try:
+            await stage_channel.create_instance(topic="test")
+        except discord.errors.HTTPException:
+            pass
+        try:
+            await stage_channel.connect(reconnect=True)
+        except discord.errors.ClientException:
+            pass
+        else:
+            guild = client.get_guild(864475338340171786)  # サーバーID
+            me = guild.get_member(896652783346917396)  # make some noise!
+            await me.edit(suppress = False)
         channel0 = client.get_channel(930767329137143839)  # 対戦表
         await channel0.purge()
         role = message.guild.get_role(930368130906218526)  # battle stadium
@@ -447,8 +460,6 @@ async def on_message(message):
         embed.title = "対戦カード"
         await channel0.send(embed=embed)
         await channel0.send("%s\n %s を確認して、マイク設定を行ってからの参加をお願いします。" % (role.mention, bbx_mic.mention))
-        if message.author.voice is not None:
-            await message.author.voice.channel.connect(reconnect=True)
         return
 
     if "s." not in message.content:
