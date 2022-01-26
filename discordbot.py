@@ -401,7 +401,7 @@ async def on_message(message):
         else:
             guild = client.get_guild(864475338340171786)  # サーバーID
             me = guild.get_member(896652783346917396)  # make some noise!
-            await me.edit(suppress = False)
+            await me.edit(suppress=False)
         channel0 = client.get_channel(930767329137143839)  # 対戦表
         await channel0.purge()
         role = message.guild.get_role(930368130906218526)  # battle stadium
@@ -476,7 +476,7 @@ async def on_message(message):
             pass
         guild = client.get_guild(864475338340171786)  # サーバーID
         me = guild.get_member(897751398702264360)  # make some noise! - local
-        await me.edit(suppress = False)
+        await me.edit(suppress=False)
         return
 
     if "s." not in message.content:
