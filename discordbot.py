@@ -479,6 +479,26 @@ async def on_message(message):
         await me.edit(suppress=False)
         return
 
+    if message.content.startswith("s.entry"):
+        input_ = message.content[8:]  # s.entry をカット
+        try:
+            name = message.guild.get_member(int(input_))
+        except ValueError:
+            name = message.guild.get_member_named(input_)
+        if name == None:
+            await message.channel.send("検索結果なし")
+            return
+        roles = name.roles
+        for role in roles:
+            if role.id == 920320926887862323:  # A部門 ビト森杯
+                await message.channel.send("%sはビト森杯 A部門エントリー済み" % (name.display_name))
+                return
+            if role.id == 920321241976541204:  # B部門 ビト森杯
+                await message.channel.send("%sはビト森杯 B部門エントリー済み" % (name.display_name))
+                return
+        await message.channel.send("%sはビト森杯にエントリーしていません" % (name.display_name))
+        return
+
     if "s." not in message.content:
         if message.author.bot:
             return
