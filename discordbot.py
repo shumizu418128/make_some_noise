@@ -485,7 +485,7 @@ async def on_message(message):
             name = message.guild.get_member(int(input_))
         except ValueError:
             name = message.guild.get_member_named(input_)
-        if name == None:
+        if name is None:
             await message.channel.send("検索結果なし")
             return
         roles = name.roles
