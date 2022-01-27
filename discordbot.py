@@ -499,6 +499,11 @@ async def on_message(message):
         await message.channel.send("%sはビト森杯にエントリーしていません" % (name.display_name))
         return
 
+    if message.content == "s.end":
+        stage_channel = client.get_channel(931462636019802123)  # ステージ
+        await stage_channel.instance.delete()
+        return
+
     if "s." not in message.content:
         if message.author.bot:
             return
