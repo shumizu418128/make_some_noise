@@ -509,7 +509,7 @@ async def on_message(message):
         elif message.channel.id == 930447365536612353:
             await message.delete(delay=1)
         else:
-            a = random.randint(1, 200)
+            a = random.randint(1, 400)
             await sleep(2)
             if a == 1:
                 await message.channel.send("ｵﾝｷﾞｬｱｱｱｱｱｱｱｱｱｱｱｱｱ！！！！！")
