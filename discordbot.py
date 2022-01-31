@@ -287,13 +287,13 @@ async def on_message(message):
             pass
         VoiceClient = message.guild.voice_client
         guild = client.get_guild(864475338340171786)  # サーバーID
-        me = guild.get_member(897751398702264360)  # make some noise! - local
+        me = guild.get_member(896652783346917396)  # make some noise!
         await me.edit(suppress=False)
         names = [(j) for j in message.content.split()]
         if len(names) != 3:
             await message.channel.send("Error: 入力方法が間違っています。")
             return
-        names.remove("ss.battle")
+        names.remove("s.battle")
         await message.channel.send(names[0] + "さん `1st` vs " + names[1] + "さん `2nd`\n\n1分・2ラウンドずつ\n1 minute, 2 rounds each\n\nAre you ready??")
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("battle_start.mp3"), volume=0.5)
         message.guild.voice_client.play(audio)
