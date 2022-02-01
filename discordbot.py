@@ -79,9 +79,7 @@ async def on_message(message):
 
     if message.content == "s.p time" or message.content == "s.time":
         if message.guild.voice_client is None:
-            await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
-            await message.delete(delay=1)
-            return
+            await message.author.voice.channel.connect(reconnect=True)
         ran_int = random.randint(1, 2)
         ran_audio = {1: "time.mp3", 2: "time_2.mp3"}
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
@@ -91,9 +89,7 @@ async def on_message(message):
 
     if message.content == "s.p kbbtime" or message.content == "s.kbbtime":
         if message.guild.voice_client is None:
-            await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
-            await message.delete(delay=1)
-            return
+            await message.author.voice.channel.connect(reconnect=True)
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("kbbtime.mp3"), volume=0.2)
         message.guild.voice_client.play(audio)
         await message.delete(delay=1)
@@ -101,9 +97,7 @@ async def on_message(message):
 
     if message.content == "s.p kansei" or message.content == "s.kansei":
         if message.guild.voice_client is None:
-            await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
-            await message.delete(delay=1)
-            return
+            await message.author.voice.channel.connect(reconnect=True)
         ran_int = random.randint(1, 2)
         ran_audio = {1: "kansei.mp3", 2: "kansei_2.mp3"}
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.3)
@@ -113,9 +107,7 @@ async def on_message(message):
 
     if message.content == "s.p count" or message.content == "s.count":
         if message.guild.voice_client is None:
-            await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
-            await message.delete(delay=1)
-            return
+            await message.author.voice.channel.connect(reconnect=True)
         ran_int = random.randint(1, 2)
         ran_audio = {1: "countdown.mp3", 2: "countdown_2.mp3"}
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
@@ -125,9 +117,7 @@ async def on_message(message):
 
     if message.content == "s.p bunka" or message.content == "s.bunka":
         if message.guild.voice_client is None:
-            await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
-            await message.delete(delay=1)
-            return
+            await message.author.voice.channel.connect(reconnect=True)
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("bunka.mp3"), volume=0.2)
         message.guild.voice_client.play(audio)
         await message.delete(delay=1)
@@ -135,9 +125,7 @@ async def on_message(message):
 
     if message.content == "s.p esh" or message.content == "s.esh":
         if message.guild.voice_client is None:
-            await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
-            await message.delete(delay=1)
-            return
+            await message.author.voice.channel.connect(reconnect=True)
         ran_int = random.randint(1, 2)
         ran_audio = {1: "esh.mp3", 2: "esh_2.mp3"}
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.4)
@@ -147,9 +135,7 @@ async def on_message(message):
 
     if message.content == "s.p msn" or message.content == "s.msn":
         if message.guild.voice_client is None:
-            await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
-            await message.delete(delay=1)
-            return
+            await message.author.voice.channel.connect(reconnect=True)
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("msn.mp3"), volume=0.4)
         message.guild.voice_client.play(audio)
         await message.delete(delay=1)
@@ -157,9 +143,7 @@ async def on_message(message):
 
     if message.content == "s.p olala" or message.content == "s.olala":
         if message.guild.voice_client is None:
-            await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
-            await message.delete(delay=1)
-            return
+            await message.author.voice.channel.connect(reconnect=True)
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("olala.mp3"), volume=0.4)
         message.guild.voice_client.play(audio)
         await message.delete(delay=1)
@@ -167,9 +151,7 @@ async def on_message(message):
 
     if message.content == "s.p dismuch" or message.content == "s.dismuch":
         if message.guild.voice_client is None:
-            await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
-            await message.delete(delay=1)
-            return
+            await message.author.voice.channel.connect(reconnect=True)
         ran_int = random.randint(1, 4)
         ran_audio = {1: "dismuch.mp3", 2: "dismuch_2.mp3", 3: "dismuch_3.mp3", 4: "dismuch_4.mp3"}
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=1)
@@ -179,9 +161,7 @@ async def on_message(message):
 
     if message.content.startswith("s.t"):
         if message.guild.voice_client is None:
-            await message.channel.send("接続していません。VCチャンネルに接続してから、もう一度お試しください。")
-            await message.delete(delay=1)
-            return
+            await message.author.voice.channel.connect(reconnect=True)
         timer = message.content.split(" ")
         try:
             timer_int = int(timer[1])
