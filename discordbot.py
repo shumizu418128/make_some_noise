@@ -100,7 +100,7 @@ async def on_message(message):
             await message.author.voice.channel.connect(reconnect=True)
         ran_int = random.randint(1, 2)
         ran_audio = {1: "kansei.mp3", 2: "kansei_2.mp3"}
-        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.3)
+        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
         message.guild.voice_client.play(audio)
         await message.delete(delay=1)
         return
