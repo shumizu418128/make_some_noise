@@ -80,8 +80,8 @@ async def on_message(message):
     if message.content == "s.p time" or message.content == "s.time":
         if message.guild.voice_client is None:
             await message.author.voice.channel.connect(reconnect=True)
-        ran_int = random.randint(1, 2)
-        ran_audio = {1: "time.mp3", 2: "time_2.mp3"}
+        ran_int = random.randint(1, 3)
+        ran_audio = {1: "time.mp3", 2: "time_2.mp3", 3: "time_3.mp3"}
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
         message.guild.voice_client.play(audio)
         await message.delete(delay=1)
@@ -355,6 +355,14 @@ async def on_message(message):
         connect = VoiceClient.is_connected()
         if connect is False:
             await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection")
+            return
+        random_fuga = random.randint(1, 10)
+        if random_fuga == 1:
+            audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time_3.mp3"), volume=0.3)
+            message.guild.voice_client.play(audio)
+            await sleep(8)
+            message4 = await message.channel.send("なああああああああああああああああああああああああああああああああああ")
+            await message4.add_reaction("🗿")
             return
         message.guild.voice_client.play(audio)
         embed = discord.Embed(title="TIME!")
