@@ -30,8 +30,9 @@ async def on_member_update(before, after):
         for id in check_role_after:
             id_list_after.append(id.id)
         channel = client.get_channel(864475338340171791)  # 全体チャット
+        channel2 = client.get_channel(930447365536612353)  # bot
         if 930368130906218526 in id_list_after and 930368130906218526 not in id_list_before:  # battle stadium
-            notice = await channel.send(f"{after.mention}\nエントリーを受け付けました\nentry completed👌")
+            notice = await channel2.send(f"{after.mention}\nエントリーを受け付けました\nentry completed👌")
             await notice.delete(delay=5)
         if 920320926887862323 in id_list_after and 920320926887862323 not in id_list_before:  # A部門ビト森杯
             await channel.send(f"{after.mention}\nビト森杯🇦部門\nエントリーを受け付けました👌\nentry completed")
