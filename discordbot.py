@@ -510,6 +510,12 @@ async def on_message(message):
     if message.content == "s.end":
         stage_channel = client.get_channel(931462636019802123)  # ステージ
         await stage_channel.instance.delete()
+        channel0 = client.get_channel(930767329137143839)  # 対戦表
+        await channel0.purge()
+        role = message.guild.get_role(930368130906218526)  # battle stadium
+        role_member = role.members
+        for member in role_member:
+            await member.remove_roles(role)
         return
 
     if "s." not in message.content:
