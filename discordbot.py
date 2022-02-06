@@ -46,7 +46,7 @@ async def on_member_update(before, after):
 
 @client.event
 async def on_message(message):
-    nowtime = datetime.datetime.now() + datetime.timedelta(hour=2)
+    nowtime = datetime.datetime.now() + datetime.timedelta(hours=2)
     if message.author.joined_at < nowtime:
         await message.add_reaction("👍")
         return
