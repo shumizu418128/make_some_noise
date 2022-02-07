@@ -518,6 +518,18 @@ async def on_message(message):
             await member.remove_roles(role)
         return
 
+    if message.content.startswith("s.pole"):
+        names = [(j) for j in message.content.split()]
+        names.remove("s.pole")
+        if len(names) != 2:
+            await message.channel.send("Error: 入力方法が間違っています。")
+            return
+        embed = discord.Embed(title="投票箱", description="1⃣ %s\n2⃣ %s" % (names[0], names[1]))
+        pole = await message.channel.send(embed=embed)
+        await pole.add_reaction("1⃣")
+        await pole.add_reaction("2⃣")
+        return
+
     if "s." not in message.content:
         if message.author.bot:
             return
