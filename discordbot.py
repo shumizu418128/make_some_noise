@@ -9,8 +9,7 @@ print("successfully started")
 
 @client.event
 async def on_voice_state_update(member, before, after):
-    guild = client.get_guild(864475338340171786)  # サーバーID
-    role = guild.get_role(935073171462307881)  # in a vc
+    role = member.guild.get_role(935073171462307881)  # in a vc
     if before.channel is None and after.channel is not None:
         await member.add_roles(role)
         return
@@ -267,8 +266,7 @@ async def on_message(message):
         except discord.errors.ClientException:
             pass
         VoiceClient = message.guild.voice_client
-        guild = client.get_guild(864475338340171786)  # サーバーID
-        me = guild.get_member(896652783346917396)  # make some noise!
+        me = message.guild.get_member(896652783346917396)  # make some noise!
         try:
             await me.edit(suppress=False)
         except AttributeError:
@@ -410,8 +408,7 @@ async def on_message(message):
         except discord.errors.ClientException:
             pass
         else:
-            guild = client.get_guild(864475338340171786)  # サーバーID
-            me = guild.get_member(896652783346917396)  # make some noise!
+            me = message.guild.get_member(896652783346917396)  # make some noise!
             await me.edit(suppress=False)
         channel0 = client.get_channel(930767329137143839)  # 対戦表
         await channel0.purge()
@@ -482,8 +479,7 @@ async def on_message(message):
             await stage_channel.connect(reconnect=True)
         except discord.errors.ClientException:
             pass
-        guild = client.get_guild(864475338340171786)  # サーバーID
-        me = guild.get_member(896652783346917396)  # make some noise!
+        me = message.guild.get_member(896652783346917396)  # make some noise!
         await me.edit(suppress=False)
         return
 
