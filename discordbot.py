@@ -22,12 +22,8 @@ async def on_member_update(before, after):
     if str(before.roles) != str(after.roles):
         check_role_before = before.roles
         check_role_after = after.roles
-        id_list_before = []
-        id_list_after = []
-        for id in check_role_before:
-            id_list_before.append(id.id)
-        for id in check_role_after:
-            id_list_after.append(id.id)
+        id_list_before = [(j) for j in check_role_before]
+        id_list_after = [(k) for k in check_role_after]
         channel = client.get_channel(864475338340171791)  # 全体チャット
         channel2 = client.get_channel(930447365536612353)  # bot
         if 930368130906218526 in id_list_after and 930368130906218526 not in id_list_before:  # battle stadium
