@@ -177,6 +177,8 @@ async def on_message(message):
             if timer_int > 10:
                 for i in range(timer_int):
                     await sleep(1)
+                    if i % 10 == 9:
+                        await message.channel.send(str(i + 1) + "秒経過")
             else:
                 counter = 10
                 for i in range(timer_int * 6):
