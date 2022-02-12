@@ -178,12 +178,14 @@ async def on_message(message):
                 for i in range(timer_int):
                     await sleep(1)
                     if i % 10 == 9:
-                        await message.channel.send(str(i + 1) + "秒経過")
+                        notice = await message.channel.send(str(i + 1) + "秒経過")
+                        await notice.delete(delay=20)
             else:
                 counter = 10
                 for i in range(timer_int * 6):
                     await sleep(10)
-                    await message.channel.send(str(counter) + "秒経過")
+                    notice = await message.channel.send(str(counter) + "秒経過")
+                    await notice.delete(delay=20)
                     counter += 10
             embed = discord.Embed(title="TIME!")
             await message.channel.send(embed=embed)
