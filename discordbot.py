@@ -246,6 +246,28 @@ async def on_message(message):
         await message.channel.send(embed=embed)
         return
 
+    if message.content == "s.c3":
+        await message.delete(delay=1)
+        if message.guild.voice_client is None:
+            await message.author.voice.channel.connect(reconnect=True)
+        await message.channel.send("タイマースタート!")
+        await sleep(30)
+        embed = discord.Embed(title="残り60秒", color=0x00ff00)
+        await message.channel.send(embed=embed)
+        await sleep(20)
+        embed = discord.Embed(title="残り40秒", color=0x00ff00)
+        await message.channel.send(embed=embed)
+        await sleep(20)
+        embed = discord.Embed(title="残り20秒", color=0xffff00)
+        await message.channel.send(embed=embed)
+        await sleep(10)
+        embed = discord.Embed(title="残り10秒", color=0xff0000)
+        await message.channel.send(embed=embed)
+        await sleep(10)
+        embed = discord.Embed(title="TIME!")
+        await message.channel.send(embed=embed)
+        return
+
     if message.content.startswith("s.order"):
         names = [(j) for j in message.content.split()]
         names.remove("s.order")
