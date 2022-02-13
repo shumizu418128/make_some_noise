@@ -1,4 +1,4 @@
-  # import discord
+import discord
 import random
 import datetime
 from asyncio import sleep
