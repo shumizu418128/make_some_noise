@@ -45,118 +45,115 @@ async def on_member_update(before, after):
 
 @client.event
 async def on_message(message):
-    if message.channel.id == 930767329137143839:
+    if message.channel.id == 930767329137143839:  # バトスタ対戦表
         if message.author.bot:
             return
         await message.delete(delay=1)
         return
 
     if message.content == "s.join":
+        await message.delete(delay=1)
         if message.author.voice is None:
             await message.channel.send("VCチャンネルに接続してから、もう一度お試しください。")
-            await message.delete(delay=1)
             return
         try:
             await message.author.voice.channel.connect(reconnect=True)
         except discord.errors.ClientException:
             await message.channel.send("既に接続しています。\nチャンネルを移動させたい場合、一度切断してからもう一度お試しください。")
-            await message.delete(delay=1)
             return
         else:
             await message.channel.send("接続しました。")
-            await message.delete(delay=1)
             return
 
     if message.content == "s.leave":
+        await message.delete(delay=1)
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。")
-            await message.delete(delay=1)
             return
         await message.guild.voice_client.disconnect()
         await message.channel.send("切断しました。")
-        await message.delete(delay=1)
         return
 
     if message.content == "s.p time" or message.content == "s.time":
+        await message.delete(delay=1)
         if message.guild.voice_client is None:
             await message.author.voice.channel.connect(reconnect=True)
         ran_int = random.randint(1, 3)
         ran_audio = {1: "time.mp3", 2: "time_2.mp3", 3: "time_3.mp3"}
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
         message.guild.voice_client.play(audio)
-        await message.delete(delay=1)
         return
 
     if message.content == "s.p kbbtime" or message.content == "s.kbbtime":
+        await message.delete(delay=1)
         if message.guild.voice_client is None:
             await message.author.voice.channel.connect(reconnect=True)
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("kbbtime.mp3"), volume=0.2)
         message.guild.voice_client.play(audio)
-        await message.delete(delay=1)
         return
 
     if message.content == "s.p kansei" or message.content == "s.kansei":
+        await message.delete(delay=1)
         if message.guild.voice_client is None:
             await message.author.voice.channel.connect(reconnect=True)
         ran_int = random.randint(1, 2)
         ran_audio = {1: "kansei.mp3", 2: "kansei_2.mp3"}
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
         message.guild.voice_client.play(audio)
-        await message.delete(delay=1)
         return
 
     if message.content == "s.p count" or message.content == "s.count":
+        await message.delete(delay=1)
         if message.guild.voice_client is None:
             await message.author.voice.channel.connect(reconnect=True)
         ran_int = random.randint(1, 2)
         ran_audio = {1: "countdown.mp3", 2: "countdown_2.mp3"}
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
         message.guild.voice_client.play(audio)
-        await message.delete(delay=1)
         return
 
     if message.content == "s.p bunka" or message.content == "s.bunka":
+        await message.delete(delay=1)
         if message.guild.voice_client is None:
             await message.author.voice.channel.connect(reconnect=True)
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("bunka.mp3"), volume=0.2)
         message.guild.voice_client.play(audio)
-        await message.delete(delay=1)
         return
 
     if message.content == "s.p esh" or message.content == "s.esh":
+        await message.delete(delay=1)
         if message.guild.voice_client is None:
             await message.author.voice.channel.connect(reconnect=True)
         ran_int = random.randint(1, 2)
         ran_audio = {1: "esh.mp3", 2: "esh_2.mp3"}
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.4)
         message.guild.voice_client.play(audio)
-        await message.delete(delay=1)
         return
 
     if message.content == "s.p msn" or message.content == "s.msn":
+        await message.delete(delay=1)
         if message.guild.voice_client is None:
             await message.author.voice.channel.connect(reconnect=True)
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("msn.mp3"), volume=0.4)
         message.guild.voice_client.play(audio)
-        await message.delete(delay=1)
         return
 
     if message.content == "s.p olala" or message.content == "s.olala":
+        await message.delete(delay=1)
         if message.guild.voice_client is None:
             await message.author.voice.channel.connect(reconnect=True)
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("olala.mp3"), volume=0.4)
         message.guild.voice_client.play(audio)
-        await message.delete(delay=1)
         return
 
     if message.content == "s.p dismuch" or message.content == "s.dismuch":
+        await message.delete(delay=1)
         if message.guild.voice_client is None:
             await message.author.voice.channel.connect(reconnect=True)
         ran_int = random.randint(1, 4)
         ran_audio = {1: "dismuch.mp3", 2: "dismuch_2.mp3", 3: "dismuch_3.mp3", 4: "dismuch_4.mp3"}
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=1)
         message.guild.voice_client.play(audio)
-        await message.delete(delay=1)
         return
 
     if message.content.startswith("s.t"):
@@ -194,14 +191,14 @@ async def on_message(message):
             return
 
     if message.content == "s.help":
+        await message.delete(delay=1)
         await message.channel.send("コマンド一覧\n`s.join` コマンドを打った人が居るVCチャンネルに接続\n`s.leave` VCチャンネルから切断\n`s.t` タイマーを利用できます。詳細はs.help timeと入力すると確認できます。\n`s.p count or s.count` 321beatboxの音声\n`s.p time or s.time` timeの音声\n`s.p kbbtime or s.kbbtime` 歓声無しtimeの音声 音源：KBB\n`s.p kansei or s.kansei` 歓声\n`s.p bunka or s.bunka` 文化の人の音声\n`s.p esh or s.esh` eshの音声\n`s.p msn or s.msn` make some noiseの音声\n`s.p olala or s.olala` olalaの音声")
         await message.channel.send("make some noise bot開発者：tari3210 #9924")
-        await message.delete(delay=1)
         return
 
     if message.content == "s.help time":
-        await message.channel.send("タイマー利用方法\n\n`s.t`の後ろに、半角スペースを空けて数字を入力してください。\n例：`s.t 3` \n1から10まで数字は分単位で、それ以上の数字は秒単位でセットされます。\n例1：1分40秒にセットしたい場合 `s.t 100`\n例2：3分にセットしたい場合 `s.t 3`もしくは`s.t 180`\n\n注意：必ず整数で入力してください。")
         await message.delete(delay=1)
+        await message.channel.send("タイマー利用方法\n\n`s.t`の後ろに、半角スペースを空けて数字を入力してください。\n例：`s.t 3` \n1から10まで数字は分単位で、それ以上の数字は秒単位でセットされます。\n例1：1分40秒にセットしたい場合 `s.t 100`\n例2：3分にセットしたい場合 `s.t 3`もしくは`s.t 180`\n\n注意：必ず整数で入力してください。")
         return
 
     if message.content == "s.c":
@@ -404,6 +401,7 @@ async def on_message(message):
         return
 
     if message.content.startswith("s.role"):
+        await message.delete(delay=1)
         input_id = [(j) for j in message.content.split()]
         try:
             role = message.guild.get_role(int(input_id[1]))
@@ -496,6 +494,7 @@ async def on_message(message):
         return
 
     if message.content == "s.stage":
+        await message.delete(delay=1)
         stage_channel = client.get_channel(931462636019802123)  # ステージ
         try:
             await stage_channel.create_instance(topic="battle stadium")
@@ -530,6 +529,7 @@ async def on_message(message):
         return
 
     if message.content == "s.end":
+        await message.delete(delay=1)
         stage_channel = client.get_channel(931462636019802123)  # ステージ
         await stage_channel.instance.delete()
         channel0 = client.get_channel(930767329137143839)  # 対戦表
@@ -550,6 +550,30 @@ async def on_message(message):
         poll = await message.channel.send(embed=embed)
         await poll.add_reaction("1⃣")
         await poll.add_reaction("2⃣")
+        return
+
+    if message.content.startswith("s.remove"):
+        input_ = message.content[9:]  # ss.remove をカット
+        try:
+            name = message.guild.get_member(int(input_))
+        except ValueError:
+            name = message.guild.get_member_named(input_)
+        if name is None:
+            await message.channel.send("検索結果なし")
+            return
+        roles = name.roles
+        for role in roles:
+            if role.id == 920320926887862323:  # A部門 ビト森杯
+                roleA = message.guild.get_role(920320926887862323)  # A部門 ビト森杯
+                await name.remove_roles(roleA)
+                await message.channel.send("%sさんのビト森杯 A部門エントリーを取り消しました。" % (name.display_name))
+                return
+            if role.id == 920321241976541204:  # B部門 ビト森杯
+                roleB = message.guild.get_role(920321241976541204)  # B部門 ビト森杯
+                await name.remove_roles(roleB)
+                await message.channel.send("%sさんのビト森杯 B部門エントリーを取り消しました。" % (name.display_name))
+                return
+        await message.channel.send("%sはビト森杯にエントリーしていません" % (name.display_name))
         return
 
     if "s." not in message.content:
