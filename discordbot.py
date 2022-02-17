@@ -406,17 +406,17 @@ async def on_message(message):
         try:
             role = message.guild.get_role(int(input_id[1]))
         except ValueError:
-            await message.channel.send("Error: type ID")
+            await message.channel.send("Error: ロールIDを入力してください")
             return
         else:
             try:
                 role_member = role.members
             except AttributeError:
-                await message.channel.send("Error: Role not found")
+                await message.channel.send("Error: ロールが見つかりませんでした")
                 return
             else:
                 for member in role_member:
-                    await message.channel.send(member.display_name)
+                    await message.channel.send(member.display_name, member.id)
                 await message.channel.send("---finish---")
                 return
 
@@ -520,12 +520,12 @@ async def on_message(message):
         roles = name.roles
         for role in roles:
             if role.id == 920320926887862323:  # A部門 ビト森杯
-                await message.channel.send("%sはビト森杯 A部門エントリー済み" % (name.display_name))
+                await message.channel.send("%sさんはビト森杯 🇦部門エントリー済み" % (name.display_name))
                 return
             if role.id == 920321241976541204:  # B部門 ビト森杯
-                await message.channel.send("%sはビト森杯 B部門エントリー済み" % (name.display_name))
+                await message.channel.send("%sさんはビト森杯 🅱️部門エントリー済み" % (name.display_name))
                 return
-        await message.channel.send("%sはビト森杯にエントリーしていません" % (name.display_name))
+        await message.channel.send("%sさんはビト森杯にエントリーしていません" % (name.display_name))
         return
 
     if message.content == "s.end":
@@ -552,8 +552,8 @@ async def on_message(message):
         await poll.add_reaction("2⃣")
         return
 
-    if message.content.startswith("s.remove"):
-        input_ = message.content[9:]  # ss.remove をカット
+    if message.content.startswith("s.cancel"):
+        input_ = message.content[9:]  # s.cancel をカット
         try:
             name = message.guild.get_member(int(input_))
         except ValueError:
@@ -566,14 +566,14 @@ async def on_message(message):
             if role.id == 920320926887862323:  # A部門 ビト森杯
                 roleA = message.guild.get_role(920320926887862323)  # A部門 ビト森杯
                 await name.remove_roles(roleA)
-                await message.channel.send("%sさんのビト森杯 A部門エントリーを取り消しました。" % (name.display_name))
+                await message.channel.send("%sさんのビト森杯 🇦部門エントリーを取り消しました。" % (name.display_name))
                 return
             if role.id == 920321241976541204:  # B部門 ビト森杯
                 roleB = message.guild.get_role(920321241976541204)  # B部門 ビト森杯
                 await name.remove_roles(roleB)
-                await message.channel.send("%sさんのビト森杯 B部門エントリーを取り消しました。" % (name.display_name))
+                await message.channel.send("%sさんのビト森杯 🅱️部門エントリーを取り消しました。" % (name.display_name))
                 return
-        await message.channel.send("%sはビト森杯にエントリーしていません" % (name.display_name))
+        await message.channel.send("%sさんはビト森杯にエントリーしていません" % (name.display_name))
         return
 
     if "s." not in message.content:
