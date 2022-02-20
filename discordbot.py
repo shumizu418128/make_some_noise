@@ -34,11 +34,11 @@ async def on_member_update(before, after):
             notice = await channel2.send(f"{after.mention}\nエントリーを受け付けました\nentry completed👍")
             await notice.delete(delay=5)
         if 920320926887862323 in id_list_after and 920320926887862323 not in id_list_before:  # A部門ビト森杯
-            await channel.send(f"{after.mention}\nビト森杯🇦部門\nエントリーを受け付けました👍\nentry completed")
+            await channel.send(f"{after.mention}\nビト森杯🇦部門\nエントリーを受け付けました：{after.display_name}さん\nentry completed👍\n\n名前を変更する際は、一度エントリーをキャンセルしてください。")
         if 920320926887862323 in id_list_before and 920320926887862323 not in id_list_after:  # A部門ビト森杯
             await channel.send(f"{after.mention}\nビト森杯🇦部門\nエントリーを取り消しました❎\nentry canceled")
         if 920321241976541204 in id_list_after and 920321241976541204 not in id_list_before:  # B部門ビト森杯
-            await channel.send(f"{after.mention}\nビト森杯🅱️部門\nエントリーを受け付けました👍\nentry completed")
+            await channel.send(f"{after.mention}\nビト森杯🅱️部門\nエントリーを受け付けました：{after.display_name}さん\nentry completed👍\n\n名前を変更する際は、一度エントリーをキャンセルしてください。")
         if 920321241976541204 in id_list_before and 920321241976541204 not in id_list_after:  # B部門ビト森杯
             await channel.send(f"{after.mention}\nビト森杯🅱️部門\nエントリーを取り消しました❎\nentry canceled")
         return
