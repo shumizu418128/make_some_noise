@@ -3,3 +3,5 @@ pynacl
 opencv-python
 numpy
 Pillow
+gspread
+oauth2client
