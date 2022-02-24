@@ -5,6 +5,4 @@ numpy
 Pillow
 gspread
 oauth2client
-tesseract-ocr
 pyocr
-tesseract-ocr
