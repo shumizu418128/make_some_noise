@@ -5,6 +5,4 @@ numpy
 Pillow
 gspread
 oauth2client
-tesseract-ocr
-tesseract-langpack-jpn
-tesseract-langpack-eng
+git+https://github.com/tesseract-ocr/tessdata_best
