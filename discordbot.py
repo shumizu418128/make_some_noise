@@ -325,43 +325,27 @@ async def on_message(message):
         await message.channel.send("3, 2, 1, Beatbox!")
         await sleep(4)
         while count <= 4:
-            await sleep(3)
-            connect = VoiceClient.is_connected()
-            if connect is False:
-                await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection")
-                return
-            await sleep(6)
-            connect = VoiceClient.is_connected()
-            if connect is False:
-                await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection")
-                return
-            await sleep(10)
-            connect = VoiceClient.is_connected()
-            if connect is False:
-                await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection")
-                return
-            embed = discord.Embed(title="残り40秒", description="Round%s %s" % (str(count), names[0]), color=0x00ff00)
-            await message.channel.send(embed=embed)
-            await sleep(10)
-            connect = VoiceClient.is_connected()
-            if connect is False:
-                await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection")
-                return
-            await sleep(10)
-            connect = VoiceClient.is_connected()
-            if connect is False:
-                await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection")
-                return
-            embed = discord.Embed(title="残り20秒", description="Round%s %s" % (str(count), names[0]), color=0xffff00)
-            await message.channel.send(embed=embed)
-            await sleep(10)
-            connect = VoiceClient.is_connected()
-            if connect is False:
-                await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection")
-                return
-            embed = discord.Embed(title="残り10秒", description="Round%s %s" % (str(count), names[0]), color=0xff0000)
-            await message.channel.send(embed=embed)
-            await sleep(9)
+            embed = discord.Embed(title="1:00", description="Round%s %s" % (str(count), names[0]), color=0x00ff00)
+            sent_message = await message.channel.send(embed=embed)
+            counter = 50
+            color = 0x00ff00
+            for i in range(5):
+                await sleep(9.8)
+                embed = discord.Embed(title=f"{counter}", description="Round%s %s" % (str(count), names[0]), color=color)
+                await sent_message.edit(embed=embed)
+                counter -= 10
+                connect = VoiceClient.is_connected()
+                if connect is False:
+                    await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection")
+                    return
+                if i == 1:
+                    color = 0xffff00
+                elif i == 3:
+                    color = 0xff0000
+            await sleep(9.8)
+            embed = discord.Embed(title=f"{counter}", description="Round%s %s" % (str(count), names[0]))
+            await sent_message.edit(embed=embed)
+            await sent_message.delete(delay=5)
             if count <= 3:
                 audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("round%sswitch.mp3" % (str(count + 1))), volume=1.5)
                 connect = VoiceClient.is_connected()
@@ -369,15 +353,12 @@ async def on_message(message):
                     await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection")
                     return
                 message.guild.voice_client.play(audio)
-                await message.channel.send("--------------------\n\nTIME!\nRound%s %s\nSWITCH!\n\n--------------------" % (str(count + 1), names[1]))
+                switch = await message.channel.send("--------------------\n\nTIME!\nRound%s %s\nSWITCH!\n\n--------------------" % (str(count + 1), names[1]))
+                await switch.delete(delay=5)
                 names.reverse()
                 await sleep(3)
             count += 1
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time.mp3"), volume=0.2)
-        connect = VoiceClient.is_connected()
-        if connect is False:
-            await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection")
-            return
         random_fuga = random.randint(1, 10)
         if random_fuga == 1:
             audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time_3.mp3"), volume=0.3)
@@ -390,7 +371,8 @@ async def on_message(message):
         embed = discord.Embed(title="TIME!")
         await message.channel.send(embed=embed)
         embed = discord.Embed(title="投票箱", description="`1st:`%s\n`2nd:`%s\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。" % (names[1], names[0]))
-        message3 = await message.channel.send(embed=embed)
+        role_vc = message.guild.get_role(935073171462307881)  # in a vc
+        message3 = await message.channel.send(content=role_vc.mention, embed=embed)
         await message3.add_reaction("1⃣")
         await message3.add_reaction("2⃣")
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("msn.mp3"), volume=0.5)
