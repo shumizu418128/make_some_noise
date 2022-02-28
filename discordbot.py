@@ -342,7 +342,7 @@ async def on_message(message):
                     color = 0xffff00
                 elif i == 3:
                     color = 0xff0000
-            await sleep(9.8)
+            await sleep(9.7)
             embed = discord.Embed(title=f"{counter}", description="Round%s %s" % (str(count), names[0]))
             await sent_message.edit(embed=embed)
             await sent_message.delete(delay=5)
