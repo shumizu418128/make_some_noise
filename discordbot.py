@@ -323,7 +323,7 @@ async def on_message(message):
             await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection")
             return
         await message.channel.send("3, 2, 1, Beatbox!")
-        await sleep(4)
+        await sleep(3)
         while count <= 4:
             embed = discord.Embed(title="1:00", description="Round%s %s" % (str(count), names[0]), color=0x00ff00)
             sent_message = await message.channel.send(embed=embed)
