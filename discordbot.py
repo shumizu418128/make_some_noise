@@ -228,7 +228,7 @@ async def on_message(message):
                     color = 0xffff00
                 elif i == 3:
                     color = 0xff0000
-            await sleep(9.7)
+            await sleep(9.8)
             embed = discord.Embed(title="TIME!")
             await sent_message.edit(embed=embed)
             await sent_message.delete(delay=5)
@@ -293,12 +293,12 @@ async def on_message(message):
                 await sent_message.edit(embed=embed)
                 await sent_message.delete(delay=5)
                 names.reverse()
+                round_count += 1
                 if round_count < 4:
                     switch = await message.channel.send("SWITCH!")
                     await switch.delete(delay=5)
                     embed = discord.Embed(title="1:00", description=f"Round{round_count} {names[0]}", color=0x00ff00)
                     sent_message = await message.channel.send(embed=embed)
-                round_count += 1
             audio = discord.PCMVolumeTransformer(
                 discord.FFmpegPCMAudio("time.mp3"), volume=0.2)
             message.guild.voice_client.play(audio)
