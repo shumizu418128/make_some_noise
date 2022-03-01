@@ -254,7 +254,7 @@ async def on_message(message):
             start = await message.channel.send("3, 2, 1, Beatbox!")
             await start.delete(delay=10)
             message.guild.voice_client.play(audio)
-            await sleep(3)
+            await sleep(7)
             embed = discord.Embed(title="1:00", description=f"Round1 {names[0]}", color=0x00ff00)
             sent_message = await message.channel.send(embed=embed)
             while round_count < 5:
