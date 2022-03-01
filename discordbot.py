@@ -170,7 +170,7 @@ async def on_message(message):
             await message.channel.send("3, 2, 1, Beatbox!")
             audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("countdown.mp3"), volume=0.2)
             message.guild.voice_client.play(audio)
-            await sleep(4)
+            await sleep(7)
             i = 0
             if timer_int > 10:
                 for i in range(timer_int):
@@ -214,7 +214,7 @@ async def on_message(message):
             start = await message.channel.send("3, 2, 1, Beatbox!")
             await start.delete(delay=10)
             message.guild.voice_client.play(audio)
-            await sleep(3)
+            await sleep(7)
             embed = discord.Embed(title="1:00", color=0x00ff00)
             sent_message = await message.channel.send(embed=embed)
             counter = 50
