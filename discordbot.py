@@ -245,7 +245,7 @@ async def on_message(message):
             if len(names) == 3:
                 round_count = names[2]
                 embed = discord.Embed(title="再開コマンド",
-                        description=f"Round{names[2]}から再開します")
+                                        description=f"Round{names[2]}から再開します")
                 await message.channel.send(embed=embed)
                 del names[2]
                 if round_count % 2 == 0:
@@ -264,7 +264,7 @@ async def on_message(message):
                 color = 0x00ff00
                 for i in range(7):
                     def check(reaction, user):
-                        return user.bot == False and str(reaction.emoji) == '⏭️'
+                        return user.bot is False and str(reaction.emoji) == '⏭️'
                     try:
                         await client.wait_for('reaction_add', timeout=timeout, check=check)
                     except asyncio.TimeoutError:
@@ -272,7 +272,7 @@ async def on_message(message):
                             await message.channel.send("Error: timeout\nタイマーを停止しました")
                             return
                         embed = discord.Embed(title=f"{counter}",
-                                description=f"Round{round_count} {names[0]}", color=color)
+                                                description=f"Round{round_count} {names[0]}", color=color)
                         await sent_message.edit(embed=embed)
                         counter -= 10
                         if counter == 30:
@@ -286,7 +286,7 @@ async def on_message(message):
                             timeout = 30
                             if round_count == 4:
                                 embed = discord.Embed(title="0",
-                                    description=f"Round4 {names[0]}", color=color)
+                                                        description=f"Round4 {names[0]}", color=color)
                                 await sent_message.edit(embed=embed)
                                 break
                         continue
