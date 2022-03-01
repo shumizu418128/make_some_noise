@@ -294,7 +294,7 @@ async def on_message(message):
                 await sent_message.delete(delay=5)
                 names.reverse()
                 round_count += 1
-                if round_count < 4:
+                if round_count < 5:
                     switch = await message.channel.send("SWITCH!")
                     await switch.delete(delay=5)
                     embed = discord.Embed(title="1:00", description=f"Round{round_count} {names[0]}", color=0x00ff00)
