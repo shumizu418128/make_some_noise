@@ -29,8 +29,8 @@ async def on_member_update(before, after):
             id_list_before.append(id.id)
         for id in check_role_after:
             id_list_after.append(id.id)
-        channel = client.get_channel(864475338340171791)  # 全体チャット
-        channel2 = client.get_channel(930447365536612353)  # bot
+        channel = client.get_channel(916608669221806100)  # ビト森杯 進行bot
+        channel2 = client.get_channel(930447365536612353)  # bot - battle stadium
         if 930368130906218526 in id_list_after and 930368130906218526 not in id_list_before:  # battle stadium
             notice = await channel2.send(f"{after.mention}\nエントリーを受け付けました\nentry completed👍")
             await notice.delete(delay=5)
