@@ -220,7 +220,7 @@ async def on_message(message):
             counter = 50
             color = 0x00ff00
             for i in range(5):
-                await sleep(10)
+                await sleep(9.9)
                 embed = discord.Embed(title=f"{counter}", color=color)
                 await sent_message.edit(embed=embed)
                 counter -= 10
@@ -228,7 +228,7 @@ async def on_message(message):
                     color = 0xffff00
                 elif i == 3:
                     color = 0xff0000
-            await sleep(10)
+            await sleep(9.9)
             embed = discord.Embed(title="TIME!")
             await sent_message.edit(embed=embed)
             await sent_message.delete(delay=5)
@@ -320,7 +320,7 @@ async def on_message(message):
         counter = 80
         color = 0x00ff00
         for i in range(8):
-            await sleep(10)
+            await sleep(9.9)
             embed = discord.Embed(title=f"{counter}", color=color)
             await sent_message.edit(embed=embed)
             counter -= 10
@@ -328,7 +328,7 @@ async def on_message(message):
                 color = 0xffff00
             elif i == 6:
                 color = 0xff0000
-        await sleep(10)
+        await sleep(9.9)
         embed = discord.Embed(title="TIME!")
         await sent_message.edit(embed=embed)
         await sent_message.delete(delay=5)
@@ -399,7 +399,7 @@ async def on_message(message):
             counter = 50
             color = 0x00ff00
             for i in range(5):
-                await sleep(10)
+                await sleep(9.9)
                 embed = discord.Embed(title=f"{counter}", description="Round%s %s" % (str(count), names[0]), color=color)
                 await sent_message.edit(embed=embed)
                 counter -= 10
@@ -411,7 +411,7 @@ async def on_message(message):
                     color = 0xffff00
                 elif i == 3:
                     color = 0xff0000
-            await sleep(10)
+            await sleep(9.9)
             embed = discord.Embed(title=f"{counter}", description="Round%s %s" % (str(count), names[0]))
             await sent_message.edit(embed=embed)
             await sent_message.delete(delay=5)
