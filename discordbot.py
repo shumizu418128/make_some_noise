@@ -1,8 +1,14 @@
 import discord
 import random
 import datetime
+import cv2
+import numpy as np
+import time
 from asyncio import sleep
 import asyncio
+from PIL import Image, ImageDraw, ImageFont
+import pyocr
+import pyocr.builders
 intents = discord.Intents.all()  # デフォルトのIntentsオブジェクトを生成
 intents.typing = False  # typingを受け取らないように
 client = discord.Client(intents=intents)
