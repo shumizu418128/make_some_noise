@@ -588,8 +588,9 @@ async def on_message(message):
 
     if message.content == "s.end":
         await message.delete(delay=1)
-        stage_channel = client.get_channel(931462636019802123)  # ステージ
-        await stage_channel.instance.complete()
+        scheduled_events = message.guild.scheduled_events
+        if len(scheduled_events) == 1:
+            await scheduled_events[0].complete()
         channel0 = client.get_channel(930767329137143839)  # 対戦表
         await channel0.purge()
         role = message.guild.get_role(930368130906218526)  # battle stadium
