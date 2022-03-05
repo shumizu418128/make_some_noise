@@ -475,15 +475,10 @@ async def on_message(message):
         await message.channel.send("処理中...")
         stage_channel = client.get_channel(931462636019802123)  # ステージ
         stage_instance = client.get_stage_instance(931462636019802123)  # ステージインスタンス
-        scheduled_event = stage_instance.scheduled_event
-        if scheduled_event is not None:
-            try:
-                await scheduled_event.start()
-            except discord.errors.HTTPException:
-                try:
-                    await stage_channel.create_instance(topic="battle stadium")
-                except discord.errors.HTTPException:
-                    pass
+        try:
+            await stage_channel.create_instance(topic="battle stadium")
+        except discord.errors.HTTPException:
+            pass
         try:
             await stage_channel.connect(reconnect=True)
         except discord.errors.ClientException:
