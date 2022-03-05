@@ -474,11 +474,17 @@ async def on_message(message):
     if message.content == "s.start":
         await message.channel.send("処理中...")
         stage_channel = client.get_channel(931462636019802123)  # ステージ
-        stage_instance = client.get_stage_instance(931462636019802123)  # ステージインスタンス
-        try:
-            await stage_channel.create_instance(topic="battle stadium")
-        except discord.errors.HTTPException:
-            pass
+        scheduled_events = message.guild.scheduled_events
+        if len(scheduled_events) == 1:
+            try:
+                await scheduled_events[0].start()
+            except discord.errors.HTTPException:
+                pass
+        else:
+            try:
+                await stage_channel.create_instance(topic="battle stadium")
+            except discord.errors.HTTPException:
+                pass
         try:
             await stage_channel.connect(reconnect=True)
         except discord.errors.ClientException:
@@ -583,7 +589,7 @@ async def on_message(message):
     if message.content == "s.end":
         await message.delete(delay=1)
         stage_channel = client.get_channel(931462636019802123)  # ステージ
-        await stage_channel.instance.delete()
+        await stage_channel.instance.complete()
         channel0 = client.get_channel(930767329137143839)  # 対戦表
         await channel0.purge()
         role = message.guild.get_role(930368130906218526)  # battle stadium
