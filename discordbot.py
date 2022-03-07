@@ -489,8 +489,7 @@ async def on_message(message):
             await stage_channel.connect(reconnect=True)
         except discord.errors.ClientException:
             pass
-        guild = client.get_guild(864475338340171786)  # サーバーID
-        me = guild.get_member(896652783346917396)  # make some noise!
+        me = message.guild.get_member(896652783346917396)  # make some noise!
         await me.edit(suppress=False)
         channel0 = client.get_channel(930767329137143839)  # 対戦表
         await channel0.purge()
