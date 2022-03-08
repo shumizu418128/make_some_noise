@@ -243,7 +243,7 @@ async def on_message(message):
         elif len(names) == 2 or len(names) == 3:
             round_count = 1
             if len(names) == 3:
-                round_count = names[2]
+                round_count = int(names[2])
                 embed = discord.Embed(title="再開コマンド", description=f"Round{names[2]}から再開します")
                 await message.channel.send(embed=embed)
                 del names[2]
@@ -255,7 +255,7 @@ async def on_message(message):
             await start.delete(delay=10)
             message.guild.voice_client.play(audio)
             await sleep(7)
-            embed = discord.Embed(title="1:00", description=f"Round1 {names[0]}", color=0x00ff00)
+            embed = discord.Embed(title="1:00", description=f"Round{round_count} {names[0]}", color=0x00ff00)
             sent_message = await message.channel.send(embed=embed)
             while round_count < 5:
                 timeout = 10
