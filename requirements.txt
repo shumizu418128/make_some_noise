@@ -1,8 +1,2 @@
 git+https://github.com/Pycord-Development/pycord
 pynacl
-opencv-python
-numpy
-Pillow
-gspread
-oauth2client
-pyocr
