@@ -334,23 +334,6 @@ async def on_message(message):
         await sent_message.delete(delay=5)
         return
 
-    if message.content.startswith("s.order"):
-        names = [(j) for j in message.content.split()]
-        names.remove("s.order")
-        random.shuffle(names)
-        count, count2 = 0, 1
-        await message.channel.send("処理に時間がかかります。\n「処理終了」と表示されるまで **何も書き込まず** お待ちください。\n対戦カード：")
-        while count < len(names):
-            await message.channel.send("第" + str(count2) + "試合：" + names[count] + " VS " + names[count + 1])
-            count += 2
-            count2 += 1
-        list = []
-        for i in names:
-            list.append(i)
-        list = ', '.join(list)
-        await message.channel.send("トーナメント表書き込み順（上から）：\n" + list + "\n\n――――――処理終了――――――")
-        return
-
     if message.content.startswith("s.battle"):
         stage_channel = client.get_channel(931462636019802123)  # ステージ
         try:
@@ -596,6 +579,11 @@ async def on_message(message):
         role_member = role.members
         for member in role_member:
             await member.remove_roles(role)
+        stage = client.get_channel(931462636019802123)  # ステージ
+        chat = client.get_channel(864475338340171795)  # 雑談部屋1
+        members = stage.members
+        for member in members:
+            await member.move_to(chat)
         return
 
     if message.content.startswith("s.poll"):
