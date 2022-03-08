@@ -547,7 +547,7 @@ async def on_message(message):
         await message.channel.send(embed=embed)
         embed.title = "対戦カード"
         await channel0.send(embed=embed)
-        await channel0.send("%s\n\n%s を確認して、マイク設定を行ってからの参加をお願いします。" % (role.mention, bbx_mic.mention))
+        await channel0.send("%s\n\n%s を確認して、マイク設定を行ってからの参加をお願いします。\n\n※スマホユーザーの方へ\nspeakerになった後、ミュート以外画面操作を一切行わないでください\nDiscordバグにより音声が一切入らなくなります" % (role.mention, bbx_mic.mention))
         return
 
     if message.content == "s.stage":
