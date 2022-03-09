@@ -330,13 +330,13 @@ async def on_message(message):
         await start.delete(delay=10)
         message.guild.voice_client.play(audio)
         await sleep(7)
-        embed = discord.Embed(title="1:00", description=f"Round{round_count} {names[0]}", color=0x00ff00)
+        embed = discord.Embed(title="90", description=f"Round{round_count} {names[0]}", color=0x00ff00)
         sent_message = await message.channel.send(embed=embed)
         while round_count < 5:
             timeout = 10
-            counter = 50
+            counter = 80
             color = 0x00ff00
-            for i in range(7):
+            while True:
                 def check(reaction, user):
                     return user.bot is False and str(reaction.emoji) == '⏭️'
                 try:
