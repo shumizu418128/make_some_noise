@@ -372,7 +372,7 @@ async def on_message(message):
             if round_count < 5:
                 switch = await message.channel.send("SWITCH!")
                 await switch.delete(delay=5)
-                embed = discord.Embed(title="1:00", description=f"Round{round_count} {names[0]}", color=0x00ff00)
+                embed = discord.Embed(title="90", description=f"Round{round_count} {names[0]}", color=0x00ff00)
                 sent_message = await message.channel.send(embed=embed)
         audio = discord.PCMVolumeTransformer(
             discord.FFmpegPCMAudio("time.mp3"), volume=0.2)
