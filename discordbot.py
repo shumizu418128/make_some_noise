@@ -1,3 +1,4 @@
+from ast import Return
 import discord
 import random
 import datetime
@@ -313,6 +314,74 @@ async def on_message(message):
         else:
             await message.channel.send("Error: 入力方法が間違っています。")
         return
+
+    if message.content.startswith("s.bj"):
+        if message.guild.voice_client is None:
+            await message.author.voice.channel.connect(reconnect=True)
+        names = [(j) for j in message.content.split()]
+        names.remove("s.bj")
+        round_count = 1
+        if len(names) != 2:
+            await message.channel.send("Error: 入力方法が間違っています。")
+            return
+        audio = discord.PCMVolumeTransformer(
+            discord.FFmpegPCMAudio("countdown.mp3"), volume=0.5)
+        start = await message.channel.send("3, 2, 1, Beatbox!")
+        await start.delete(delay=10)
+        message.guild.voice_client.play(audio)
+        await sleep(7)
+        embed = discord.Embed(title="1:00", description=f"Round{round_count} {names[0]}", color=0x00ff00)
+        sent_message = await message.channel.send(embed=embed)
+        while round_count < 5:
+            timeout = 10
+            counter = 50
+            color = 0x00ff00
+            for i in range(7):
+                def check(reaction, user):
+                    return user.bot is False and str(reaction.emoji) == '⏭️'
+                try:
+                    await client.wait_for('reaction_add', timeout=timeout, check=check)
+                except asyncio.TimeoutError:
+                    if counter == -10:
+                        await message.channel.send("Error: timeout\nタイマーを停止しました")
+                        return
+                    embed = discord.Embed(title=f"{counter}", description=f"Round{round_count} {names[0]}", color=color)
+                    await sent_message.edit(embed=embed)
+                    counter -= 10
+                    if counter == 30:
+                        color = 0xffff00
+                    elif counter == 10:
+                        color = 0xff0000
+                    elif counter == 0:
+                        color = 0x000000
+                        await sent_message.add_reaction("⏭️")
+                    elif counter == -10:
+                        timeout = 30
+                        if round_count == 4:
+                            embed = discord.Embed(title="0", description=f"Round4 {names[0]}", color=color)
+                            await sent_message.edit(embed=embed)
+                            break
+                    continue
+                else:
+                    break
+            embed = discord.Embed(title="TIME!")
+            await sent_message.edit(embed=embed)
+            await sent_message.delete(delay=5)
+            names.reverse()
+            round_count += 1
+            if round_count < 5:
+                switch = await message.channel.send("SWITCH!")
+                await switch.delete(delay=5)
+                embed = discord.Embed(title="1:00", description=f"Round{round_count} {names[0]}", color=0x00ff00)
+                sent_message = await message.channel.send(embed=embed)
+        audio = discord.PCMVolumeTransformer(
+            discord.FFmpegPCMAudio("time.mp3"), volume=0.2)
+        message.guild.voice_client.play(audio)
+        await sleep(3)
+        audio = discord.PCMVolumeTransformer(
+            discord.FFmpegPCMAudio("msn.mp3"), volume=0.5)
+        message.guild.voice_client.play(audio)
+        await message.delete(delay=1)
 
     if message.content == "s.c90":
         await message.delete(delay=1)
