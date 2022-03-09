@@ -263,7 +263,10 @@ async def on_message(message):
                 color = 0x00ff00
                 for i in range(7):
                     def check(reaction, user):
-                        return user.bot is False and str(reaction.emoji) == '⏭️'
+                        id_manage = 904368977092964352  # ビト森杯運営
+                        roles = user.roles
+                        id_list = [role.id for role in roles]
+                        return id_manage in id_list and str(reaction.emoji) == '⏭️'
                     try:
                         await client.wait_for('reaction_add', timeout=timeout, check=check)
                     except asyncio.TimeoutError:
