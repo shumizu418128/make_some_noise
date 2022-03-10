@@ -469,6 +469,7 @@ async def on_message(message):
             embed = discord.Embed(title=f"{counter}", description="Round%s %s" % (str(count), names[0]))
             await sent_message.edit(embed=embed)
             await sent_message.delete(delay=5)
+            names.reverse()
             if count <= 3:
                 audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("round%sswitch.mp3" % (str(count + 1))), volume=1.5)
                 connect = VoiceClient.is_connected()
@@ -478,22 +479,25 @@ async def on_message(message):
                 message.guild.voice_client.play(audio)
                 switch = await message.channel.send("--------------------\n\nTIME!\nRound%s %s\nSWITCH!\n\n--------------------" % (str(count + 1), names[1]))
                 await switch.delete(delay=5)
-                names.reverse()
                 await sleep(3)
             count += 1
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time.mp3"), volume=0.2)
-        random_fuga = random.randint(1, 10)
-        if random_fuga == 1:
+        if random.randint(1, 10) == 1:
             audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time_3.mp3"), volume=0.3)
             message.guild.voice_client.play(audio)
             await sleep(8)
             message4 = await message.channel.send("なああああああああああああああああああああああああああああああああああ")
             await message4.add_reaction("🗿")
+            embed = discord.Embed(title="投票箱", description="`1st:`%s\n`2nd:`%s\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。" % (names[0], names[1]))
+            role_vc = message.guild.get_role(935073171462307881)  # in a vc
+            message3 = await message.channel.send(content=role_vc.mention, embed=embed)
+            await message3.add_reaction("1⃣")
+            await message3.add_reaction("2⃣")
             return
         message.guild.voice_client.play(audio)
         embed = discord.Embed(title="TIME!")
         await message.channel.send(embed=embed)
-        embed = discord.Embed(title="投票箱", description="`1st:`%s\n`2nd:`%s\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。" % (names[1], names[0]))
+        embed = discord.Embed(title="投票箱", description="`1st:`%s\n`2nd:`%s\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。" % (names[0], names[1]))
         role_vc = message.guild.get_role(935073171462307881)  # in a vc
         message3 = await message.channel.send(content=role_vc.mention, embed=embed)
         await message3.add_reaction("1⃣")
@@ -696,12 +700,10 @@ async def on_message(message):
     if "s." not in message.content:
         if message.author.bot:
             return
-        elif message.channel.id == 930447365536612353:
+        elif message.channel.id == 930447365536612353:  # バトスタbot
             await message.delete(delay=1)
         else:
-            a = random.randint(1, 400)
-            await sleep(2)
-            if a == 1:
+            if random.randint(1, 200) == 1:
                 await message.channel.send("ｵﾝｷﾞｬｱｱｱｱｱｱｱｱｱｱｱｱｱ！！！！！")
         return
 
