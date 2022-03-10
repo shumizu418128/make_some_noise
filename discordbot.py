@@ -1,4 +1,3 @@
-from ast import Return
 import discord
 import random
 import datetime
