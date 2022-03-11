@@ -23,12 +23,8 @@ async def on_member_update(before, after):
     if str(before.roles) != str(after.roles):
         check_role_before = before.roles
         check_role_after = after.roles
-        id_list_before = []
-        id_list_after = []
-        for id in check_role_before:
-            id_list_before.append(id.id)
-        for id in check_role_after:
-            id_list_after.append(id.id)
+        id_list_before = [role.id for role in check_role_before]
+        id_list_after = [role.id for role in check_role_after]
         channel = client.get_channel(916608669221806100)  # ビト森杯 進行bot
         channel2 = client.get_channel(930447365536612353)  # bot - battle stadium
         if 930368130906218526 in id_list_after and 930368130906218526 not in id_list_before:  # battle stadium
@@ -525,7 +521,7 @@ async def on_message(message):
                 return
             else:
                 for member in role_member:
-                    await message.channel.send(member.display_name, member.id)
+                    await message.channel.send(f"{member.display_name}, {member.id}")
                 await message.channel.send("---finish---")
                 return
 
@@ -577,9 +573,7 @@ async def on_message(message):
         await message2.clear_reaction("✅")
         await message.channel.send("参加受付を締め切りました。\nentry closed\n\n処理中... しばらくお待ちください")
         role_member = role.members
-        playerlist = []
-        for member in role_member:
-            playerlist.append(member.display_name)
+        playerlist = [member.display_name for member in role_member]
         random.shuffle(playerlist)
         if len(playerlist) < 2:
             embed = discord.Embed(title="Error", description="参加者が不足しています。", color=0xff0000)
@@ -659,6 +653,12 @@ async def on_message(message):
         members = stage.members
         for member in members:
             await member.move_to(chat)
+        try:
+            instance = await stage.fetch_instance()
+        except discord.errors.NotFound:
+            pass
+        else:
+            await instance.delete()
         return
 
     if message.content.startswith("s.poll"):
