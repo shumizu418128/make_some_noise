@@ -637,6 +637,24 @@ async def on_message(message):
         await message.channel.send("%sさんはビト森杯にエントリーしていません" % (name.display_name))
         return
 
+    if message.content.startswith("contact:"):
+        input_ = [j for j in message.content.split()]
+        name = message.guild.get_member(int(input_[1]))
+        if name is None:
+            await message.channel.send("Error: ID検索結果なし")
+            return
+        await message.channel.send(f"{name.mention}\nご用件をこのチャンネルにご記入ください。\nplease write your inquiry here.")
+        roles = name.roles
+        for role in roles:
+            if role.id == 920320926887862323:  # A部門 ビト森杯
+                await message.channel.send("%sさんはビト森杯 🇦部門エントリー済み" % (name.display_name))
+                return
+            if role.id == 920321241976541204:  # B部門 ビト森杯
+                await message.channel.send("%sさんはビト森杯 🅱️部門エントリー済み" % (name.display_name))
+                return
+        await message.channel.send("%sさんはビト森杯にエントリーしていません" % (name.display_name))
+        return
+
     if message.content == "s.end":
         await message.delete(delay=1)
         scheduled_events = message.guild.scheduled_events
