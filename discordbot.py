@@ -461,7 +461,7 @@ async def on_message(message):
                     await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection")
                     return
                 message.guild.voice_client.play(audio)
-                switch = await message.channel.send("--------------------\n\nTIME!\nRound%s %s\nSWITCH!\n\n--------------------" % (str(count + 1), names[1]))
+                switch = await message.channel.send("--------------------\n\nTIME!\nRound%s %s\nSWITCH!\n\n--------------------" % (str(count + 1), names[0]))
                 await switch.delete(delay=5)
                 await sleep(3)
             count += 1
@@ -587,9 +587,6 @@ async def on_message(message):
 
     if message.content == "s.end":
         await message.delete(delay=1)
-        scheduled_events = message.guild.scheduled_events
-        if len(scheduled_events) == 1:
-            await scheduled_events[0].complete()
         channel0 = client.get_channel(930767329137143839)  # 対戦表
         await channel0.purge()
         role = message.guild.get_role(930368130906218526)  # battle stadium
@@ -607,6 +604,9 @@ async def on_message(message):
             pass
         else:
             await instance.delete()
+        scheduled_events = message.guild.scheduled_events
+        if len(scheduled_events) == 1:
+            await scheduled_events[0].complete()
         return
 
     if "s." not in message.content:
