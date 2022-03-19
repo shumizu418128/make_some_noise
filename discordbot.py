@@ -27,6 +27,7 @@ async def on_member_update(before, after):
         if 930368130906218526 in id_after and 930368130906218526 not in id_before:  # battle stadium
             notice = await channel.send(f"{after.mention}\nエントリーを受け付けました\nentry completed👍")
             await notice.delete(delay=5)
+        return
 
 @client.event
 async def on_message(message):
