@@ -184,7 +184,7 @@ async def on_message(message):
         await message.channel.send("タイマー利用方法\n\n`s.t`の後ろに、半角スペースを空けて数字を入力してください。\n例：`s.t 3` \n1から10まで数字は分単位で、それ以上の数字は秒単位でセットされます。\n例1：1分40秒にセットしたい場合 `s.t 100`\n例2：3分にセットしたい場合 `s.t 3`もしくは`s.t 180`\n\n注意：必ず整数で入力してください。")
         return
 
-    if message.content.startswith("s.c"):
+    if message.content.startswith("s.c") and "s.c90" not in message.content and "s.cancel" not in message.content:
         if message.guild.voice_client is None:
             await message.author.voice.channel.connect(reconnect=True)
         names = [(j) for j in message.content.split()]
