@@ -25,8 +25,7 @@ async def on_member_update(before, after):
         id_after = [role.id for role in after.roles]
         channel = client.get_channel(930447365536612353)  # bot - battle stadium
         if 930368130906218526 in id_after and 930368130906218526 not in id_before:  # battle stadium
-            notice = await channel.send(f"{after.mention}\nエントリーを受け付けました\nentry completed👍")
-            await notice.delete(delay=5)
+            await channel.send(f"{after.mention}\nエントリーを受け付けました\nentry completed👍", delete_after=5)
         return
 
 @client.event
@@ -161,14 +160,12 @@ async def on_message(message):
                 for i in range(timer_int):
                     await sleep(1)
                     if i % 10 == 9:
-                        notice = await message.channel.send(str(i + 1) + "秒経過")
-                        await notice.delete(delay=20)
+                        await message.channel.send(content=str(i + 1)+"秒経過", delete_after=20)
             else:
                 counter = 10
                 for i in range(timer_int * 6):
                     await sleep(10)
-                    notice = await message.channel.send(str(counter) + "秒経過")
-                    await notice.delete(delay=20)
+                    await message.channel.send(content=str(counter)+"秒経過", delete_after=20)
                     counter += 10
             embed = discord.Embed(title="TIME!")
             await message.channel.send(embed=embed)
@@ -196,8 +193,7 @@ async def on_message(message):
             await message.delete(delay=1)
             audio = discord.PCMVolumeTransformer(
                 discord.FFmpegPCMAudio("countdown.mp3"), volume=0.5)
-            start = await message.channel.send("3, 2, 1, Beatbox!")
-            await start.delete(delay=10)
+            await message.channel.send("3, 2, 1, Beatbox!", delete_after=10)
             message.guild.voice_client.play(audio)
             await sleep(7)
             embed = discord.Embed(title="1:00", color=0x00ff00)
@@ -236,8 +232,7 @@ async def on_message(message):
                     names.reverse()
             audio = discord.PCMVolumeTransformer(
                 discord.FFmpegPCMAudio("countdown.mp3"), volume=0.5)
-            start = await message.channel.send("3, 2, 1, Beatbox!")
-            await start.delete(delay=10)
+            await message.channel.send("3, 2, 1, Beatbox!", delete_after=10)
             message.guild.voice_client.play(audio)
             await sleep(7)
             embed = discord.Embed(title="1:00", description=f"Round{round_count} {names[0]}", color=0x00ff00)
@@ -283,8 +278,7 @@ async def on_message(message):
                 names.reverse()
                 round_count += 1
                 if round_count < 5:
-                    switch = await message.channel.send("SWITCH!")
-                    await switch.delete(delay=5)
+                    await message.channel.send("SWITCH!", delete_after=5)
                     embed = discord.Embed(title="1:00", description=f"Round{round_count} {names[0]}", color=0x00ff00)
                     sent_message = await message.channel.send(embed=embed)
             audio = discord.PCMVolumeTransformer(
@@ -310,8 +304,7 @@ async def on_message(message):
             return
         audio = discord.PCMVolumeTransformer(
             discord.FFmpegPCMAudio("countdown.mp3"), volume=0.5)
-        start = await message.channel.send("3, 2, 1, Beatbox!")
-        await start.delete(delay=10)
+        await message.channel.send("3, 2, 1, Beatbox!", delete_after=10)
         message.guild.voice_client.play(audio)
         await sleep(7)
         embed = discord.Embed(title="90", description=f"Round{round_count} {names[0]}", color=0x00ff00)
@@ -354,8 +347,7 @@ async def on_message(message):
             names.reverse()
             round_count += 1
             if round_count < 5:
-                switch = await message.channel.send("SWITCH!")
-                await switch.delete(delay=5)
+                await message.channel.send("SWITCH!", delete_after=5)
                 embed = discord.Embed(title="90", description=f"Round{round_count} {names[0]}", color=0x00ff00)
                 sent_message = await message.channel.send(embed=embed)
         audio = discord.PCMVolumeTransformer(
@@ -462,8 +454,7 @@ async def on_message(message):
                     await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection")
                     return
                 message.guild.voice_client.play(audio)
-                switch = await message.channel.send("--------------------\n\nTIME!\nRound%s %s\nSWITCH!\n\n--------------------" % (str(count + 1), names[0]))
-                await switch.delete(delay=5)
+                await message.channel.send("--------------------\n\nTIME!\nRound%s %s\nSWITCH!\n\n--------------------" % (str(count + 1), names[0]), delete_after=5)
                 await sleep(3)
             count += 1
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time.mp3"), volume=0.2)
@@ -529,8 +520,7 @@ async def on_message(message):
         await message.channel.send(embed=embed)
         role_vc = message.guild.get_role(935073171462307881)  # in a vc
         bbx_mic = client.get_channel(931781522808262756)  # bbxマイク設定
-        notice = await channel1.send("%s\nエントリー後に、 %s を確認して、マイク設定を行ってください。" % (role_vc.mention, bbx_mic.mention))
-        await notice.delete(delay=60)
+        await channel1.send("%s\nエントリー後に、 %s を確認して、マイク設定を行ってください。" % (role_vc.mention, bbx_mic.mention), delete_after=60)
         await sleep(30)
         embed = discord.Embed(title="あと30秒で締め切ります", color=0xffff00)
         await message.channel.send(embed=embed)
