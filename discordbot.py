@@ -269,7 +269,6 @@ async def on_message(message):
                                 embed = discord.Embed(title="0", description=f"Round4 {names[0]}", color=color)
                                 await sent_message.edit(embed=embed)
                                 break
-                        continue
                     else:
                         break
                 embed = discord.Embed(title="TIME!")
@@ -338,7 +337,6 @@ async def on_message(message):
                             embed = discord.Embed(title="0", description=f"Round4 {names[0]}", color=color)
                             await sent_message.edit(embed=embed)
                             break
-                    continue
                 else:
                     break
             embed = discord.Embed(title="TIME!")
