@@ -541,7 +541,7 @@ async def on_message(message):
         dt_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
         date = str(dt_now.strftime('%m月%d日 %H:%M')) + " JST"
         if date[3] == "0":
-            date = date[:2] + date[4:]
+            date = date[:3] + date[4:]
         if date[0] == "0":
             date = date[1:]
         embed = discord.Embed(title="抽選結果", description="%s" % (date), color=0xff9900)
@@ -585,8 +585,13 @@ async def on_message(message):
         stage = client.get_channel(931462636019802123)  # ステージ
         chat = client.get_channel(864475338340171795)  # 雑談部屋1
         members = stage.members
-        for member in members:
-            await member.move_to(chat)
+        while len(members) > 0:
+            for member in members:
+                try:
+                    await member.move_to(chat)
+                except discord.errors.HTTPException:
+                    continue
+            members = stage.members
         try:
             instance = await stage.fetch_instance()
         except discord.errors.NotFound:
