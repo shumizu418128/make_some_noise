@@ -522,7 +522,6 @@ async def on_message(message):
         await sleep(30)
         embed = discord.Embed(title="あと30秒で締め切ります", color=0xffff00)
         await message.channel.send(embed=embed)
-        await message.channel.send(role_vc.mention)
         await sleep(20)
         embed = discord.Embed(title="締め切り10秒前", color=0xff0000)
         await message.channel.send(embed=embed)
@@ -550,10 +549,16 @@ async def on_message(message):
             counter += 1
             counter2 += 2
         if len(playerlist) % 2 == 1:
-            await message.channel.send("----------------------------------------\n\n参加人数が奇数でした。\n" + playerlist[0] + " さんの対戦が2回行われます。")
-            await channel0.send("参加人数が奇数でした。\n" + playerlist[0] + " さんの対戦が2回行われます。")
+            double_pl = message.guild.get_member_named(playerlist[0])
+            if double_pl is None:
+                double_pl = playerlist[0]
+            else:
+                double_pl = double_pl.mention
+            await message.channel.send(f"----------------------------------------\n\n参加人数が奇数でした。\n{playerlist[0]}さんの対戦が2回行われます。")
+            await channel0.send(f"参加人数が奇数でした。\n{double_pl}さんの対戦が2回行われます。")
             embed.add_field(name="Match%s" % (str(counter)), value="%s `1st` vs %s `2nd`" % (playerlist[-1], playerlist[0]), inline=False)
         await message.channel.send(embed=embed)
+        await channel0.send(role_vc.mention)
         embed.title = "対戦カード"
         await channel0.send(embed=embed)
         await channel0.send("%s\n\n%s を確認して、マイク設定を行ってからの参加をお願いします。\n\n※スマホユーザーの方へ\nspeakerになった後、ミュート以外画面操作を一切行わないでください\nDiscordバグにより音声が一切入らなくなります" % (role.mention, bbx_mic.mention))
