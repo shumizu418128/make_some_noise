@@ -287,6 +287,11 @@ async def on_message(message):
             audio = discord.PCMVolumeTransformer(
                 discord.FFmpegPCMAudio("msn.mp3"), volume=0.5)
             message.guild.voice_client.play(audio)
+            embed = discord.Embed(title="投票箱", description="1⃣ %s\n2⃣ %s" % (names[0], names[1]))
+            channel_judge = message.guild.get_channel(912714891444518943)  # 審査員会議室
+            poll = await channel_judge.send(embed=embed)
+            await poll.add_reaction("1⃣")
+            await poll.add_reaction("2⃣")
             await message.delete(delay=1)
         else:
             await message.channel.send("Error: 入力方法が間違っています。")
@@ -461,7 +466,7 @@ async def on_message(message):
             message.guild.voice_client.play(audio)
             await sleep(8)
             message4 = await message.channel.send("なああああああああああああああああああああああああああああああああああ")
-            await message4.add_reaction("🗿")
+            await message4.add_reaction("🦁")
             embed = discord.Embed(title="投票箱", description="`1st:`%s\n`2nd:`%s\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。" % (names[0], names[1]))
             role_vc = message.guild.get_role(935073171462307881)  # in a vc
             message3 = await message.channel.send(content=role_vc.mention, embed=embed)
