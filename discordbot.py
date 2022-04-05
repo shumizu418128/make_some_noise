@@ -392,7 +392,7 @@ async def on_message(message):
         except discord.errors.ClientException:
             pass
         VoiceClient = message.guild.voice_client
-        me = message.guild.get_member(896652783346917396)  # make some noise!
+        me = message.guild.me
         try:
             await me.edit(suppress=False)
         except AttributeError:
@@ -491,6 +491,8 @@ async def on_message(message):
     if message.content == "s.start":
         await message.channel.send("処理中...")
         stage_channel = client.get_channel(931462636019802123)  # ステージ
+        role_vc = message.guild.get_role(935073171462307881)  # in a vc
+        bbx_mic = client.get_channel(931781522808262756)  # bbxマイク設定
         scheduled_events = message.guild.scheduled_events
         if len(scheduled_events) == 1:
             try:
@@ -506,7 +508,7 @@ async def on_message(message):
             await stage_channel.connect(reconnect=True)
         except discord.errors.ClientException:
             pass
-        me = message.guild.get_member(896652783346917396)  # make some noise!
+        me = message.guild.me
         await me.edit(suppress=False)
         channel0 = client.get_channel(930767329137143839)  # 対戦表
         await channel0.purge()
@@ -520,9 +522,7 @@ async def on_message(message):
         await message2.add_reaction("✅")
         await message.channel.send("処理完了")
         embed = discord.Embed(title="受付開始", description="ただいまより参加受付を開始します。\n%sにてエントリーを行ってください。\nentry now accepting at %s" % (channel1.mention, channel1.mention), color=0x00bfff)
-        await message.channel.send(embed=embed)
-        role_vc = message.guild.get_role(935073171462307881)  # in a vc
-        bbx_mic = client.get_channel(931781522808262756)  # bbxマイク設定
+        await message.channel.send(role_vc.mention, embed=embed)
         await channel1.send("%s\nエントリー後に、 %s を確認して、マイク設定を行ってください。" % (role_vc.mention, bbx_mic.mention), delete_after=60)
         await sleep(30)
         embed = discord.Embed(title="あと30秒で締め切ります", color=0xffff00)
@@ -580,7 +580,7 @@ async def on_message(message):
             await stage_channel.connect(reconnect=True)
         except discord.errors.ClientException:
             pass
-        me = message.guild.get_member(896652783346917396)  # make some noise!
+        me = message.guild.me
         await me.edit(suppress=False)
         return
 
