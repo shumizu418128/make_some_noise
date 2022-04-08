@@ -534,7 +534,8 @@ async def on_message(message):
         button.callback = button_callback
         view = View()
         view.add_item(button)
-        entry_button = await channel1.send("下のボタンを押してエントリー！\npress button to entry", view=view)
+        embed = Embed(title="Entry", description="下のボタンを押してエントリー！\npress button to entry")
+        entry_button = await channel1.send(embed=embed, view=view)
         await message.channel.send("処理完了")
         embed = Embed(title="受付開始", description="ただいまより参加受付を開始します。\n%sにてエントリーを行ってください。\nentry now accepting at %s" % (channel1.mention, channel1.mention), color=0x00bfff)
         await message.channel.send(role_vc.mention, embed=embed)
