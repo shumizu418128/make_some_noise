@@ -1,8 +1,12 @@
-import discord
-import random
-import datetime
-from asyncio import sleep
 import asyncio
+import datetime
+import random
+from asyncio import sleep
+
+import discord
+from discord import Embed
+from discord.ui import Button, View
+
 intents = discord.Intents.all()  # デフォルトのIntentsオブジェクトを生成
 intents.typing = False  # typingを受け取らないように
 client = discord.Client(intents=intents)
@@ -170,7 +174,7 @@ async def on_message(message):
                     await sleep(10)
                     await message.channel.send(content=str(counter) + "秒経過", delete_after=20)
                     counter += 10
-            embed = discord.Embed(title="TIME!")
+            embed = Embed(title="TIME!")
             await message.channel.send(embed=embed)
             audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time.mp3"), volume=0.2)
             message.guild.voice_client.play(audio)
@@ -199,13 +203,13 @@ async def on_message(message):
             await message.channel.send("3, 2, 1, Beatbox!", delete_after=10)
             message.guild.voice_client.play(audio)
             await sleep(7)
-            embed = discord.Embed(title="1:00", color=0x00ff00)
+            embed = Embed(title="1:00", color=0x00ff00)
             sent_message = await message.channel.send(embed=embed)
             counter = 50
             color = 0x00ff00
             for i in range(5):
                 await sleep(9.9)
-                embed = discord.Embed(title=f"{counter}", color=color)
+                embed = Embed(title=f"{counter}", color=color)
                 await sent_message.edit(embed=embed)
                 counter -= 10
                 if i == 1:
@@ -213,7 +217,7 @@ async def on_message(message):
                 elif i == 3:
                     color = 0xff0000
             await sleep(9.9)
-            embed = discord.Embed(title="TIME!")
+            embed = Embed(title="TIME!")
             await sent_message.edit(embed=embed)
             await sent_message.delete(delay=5)
             audio = discord.PCMVolumeTransformer(
@@ -228,7 +232,7 @@ async def on_message(message):
             round_count = 1
             if len(names) == 3:
                 round_count = int(names[2])
-                embed = discord.Embed(title="再開コマンド", description=f"Round{names[2]}から再開します")
+                embed = Embed(title="再開コマンド", description=f"Round{names[2]}から再開します")
                 await message.channel.send(embed=embed)
                 del names[2]
                 if round_count % 2 == 0:
@@ -238,7 +242,7 @@ async def on_message(message):
             await message.channel.send("3, 2, 1, Beatbox!", delete_after=10)
             message.guild.voice_client.play(audio)
             await sleep(7)
-            embed = discord.Embed(title="1:00", description=f"Round{round_count} {names[0]}", color=0x00ff00)
+            embed = Embed(title="1:00", description=f"Round{round_count} {names[0]}", color=0x00ff00)
             sent_message = await message.channel.send(embed=embed)
             while round_count < 5:
                 timeout = 10
@@ -256,7 +260,7 @@ async def on_message(message):
                         if counter == -10:
                             await message.channel.send("Error: timeout\nタイマーを停止しました")
                             return
-                        embed = discord.Embed(title=f"{counter}", description=f"Round{round_count} {names[0]}", color=color)
+                        embed = Embed(title=f"{counter}", description=f"Round{round_count} {names[0]}", color=color)
                         await sent_message.edit(embed=embed)
                         counter -= 10
                         if counter == 30:
@@ -269,19 +273,19 @@ async def on_message(message):
                         elif counter == -10:
                             timeout = 30
                             if round_count == 4:
-                                embed = discord.Embed(title="0", description=f"Round4 {names[0]}", color=color)
+                                embed = Embed(title="0", description=f"Round4 {names[0]}", color=color)
                                 await sent_message.edit(embed=embed)
                                 break
                     else:
                         break
-                embed = discord.Embed(title="TIME!")
+                embed = Embed(title="TIME!")
                 await sent_message.edit(embed=embed)
                 await sent_message.delete(delay=5)
                 names.reverse()
                 round_count += 1
                 if round_count < 5:
                     await message.channel.send("SWITCH!", delete_after=5)
-                    embed = discord.Embed(title="1:00", description=f"Round{round_count} {names[0]}", color=0x00ff00)
+                    embed = Embed(title="1:00", description=f"Round{round_count} {names[0]}", color=0x00ff00)
                     sent_message = await message.channel.send(embed=embed)
             audio = discord.PCMVolumeTransformer(
                 discord.FFmpegPCMAudio("time.mp3"), volume=0.2)
@@ -290,7 +294,7 @@ async def on_message(message):
             audio = discord.PCMVolumeTransformer(
                 discord.FFmpegPCMAudio("msn.mp3"), volume=0.5)
             message.guild.voice_client.play(audio)
-            embed = discord.Embed(title="投票箱", description="1⃣ %s\n2⃣ %s" % (names[0], names[1]))
+            embed = Embed(title="投票箱", description="1⃣ %s\n2⃣ %s" % (names[0], names[1]))
             channel_judge = message.guild.get_channel(912714891444518943)  # 審査員会議室
             poll = await channel_judge.send(embed=embed)
             await poll.add_reaction("1⃣")
@@ -314,7 +318,7 @@ async def on_message(message):
         await message.channel.send("3, 2, 1, Beatbox!", delete_after=10)
         message.guild.voice_client.play(audio)
         await sleep(7)
-        embed = discord.Embed(title="90", description=f"Round{round_count} {names[0]}", color=0x00ff00)
+        embed = Embed(title="90", description=f"Round{round_count} {names[0]}", color=0x00ff00)
         sent_message = await message.channel.send(embed=embed)
         while round_count < 5:
             timeout = 10
@@ -329,7 +333,7 @@ async def on_message(message):
                     if counter == -10:
                         await message.channel.send("Error: timeout\nタイマーを停止しました")
                         return
-                    embed = discord.Embed(title=f"{counter}", description=f"Round{round_count} {names[0]}", color=color)
+                    embed = Embed(title=f"{counter}", description=f"Round{round_count} {names[0]}", color=color)
                     await sent_message.edit(embed=embed)
                     counter -= 10
                     if counter == 30:
@@ -342,19 +346,19 @@ async def on_message(message):
                     elif counter == -10:
                         timeout = 30
                         if round_count == 4:
-                            embed = discord.Embed(title="0", description=f"Round4 {names[0]}", color=color)
+                            embed = Embed(title="0", description=f"Round4 {names[0]}", color=color)
                             await sent_message.edit(embed=embed)
                             break
                 else:
                     break
-            embed = discord.Embed(title="TIME!")
+            embed = Embed(title="TIME!")
             await sent_message.edit(embed=embed)
             await sent_message.delete(delay=5)
             names.reverse()
             round_count += 1
             if round_count < 5:
                 await message.channel.send("SWITCH!", delete_after=5)
-                embed = discord.Embed(title="90", description=f"Round{round_count} {names[0]}", color=0x00ff00)
+                embed = Embed(title="90", description=f"Round{round_count} {names[0]}", color=0x00ff00)
                 sent_message = await message.channel.send(embed=embed)
         audio = discord.PCMVolumeTransformer(
             discord.FFmpegPCMAudio("time.mp3"), volume=0.2)
@@ -369,13 +373,13 @@ async def on_message(message):
         await message.delete(delay=1)
         if message.guild.voice_client is None:
             await message.author.voice.channel.connect(reconnect=True)
-        embed = discord.Embed(title="90", color=0x00ff00)
+        embed = Embed(title="90", color=0x00ff00)
         sent_message = await message.channel.send(embed=embed)
         counter = 80
         color = 0x00ff00
         for i in range(8):
             await sleep(9.9)
-            embed = discord.Embed(title=f"{counter}", color=color)
+            embed = Embed(title=f"{counter}", color=color)
             await sent_message.edit(embed=embed)
             counter -= 10
             if i == 4:
@@ -383,7 +387,7 @@ async def on_message(message):
             elif i == 6:
                 color = 0xff0000
         await sleep(9.9)
-        embed = discord.Embed(title="TIME!")
+        embed = Embed(title="TIME!")
         await sent_message.edit(embed=embed)
         await sent_message.delete(delay=5)
         return
@@ -411,7 +415,7 @@ async def on_message(message):
             if count > 4 or count == 1:
                 await message.channel.send("Error: 入力方法が間違っています。")
                 return
-            embed = discord.Embed(title="再開コマンド", description="Round%sから再開します。\n\n※意図していない場合、`s.leave`と入力してbotを停止した後、再度入力してください。" % (str(count)))
+            embed = Embed(title="再開コマンド", description="Round%sから再開します。\n\n※意図していない場合、`s.leave`と入力してbotを停止した後、再度入力してください。" % (str(count)))
             await message.channel.send(embed=embed)
             del names[3]
         elif len(names) != 3:
@@ -431,13 +435,13 @@ async def on_message(message):
         await message.channel.send("3, 2, 1, Beatbox!", delete_after=10)
         await sleep(3)
         while count <= 4:
-            embed = discord.Embed(title="1:00", description="Round%s %s" % (str(count), names[0]), color=0x00ff00)
+            embed = Embed(title="1:00", description="Round%s %s" % (str(count), names[0]), color=0x00ff00)
             sent_message = await message.channel.send(embed=embed)
             counter = 50
             color = 0x00ff00
             for i in range(5):
                 await sleep(9.9)
-                embed = discord.Embed(title=f"{counter}", description="Round%s %s" % (str(count), names[0]), color=color)
+                embed = Embed(title=f"{counter}", description="Round%s %s" % (str(count), names[0]), color=color)
                 await sent_message.edit(embed=embed)
                 counter -= 10
                 connect = VoiceClient.is_connected()
@@ -449,7 +453,7 @@ async def on_message(message):
                 elif i == 3:
                     color = 0xff0000
             await sleep(9.9)
-            embed = discord.Embed(title=f"{counter}", description="Round%s %s" % (str(count), names[0]))
+            embed = Embed(title=f"{counter}", description="Round%s %s" % (str(count), names[0]))
             await sent_message.edit(embed=embed)
             await sent_message.delete(delay=5)
             names.reverse()
@@ -470,16 +474,16 @@ async def on_message(message):
             await sleep(8)
             message4 = await message.channel.send("なああああああああああああああああああああああああああああああああああ")
             await message4.add_reaction("🦁")
-            embed = discord.Embed(title="投票箱", description="`1st:`%s\n`2nd:`%s\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。" % (names[0], names[1]))
+            embed = Embed(title="投票箱", description="`1st:`%s\n`2nd:`%s\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。" % (names[0], names[1]))
             role_vc = message.guild.get_role(935073171462307881)  # in a vc
             message3 = await message.channel.send(content=role_vc.mention, embed=embed)
             await message3.add_reaction("1⃣")
             await message3.add_reaction("2⃣")
             return
         message.guild.voice_client.play(audio)
-        embed = discord.Embed(title="TIME!")
+        embed = Embed(title="TIME!")
         await message.channel.send(embed=embed)
-        embed = discord.Embed(title="投票箱", description="`1st:`%s\n`2nd:`%s\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。" % (names[0], names[1]))
+        embed = Embed(title="投票箱", description="`1st:`%s\n`2nd:`%s\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。" % (names[0], names[1]))
         role_vc = message.guild.get_role(935073171462307881)  # in a vc
         message3 = await message.channel.send(content=role_vc.mention, embed=embed)
         await message3.add_reaction("1⃣")
@@ -520,27 +524,34 @@ async def on_message(message):
         for member in role_member:
             await member.remove_roles(role)
         channel1 = client.get_channel(930446820839157820)  # 参加
-        message2 = await channel1.fetch_message(931879656213319720)  # carl-botのメッセージ エントリー開始用
-        await message2.clear_reaction("✅")
-        await message2.add_reaction("✅")
+        button = Button(label="Entry", style=discord.ButtonStyle.primary, emoji="✅")
+        async def button_callback(interaction):
+            role = interaction.guild.get_role(930368130906218526)  # battle stadium
+            await interaction.user.add_roles(role)
+            embed = Embed(title="受付完了 entry completed", description=interaction.user.display_name)
+            await interaction.response.send_message(embed=embed, ephemeral=True)
+        button.callback = button_callback
+        view = View()
+        view.add_item(button)
+        entry_button = await channel1.send("下のボタンを押してエントリー！\npress button to entry", view=view)
         await message.channel.send("処理完了")
-        embed = discord.Embed(title="受付開始", description="ただいまより参加受付を開始します。\n%sにてエントリーを行ってください。\nentry now accepting at %s" % (channel1.mention, channel1.mention), color=0x00bfff)
+        embed = Embed(title="受付開始", description="ただいまより参加受付を開始します。\n%sにてエントリーを行ってください。\nentry now accepting at %s" % (channel1.mention, channel1.mention), color=0x00bfff)
         await message.channel.send(role_vc.mention, embed=embed)
         await channel1.send("%s\nエントリー後に、 %s を確認して、マイク設定を行ってください。" % (role_vc.mention, bbx_mic.mention), delete_after=60)
         await sleep(30)
-        embed = discord.Embed(title="あと30秒で締め切ります", color=0xffff00)
+        embed = Embed(title="あと30秒で締め切ります", color=0xffff00)
         await message.channel.send(embed=embed)
         await sleep(20)
-        embed = discord.Embed(title="締め切り10秒前", color=0xff0000)
+        embed = Embed(title="締め切り10秒前", color=0xff0000)
         await message.channel.send(embed=embed)
         await sleep(10)
-        await message2.clear_reaction("✅")
+        await entry_button.delete()
         await message.channel.send("参加受付を締め切りました。\nentry closed\n\n処理中... しばらくお待ちください")
         role_member = role.members
         playerlist = [member.display_name for member in role_member]
         random.shuffle(playerlist)
         if len(playerlist) < 2:
-            embed = discord.Embed(title="Error", description="参加者が不足しています。", color=0xff0000)
+            embed = Embed(title="Error", description="参加者が不足しています。", color=0xff0000)
             await message.channel.send(embed=embed)
             return
         counter = 1
@@ -551,7 +562,7 @@ async def on_message(message):
             date = date[:3] + date[4:]
         if date[0] == "0":
             date = date[1:]
-        embed = discord.Embed(title="抽選結果", description="%s" % (date), color=0xff9900)
+        embed = Embed(title="抽選結果", description="%s" % (date), color=0xff9900)
         while counter2 + 2 <= len(playerlist):
             embed.add_field(name="Match%s" % (str(counter)), value="%s `1st` vs %s `2nd`" % (playerlist[counter2], playerlist[counter2 + 1]), inline=False)
             counter += 1
