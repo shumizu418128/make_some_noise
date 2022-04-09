@@ -29,7 +29,7 @@ async def on_member_update(before, after):
         id_after = [role.id for role in after.roles]
         channel = client.get_channel(930447365536612353)  # bot - battle stadium
         if 930368130906218526 in id_after and 930368130906218526 not in id_before and after.is_on_mobile():  # battle stadium
-            await channel.send(f"{after.mention}\nエントリーを受け付けました\nentry completed👍\n\n※バトルを始める際、speakerになった後、ミュート以外画面操作を一切行わないでください\nDiscordバグにより音声が一切入らなくなります", delete_after=5)
+            await channel.send(f"{after.mention}\nエントリーを受け付けました\nentry completed👍\n\n※バトルを始める際、speakerになった後、ミュート以外画面操作を一切行わないでください\nDiscordバグにより音声が一切入らなくなります", delete_after=15)
             return
         if 930368130906218526 in id_after and 930368130906218526 not in id_before:  # battle stadium
             await channel.send(f"{after.mention}\nエントリーを受け付けました\nentry completed👍\n\n(スマホ以外からのエントリー)", delete_after=5)
