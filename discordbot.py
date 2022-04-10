@@ -529,7 +529,10 @@ async def on_message(message):
         async def button_callback(interaction):
             role = interaction.guild.get_role(930368130906218526)  # battle stadium
             await interaction.user.add_roles(role)
-            embed = Embed(title="受付完了 entry completed", description=interaction.user.display_name)
+            description = interaction.user.display_name
+            if interaction.user.is_on_mobile():
+                description = f"{interaction.user.display_name}\n※バトルを始める際、speakerになった後、ミュート以外画面操作を一切行わないでください\nDiscordバグにより音声が一切入らなくなります"
+            embed = Embed(title="受付完了 entry completed", description=description)
             await interaction.response.send_message(embed=embed, ephemeral=True)
         button.callback = button_callback
         view = View()
