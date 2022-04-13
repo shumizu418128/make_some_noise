@@ -245,7 +245,7 @@ async def on_message(message):
             embed = Embed(title="1:00", description=f"Round{round_count} {names[0]}", color=0x00ff00)
             sent_message = await message.channel.send(embed=embed)
             while round_count < 5:
-                timeout = 10
+                timeout = 9.9
                 counter = 50
                 color = 0x00ff00
                 for i in range(7):
