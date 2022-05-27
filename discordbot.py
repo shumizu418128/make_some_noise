@@ -637,9 +637,6 @@ async def on_message(message):
             return
         elif message.channel.id == 930447365536612353:  # バトスタbot
             await message.delete(delay=1)
-        else:
-            if random.randint(1, 200) == 1:
-                await message.channel.send("ｵﾝｷﾞｬｱｱｱｱｱｱｱｱｱｱｱｱｱ！！！！！")
         return
 
 client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
