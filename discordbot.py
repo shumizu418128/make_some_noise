@@ -14,6 +14,8 @@ print("successfully started")
 
 @client.event
 async def on_voice_state_update(member, before, after):
+    if member.guild.id != 864475338340171786:  # ビト森ID
+        return
     role = member.guild.get_role(935073171462307881)  # in a vc
     if before.channel is None and after.channel is not None:
         await member.add_roles(role)
@@ -29,10 +31,10 @@ async def on_member_update(before, after):
         id_after = [role.id for role in after.roles]
         channel = client.get_channel(930447365536612353)  # bot - battle stadium
         if 930368130906218526 in id_after and 930368130906218526 not in id_before and after.is_on_mobile():  # battle stadium
-            await channel.send(f"{after.mention}\nエントリーを受け付けました\nentry completed👍\n\n※バトルを始める際、speakerになった後、ミュート以外画面操作を一切行わないでください\nDiscordバグにより音声が一切入らなくなります", delete_after=15)
+            await channel.send(f"{after.mention}\nエントリーを受け付けました\nentry completed👍\n\n※バトルを始める際、speakerになった後、ミュート以外画面操作を一切行わないでください\nDiscordバグにより音声が一切入らなくなります", delete_after=20)
             return
         if 930368130906218526 in id_after and 930368130906218526 not in id_before:  # battle stadium
-            await channel.send(f"{after.mention}\nエントリーを受け付けました\nentry completed👍\n\n(スマホ以外からのエントリー)", delete_after=5)
+            await channel.send(f"{after.mention}\nエントリーを受け付けました\nentry completed👍", delete_after=5)
         return
 
 @client.event
@@ -525,7 +527,6 @@ async def on_message(message):
             await member.remove_roles(role)
         channel1 = client.get_channel(930446820839157820)  # 参加
         button = Button(label="Entry", style=discord.ButtonStyle.primary, emoji="✅")
-
         async def button_callback(interaction):
             role = interaction.guild.get_role(930368130906218526)  # battle stadium
             await interaction.user.add_roles(role)
@@ -538,14 +539,15 @@ async def on_message(message):
         view = View()
         view.add_item(button)
         embed = Embed(title="Entry", description="下のボタンを押してエントリー！\npress button to entry")
-        entry_button = await channel1.send(embed=embed, view=view)
+        entry_button = await channel1.send(role_vc.mention, embed=embed, view=view)
         await message.channel.send("処理完了")
         embed = Embed(title="受付開始", description="ただいまより参加受付を開始します。\n%sにてエントリーを行ってください。\nentry now accepting at %s" % (channel1.mention, channel1.mention), color=0x00bfff)
-        await message.channel.send(role_vc.mention, embed=embed)
-        await channel1.send("%s\nエントリー後に、 %s を確認して、マイク設定を行ってください。" % (role_vc.mention, bbx_mic.mention), delete_after=60)
+        await message.channel.send(embed=embed)
+        await channel1.send("エントリー後に、 %s を確認して、マイク設定を行ってください。" % (bbx_mic.mention), delete_after=60)
         await sleep(30)
         embed = Embed(title="あと30秒で締め切ります", color=0xffff00)
         await message.channel.send(embed=embed)
+        await channel1.send(f"{role_vc.mention}\nボタンを押してエントリー！\npress button to entry", delete_after=30)
         await sleep(20)
         embed = Embed(title="締め切り10秒前", color=0xff0000)
         await message.channel.send(embed=embed)
