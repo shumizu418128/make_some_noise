@@ -527,6 +527,7 @@ async def on_message(message):
             await member.remove_roles(role)
         channel1 = client.get_channel(930446820839157820)  # 参加
         button = Button(label="Entry", style=discord.ButtonStyle.primary, emoji="✅")
+
         async def button_callback(interaction):
             role = interaction.guild.get_role(930368130906218526)  # battle stadium
             await interaction.user.add_roles(role)
