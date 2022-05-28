@@ -615,15 +615,6 @@ async def on_message(message):
         for member in role_member:
             await member.remove_roles(role)
         stage = client.get_channel(931462636019802123)  # ステージ
-        chat = client.get_channel(864475338340171795)  # 雑談部屋1
-        members = stage.members
-        while len(members) > 0:
-            for member in members:
-                try:
-                    await member.move_to(chat)
-                except discord.errors.HTTPException:
-                    continue
-            members = stage.members
         try:
             instance = await stage.fetch_instance()
         except discord.errors.NotFound:
