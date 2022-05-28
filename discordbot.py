@@ -39,6 +39,9 @@ async def on_member_update(before, after):
 
 @client.event
 async def on_message(message):
+    if message.channel.id == 930839018671837184:  # バトスタチャット
+        return
+
     if message.channel.id == 930767329137143839:  # バトスタ対戦表
         if message.author.bot:
             return
@@ -502,7 +505,9 @@ async def on_message(message):
         stage_channel = client.get_channel(931462636019802123)  # ステージ
         role_vc = message.guild.get_role(935073171462307881)  # in a vc
         bbx_mic = client.get_channel(931781522808262756)  # bbxマイク設定
+        chat = client.get_channel(930839018671837184)  # バトスタチャット
         scheduled_events = message.guild.scheduled_events
+        await chat.send(f"{role_vc.mention}\nチャット欄はこちら")
         if len(scheduled_events) == 1:
             try:
                 await scheduled_events[0].start()
