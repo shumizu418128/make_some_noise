@@ -572,7 +572,7 @@ async def on_message(message):
             date = date[1:]
         embed = Embed(title="抽選結果", description="%s" % (date), color=0xff9900)
         while counter2 + 2 <= len(playerlist):
-            embed.add_field(name="Match%s" % (str(counter)), value="%s `1st` vs %s `2nd`" % (playerlist[counter2].replace(" ", "-"), playerlist[counter2 + 1]).replace(" ", "-"), inline=False)
+            embed.add_field(name="Match%s" % (str(counter)), value="%s `1st` vs %s `2nd`" % (playerlist[counter2], playerlist[counter2 + 1]), inline=False)
             counter += 1
             counter2 += 2
         if len(playerlist) % 2 == 1:
