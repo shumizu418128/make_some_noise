@@ -153,47 +153,10 @@ async def on_message(message):
         message.guild.voice_client.play(audio)
         return
 
-    if message.content.startswith("s.t"):
-        if message.guild.voice_client is None:
-            await message.author.voice.channel.connect(reconnect=True)
-        timer = message.content.split(" ")
-        try:
-            timer_int = int(timer[1])
-        except BaseException:
-            await message.channel.send("入力方法が間違っています。正しい入力方法は、s.help timeと入力すると確認できます。")
-            return
-        else:
-            await message.channel.send("3, 2, 1, Beatbox!")
-            audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("countdown.mp3"), volume=0.2)
-            message.guild.voice_client.play(audio)
-            await sleep(7)
-            i = 0
-            if timer_int > 10:
-                for i in range(timer_int):
-                    await sleep(1)
-                    if i % 10 == 9:
-                        await message.channel.send(content=str(i + 1) + "秒経過", delete_after=20)
-            else:
-                counter = 10
-                for i in range(timer_int * 6):
-                    await sleep(10)
-                    await message.channel.send(content=str(counter) + "秒経過", delete_after=20)
-                    counter += 10
-            embed = Embed(title="TIME!")
-            await message.channel.send(embed=embed)
-            audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time.mp3"), volume=0.2)
-            message.guild.voice_client.play(audio)
-            return
-
     if message.content == "s.help":
         await message.delete(delay=1)
-        await message.channel.send("コマンド一覧\n`s.join` コマンドを打った人が居るVCチャンネルに接続\n`s.leave` VCチャンネルから切断\n`s.t` タイマーを利用できます。詳細はs.help timeと入力すると確認できます。\n`s.p count or s.count` 321beatboxの音声\n`s.p time or s.time` timeの音声\n`s.p kbbtime or s.kbbtime` 歓声無しtimeの音声 音源：KBB\n`s.p kansei or s.kansei` 歓声\n`s.p bunka or s.bunka` 文化の人の音声\n`s.p esh or s.esh` eshの音声\n`s.p msn or s.msn` make some noiseの音声\n`s.p olala or s.olala` olalaの音声")
+        await message.channel.send("コマンド一覧\n`s.join` コマンドを打った人が居るVCチャンネルに接続\n`s.leave` VCチャンネルから切断\n`s.p count or s.count` 321beatboxの音声\n`s.p time or s.time` timeの音声\n`s.p kbbtime or s.kbbtime` 歓声無しtimeの音声 音源：KBB\n`s.p kansei or s.kansei` 歓声\n`s.p bunka or s.bunka` 文化の人の音声\n`s.p esh or s.esh` eshの音声\n`s.p msn or s.msn` make some noiseの音声\n`s.p olala or s.olala` olalaの音声")
         await message.channel.send("make some noise bot開発者：tari3210 #9924")
-        return
-
-    if message.content == "s.help time":
-        await message.delete(delay=1)
-        await message.channel.send("タイマー利用方法\n\n`s.t`の後ろに、半角スペースを空けて数字を入力してください。\n例：`s.t 3` \n1から10まで数字は分単位で、それ以上の数字は秒単位でセットされます。\n例1：1分40秒にセットしたい場合 `s.t 100`\n例2：3分にセットしたい場合 `s.t 3`もしくは`s.t 180`\n\n注意：必ず整数で入力してください。")
         return
 
     if message.content.startswith("s.c") and "s.c90" not in message.content and "s.cancel" not in message.content and "s.check" not in message.content:
