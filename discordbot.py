@@ -437,11 +437,12 @@ async def on_message(message):
         if connect is False:
             await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection")
             return
-        await message.channel.send("3, 2, 1, Beatbox!", delete_after=10)
+        embed = Embed(title="3, 2, 1, Beatbox!")
+        sent_message = await message.channel.send(embed=embed)
         await sleep(3)
         while count <= 4:
             embed = Embed(title="1:00", description="Round%s %s" % (str(count), names[0]), color=0x00ff00)
-            sent_message = await message.channel.send(embed=embed)
+            await sent_message.edit(embed=embed)
             counter = 50
             color = 0x00ff00
             for i in range(5):
@@ -469,7 +470,8 @@ async def on_message(message):
                     await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection")
                     return
                 message.guild.voice_client.play(audio)
-                await message.channel.send("--------------------\n\nTIME!\nRound%s %s\nSWITCH!\n\n--------------------" % (str(count + 1), names[0]), delete_after=5)
+                embed = Embed(title=f"TIME!", description="Round%s\nSWITCH!" % (str(count + 1), names[0]))
+                await sent_message.edit(embed=embed)
                 await sleep(3)
             count += 1
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time.mp3"), volume=0.2)
@@ -487,7 +489,7 @@ async def on_message(message):
             return
         message.guild.voice_client.play(audio)
         embed = Embed(title="TIME!")
-        await message.channel.send(embed=embed)
+        await sent_message.edit(embed=embed)
         embed = Embed(title="投票箱", description="`1st:`%s\n`2nd:`%s\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。" % (names[0], names[1]))
         role_vc = message.guild.get_role(935073171462307881)  # in a vc
         message3 = await message.channel.send(content=role_vc.mention, embed=embed)
