@@ -372,25 +372,54 @@ async def on_message(message):
             await me.edit(suppress=False)
         except AttributeError:
             pass
-        names = [(j) for j in message.content.split()]
+        names = [(j) for j in message.content.replace('s.battle', '').split()]
         count = 1
-        if len(names) == 4:
+        if len(names) == 3:
             try:
-                count = int(names[3])
+                count = int(names[2])
             except ValueError:
-                await message.channel.send("Error: 入力方法が間違っています。")
+                pass
+            if 2 <= count <= 4 and len(names) == 3:
+                embed = Embed(title="再開コマンド", description="Round%sから再開します。\n\n※意図していない場合、`s.leave`と入力してbotを停止した後、再度入力してください。" % (str(count)))
+                await message.channel.send(embed=embed)
+                del names[2]
+        while len(names) != 2:
+            await message.channel.send("Error: 入力方法が間違っています。\n\n`cancelと入力するとキャンセルできます`\nもう一度入力してください：")
+
+            def check(m):
+                return m.channel == message.channel and m.author == message.author
+
+            try:
+                msg2 = await client.wait_for('message', timeout=60.0, check=check)
+            except asyncio.TimeoutError:
+                await message.channel.send("Error: timeout")
                 return
-            if count > 4 or count == 1:
-                await message.channel.send("Error: 入力方法が間違っています。")
+            if msg2.content == "cancel":
+                await message.channel.send("キャンセルしました。")
                 return
-            embed = Embed(title="再開コマンド", description="Round%sから再開します。\n\n※意図していない場合、`s.leave`と入力してbotを停止した後、再度入力してください。" % (str(count)))
-            await message.channel.send(embed=embed)
-            del names[3]
-        elif len(names) != 3:
-            await message.channel.send("Error: 入力方法が間違っています。")
+            if msg2.content.startswith("s.battle"):
+                return
+            names = [(j) for j in msg2.content.replace('s.battle', '').split()]
+        embed = Embed(title=f"{names[0]}さん `1st` vs {names[1]}さん `2nd`", description="1分・2ラウンドずつ\n1 minute, 2 rounds each\n\n▶️を押してスタート")
+        before_start = await message.channel.send(embed=embed)
+        await before_start.add_reaction("▶️")
+        await before_start.add_reaction("❌")
+        stamps = ["▶️", "❌"]
+
+        def check(reaction, user):
+            return user == message.author and str(reaction.emoji) in stamps and reaction.message == before_start
+
+        try:
+            reaction, _ = await client.wait_for('reaction_add', timeout=600, check=check)
+        except asyncio.TimeoutError:
+            await before_start.delete()
+            await message.channel.send("Error: timeout")
             return
-        names.remove("s.battle")
-        await message.channel.send(names[0] + "さん `1st` vs " + names[1] + "さん `2nd`\n\n1分・2ラウンドずつ\n1 minute, 2 rounds each\n\nAre you ready??")
+        if reaction.emoji == "❌":
+            await before_start.delete()
+            return
+        embed = Embed(title="Are you ready??")
+        sent_message = await message.channel.send(embed=embed)
         if count % 2 == 0:
             names.reverse()
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("battle_start.mp3"), volume=0.4)
@@ -401,7 +430,7 @@ async def on_message(message):
             await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection")
             return
         embed = Embed(title="3, 2, 1, Beatbox!")
-        sent_message = await message.channel.send(embed=embed)
+        await sent_message.edit(embed=embed)
         await sleep(3)
         while count <= 4:
             embed = Embed(title="1:00", description="Round%s %s" % (str(count), names[0]), color=0x00ff00)
@@ -424,7 +453,6 @@ async def on_message(message):
             await sleep(9.9)
             embed = Embed(title=f"{counter}", description="Round%s %s" % (str(count), names[0]))
             await sent_message.edit(embed=embed)
-            await sent_message.delete(delay=5)
             names.reverse()
             if count <= 3:
                 audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("round%sswitch.mp3" % (str(count + 1))), volume=1.5)
