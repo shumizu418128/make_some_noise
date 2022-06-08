@@ -361,17 +361,6 @@ async def on_message(message):
         return
 
     if message.content.startswith("s.battle"):
-        stage_channel = client.get_channel(931462636019802123)  # ステージ
-        try:
-            await stage_channel.connect(reconnect=True)
-        except discord.errors.ClientException:
-            pass
-        VoiceClient = message.guild.voice_client
-        me = message.guild.me
-        try:
-            await me.edit(suppress=False)
-        except AttributeError:
-            pass
         names = [(j) for j in message.content.replace('s.battle', '').split()]
         count = 1
         if len(names) == 3:
@@ -420,6 +409,17 @@ async def on_message(message):
             return
         embed = Embed(title="Are you ready??")
         sent_message = await message.channel.send(embed=embed)
+        stage_channel = client.get_channel(931462636019802123)  # ステージ
+        try:
+            await stage_channel.connect(reconnect=True)
+        except discord.errors.ClientException:
+            pass
+        VoiceClient = message.guild.voice_client
+        me = message.guild.me
+        try:
+            await me.edit(suppress=False)
+        except AttributeError:
+            pass
         if count % 2 == 0:
             names.reverse()
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("battle_start.mp3"), volume=0.4)
