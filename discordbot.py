@@ -461,7 +461,7 @@ async def on_message(message):
                     await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection")
                     return
                 message.guild.voice_client.play(audio)
-                embed = Embed(title=f"TIME!", description="Round%s\nSWITCH!" % (str(count + 1), names[0]))
+                embed = Embed(title="TIME!", description=f"Round{count + 1}\nSWITCH!")
                 await sent_message.edit(embed=embed)
                 await sleep(3)
             count += 1
