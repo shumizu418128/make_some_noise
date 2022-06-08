@@ -404,6 +404,7 @@ async def on_message(message):
             await before_start.delete()
             await message.channel.send("Error: timeout")
             return
+        await before_start.clear_reactions()
         if reaction.emoji == "❌":
             await before_start.delete()
             return
