@@ -502,7 +502,7 @@ async def on_message(message):
         chat = client.get_channel(930839018671837184)  # バトスタチャット
         scheduled_events = message.guild.scheduled_events
         await chat.send(f"{role_vc.mention}\nチャット欄はこちら")
-        if len(scheduled_events) == 1:
+        if len(scheduled_events) == 1 and scheduled_events[0].name == "battle stadium":
             try:
                 await scheduled_events[0].start()
             except discord.errors.HTTPException:
