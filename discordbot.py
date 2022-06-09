@@ -27,14 +27,16 @@ async def on_voice_state_update(member, before, after):
 @client.event
 async def on_member_update(before, after):
     if str(before.roles) != str(after.roles):
-        id_before = [role.id for role in before.roles]
-        id_after = [role.id for role in after.roles]
+        role_before = before.get_role(930368130906218526)  # battle stadium
+        role_after = after.get_role(930368130906218526)  # battle stadium
+        chat = client.get_channel(930839018671837184)  # バトスタチャット
         channel = client.get_channel(930447365536612353)  # bot - battle stadium
-        if 930368130906218526 in id_after and 930368130906218526 not in id_before and after.is_on_mobile():  # battle stadium
-            await channel.send(f"{after.mention}\nエントリーを受け付けました\nentry completed👍\n\n※バトルを始める際、speakerになった後、ミュート以外画面操作を一切行わないでください\nDiscordバグにより音声が一切入らなくなります", delete_after=20)
-            return
-        if 930368130906218526 in id_after and 930368130906218526 not in id_before:  # battle stadium
-            await channel.send(f"{after.mention}\nエントリーを受け付けました\nentry completed👍", delete_after=5)
+        if role_before is None and role_after is not None:
+            await channel.send(f"エントリー完了：{after.display_name}", delete_after=3)
+            if after.is_on_mobile():  # battle stadium
+                embed = Embed(title=":warning:", description="バトルを始める際、speakerになった後、ミュート以外画面操作を一切行わないでください\nDiscordバグにより音声が一切入らなくなります", color=0xffff00)
+                await sleep(3)
+                await chat.send(after.mention, embed=embed, delete_after=20)
         return
 
 @client.event
