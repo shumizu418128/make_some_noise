@@ -423,8 +423,6 @@ async def on_message(message):
             await me.edit(suppress=False)
         except AttributeError:
             pass
-        if count % 2 == 0:
-            names.reverse()
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("battle_start.mp3"), volume=0.4)
         message.guild.voice_client.play(audio)
         await sleep(11)
@@ -436,13 +434,13 @@ async def on_message(message):
         await sent_message.edit(embed=embed)
         await sleep(3)
         while count <= 4:
-            embed = Embed(title="1:00", description="Round%s %s" % (str(count), names[0]), color=0x00ff00)
+            embed = Embed(title="1:00", description=f"Round{count} {names[1 - count % 2]}\n\n{names[0]} vs {names[1]}", color=0x00ff00)
             await sent_message.edit(embed=embed)
             counter = 50
             color = 0x00ff00
             for i in range(5):
                 await sleep(9.9)
-                embed = Embed(title=f"{counter}", description="Round%s %s" % (str(count), names[0]), color=color)
+                embed = Embed(title=f"{counter}", description=f"Round{count} {names[1 - count % 2]}\n\n{names[0]} vs {names[1]}", color=color)
                 await sent_message.edit(embed=embed)
                 counter -= 10
                 connect = VoiceClient.is_connected()
@@ -454,17 +452,14 @@ async def on_message(message):
                 elif i == 3:
                     color = 0xff0000
             await sleep(9.9)
-            embed = Embed(title=f"{counter}", description="Round%s %s" % (str(count), names[0]))
-            await sent_message.edit(embed=embed)
-            names.reverse()
             if count <= 3:
-                audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("round%sswitch.mp3" % (str(count + 1))), volume=1.5)
+                audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(f"round{count + 1}switch.mp3", volume=1.5))
                 connect = VoiceClient.is_connected()
                 if connect is False:
                     await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection")
                     return
                 message.guild.voice_client.play(audio)
-                embed = Embed(title="TIME!", description=f"Round{count + 1}\nSWITCH!")
+                embed = Embed(title="TIME!", description=f"Round{count + 1} {names[count % 2]}\nSWITCH!\n\n{names[0]} vs {names[1]}")
                 await sent_message.edit(embed=embed)
                 await sleep(3)
             count += 1
@@ -472,28 +467,26 @@ async def on_message(message):
         if random.randint(1, 10) == 1:
             audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time_3.mp3"), volume=0.3)
             message.guild.voice_client.play(audio)
-            await sleep(8)
-            message4 = await message.channel.send("なああああああああああああああああああああああああああああああああああ")
-            await message4.add_reaction("🦁")
             embed = Embed(title="投票箱", description="`1st:`%s\n`2nd:`%s\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。" % (names[0], names[1]))
             role_vc = message.guild.get_role(935073171462307881)  # in a vc
-            message3 = await message.channel.send(content=role_vc.mention, embed=embed)
-            await message3.add_reaction("1⃣")
-            await message3.add_reaction("2⃣")
+            await sent_message.edit(role_vc.mention, embed=embed)
+            await sent_message.add_reaction("1⃣")
+            await sent_message.add_reaction("2⃣")
+            await sleep(8)
+            await sent_message.add_reaction("🦁")
+            await sent_message.edit(f"{role_vc.mention}\nなああああああああああああああああああああああああああああああああああああああああああああああああああ", embed=embed)
             return
         message.guild.voice_client.play(audio)
-        embed = Embed(title="TIME!")
-        await sent_message.edit(embed=embed)
         embed = Embed(title="投票箱", description="`1st:`%s\n`2nd:`%s\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。" % (names[0], names[1]))
         role_vc = message.guild.get_role(935073171462307881)  # in a vc
-        message3 = await message.channel.send(content=role_vc.mention, embed=embed)
-        await message3.add_reaction("1⃣")
-        await message3.add_reaction("2⃣")
+        await sent_message.edit(role_vc.mention, embed=embed)
+        await sent_message.add_reaction("1⃣")
+        await sent_message.add_reaction("2⃣")
+        await sent_message.add_reaction("🔥")
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("msn.mp3"), volume=0.5)
         await sleep(3)
         message.guild.voice_client.play(audio)
-        message4 = await message.channel.send("make some noise for the battle!\ncome on!!")
-        await message4.add_reaction("🔥")
+        await sent_message.edit(f"{role_vc.mention}\nmake some noise for the battle!\ncome on!!", embed=embed)
         return
 
     if message.content == "s.start":
