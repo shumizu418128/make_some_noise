@@ -25,21 +25,6 @@ async def on_voice_state_update(member, before, after):
         return
 
 @client.event
-async def on_member_update(before, after):
-    if str(before.roles) != str(after.roles):
-        role_before = before.get_role(930368130906218526)  # battle stadium
-        role_after = after.get_role(930368130906218526)  # battle stadium
-        chat = client.get_channel(930839018671837184)  # バトスタチャット
-        channel = client.get_channel(930447365536612353)  # bot - battle stadium
-        if role_before is None and role_after is not None:
-            await channel.send(f"エントリー完了：{after.display_name}", delete_after=3)
-            if after.is_on_mobile():  # battle stadium
-                embed = Embed(title=":warning:", description="バトルを始める際、speakerになった後、ミュート以外画面操作を一切行わないでください\nDiscordバグにより音声が一切入らなくなります", color=0xffff00)
-                await sleep(3)
-                await chat.send(after.mention, embed=embed, delete_after=20)
-        return
-
-@client.event
 async def on_message(message):
     if message.channel.id == 930839018671837184:  # バトスタチャット
         return
@@ -528,11 +513,15 @@ async def on_message(message):
             await interaction.user.add_roles(role)
             description = interaction.user.display_name
             if interaction.user.is_on_mobile():
-                description = f"{interaction.user.display_name}\n※バトルを始める際、speakerになった後、ミュート以外画面操作を一切行わないでください\nDiscordバグにより音声が一切入らなくなります"
+                description += "\n\n※バトルを始める際、speakerになった後、ミュート以外画面操作を一切行わないでください\nDiscordバグにより音声が一切入らなくなります"
             embed = Embed(title="受付完了 entry completed", description=description)
             await interaction.response.send_message(embed=embed, ephemeral=True)
+            await message.channel.send(f"エントリー完了：{interaction.user.display_name}", delete_after=3)
+            await sleep(3)
+            embed = Embed(title=":warning:", description="バトルを始める際、speakerになった後、ミュート以外画面操作を一切行わないでください\nDiscordバグにより音声が一切入らなくなります", color=0xffff00)
+            await chat.send(interaction.user.mention, embed=embed, delete_after=20)
         button.callback = button_callback
-        view = View()
+        view = View(timeout=None)
         view.add_item(button)
         embed = Embed(title="Entry", description="下のボタンを押してエントリー！\npress button to entry")
         entry_button = await channel1.send(role_vc.mention, embed=embed, view=view)
