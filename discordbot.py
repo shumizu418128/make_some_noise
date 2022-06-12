@@ -264,7 +264,7 @@ async def on_message(message):
             audio = discord.PCMVolumeTransformer(
                 discord.FFmpegPCMAudio("msn.mp3"), volume=0.5)
             message.guild.voice_client.play(audio)
-            embed = Embed(title="投票箱", description="1⃣ %s\n2⃣ %s" % (names[0], names[1]))
+            embed = Embed(title="投票箱", description=f"1⃣ {names[0]}\n2⃣ {names[1]}")
             channel_judge = message.guild.get_channel(912714891444518943)  # 審査員会議室
             poll = await channel_judge.send(embed=embed)
             await poll.add_reaction("1⃣")
@@ -338,6 +338,7 @@ async def on_message(message):
             discord.FFmpegPCMAudio("msn.mp3"), volume=0.5)
         message.guild.voice_client.play(audio)
         await message.delete(delay=1)
+        return
 
     if message.content == "s.c90":
         await message.delete(delay=1)
@@ -371,7 +372,7 @@ async def on_message(message):
             except ValueError:
                 pass
             if 2 <= count <= 4 and len(names) == 3:
-                embed = Embed(title="再開コマンド", description="Round%sから再開します。\n\n※意図していない場合、`s.leave`と入力してbotを停止した後、再度入力してください。" % (str(count)))
+                embed = Embed(title="再開コマンド", description=f"Round{count}から再開します。\n\n※意図していない場合、`s.leave`と入力してbotを停止した後、再度入力してください。")
                 await message.channel.send(embed=embed)
                 del names[2]
         while len(names) != 2:
@@ -467,7 +468,7 @@ async def on_message(message):
         if random.randint(1, 10) == 1:
             audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time_3.mp3"), volume=0.3)
             message.guild.voice_client.play(audio)
-            embed = Embed(title="投票箱", description="`1st:`%s\n`2nd:`%s\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。" % (names[0], names[1]))
+            embed = Embed(title="投票箱", description=f"`1st:`{names[0]}\n`2nd:`{names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
             role_vc = message.guild.get_role(935073171462307881)  # in a vc
             await sent_message.edit(role_vc.mention, embed=embed)
             await sent_message.add_reaction("1⃣")
@@ -477,7 +478,7 @@ async def on_message(message):
             await sent_message.edit(f"{role_vc.mention}\nなああああああああああああああああああああああああああああああああああああああああああああああああああ", embed=embed)
             return
         message.guild.voice_client.play(audio)
-        embed = Embed(title="投票箱", description="`1st:`%s\n`2nd:`%s\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。" % (names[0], names[1]))
+        embed = Embed(title="投票箱", description=f"`1st:`{names[0]}\n`2nd:`{names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
         role_vc = message.guild.get_role(935073171462307881)  # in a vc
         await sent_message.edit(role_vc.mention, embed=embed)
         await sent_message.add_reaction("1⃣")
@@ -536,9 +537,9 @@ async def on_message(message):
         embed = Embed(title="Entry", description="下のボタンを押してエントリー！\npress button to entry")
         entry_button = await channel1.send(role_vc.mention, embed=embed, view=view)
         await message.channel.send("処理完了")
-        embed = Embed(title="受付開始", description="ただいまより参加受付を開始します。\n%sにてエントリーを行ってください。\nentry now accepting at %s" % (channel1.mention, channel1.mention), color=0x00bfff)
+        embed = Embed(title="受付開始", description=f"ただいまより参加受付を開始します。\n{channel1.mention}にてエントリーを行ってください。\nentry now accepting at {channel1.mention}", color=0x00bfff)
         await message.channel.send(embed=embed)
-        await channel1.send("エントリー後に、 %s を確認して、マイク設定を行ってください。" % (bbx_mic.mention), delete_after=60)
+        await channel1.send(f"エントリー後に、 {bbx_mic.mention} を確認して、マイク設定を行ってください。", delete_after=60)
         await sleep(30)
         embed = Embed(title="あと30秒で締め切ります", color=0xffff00)
         await message.channel.send(embed=embed)
@@ -564,9 +565,9 @@ async def on_message(message):
             date = date[:3] + date[4:]
         if date[0] == "0":
             date = date[1:]
-        embed = Embed(title="抽選結果", description="%s" % (date), color=0xff9900)
+        embed = Embed(title="抽選結果", description=f"{date}", color=0xff9900)
         while counter2 + 2 <= len(playerlist):
-            embed.add_field(name="Match%s" % (str(counter)), value="%s `1st` vs %s `2nd`" % (playerlist[counter2], playerlist[counter2 + 1]), inline=False)
+            embed.add_field(name=f"Match{counter}", value=f"{playerlist[counter2]} `1st` vs {playerlist[counter2 + 1]} `2nd`", inline=False)
             counter += 1
             counter2 += 2
         if len(playerlist) % 2 == 1:
@@ -577,12 +578,12 @@ async def on_message(message):
                 double_pl = double_pl.mention
             await message.channel.send(f"----------------------------------------\n\n参加人数が奇数でした。\n{playerlist[0]}さんの対戦が2回行われます。")
             await channel0.send(f"参加人数が奇数でした。\n{double_pl}さんの対戦が2回行われます。")
-            embed.add_field(name="Match%s" % (str(counter)), value="%s `1st` vs %s `2nd`" % (playerlist[-1], playerlist[0]), inline=False)
+            embed.add_field(name=f"Match{counter}", value=f"{playerlist[-1]} `1st` vs {playerlist[0]} `2nd`", inline=False)
         await message.channel.send(embed=embed)
         await channel0.send(role_vc.mention)
         embed.title = "対戦カード"
         await channel0.send(embed=embed)
-        await channel0.send("%s\n\n%s を確認して、マイク設定を行ってからの参加をお願いします。\n\n※スマホユーザーの方へ\nspeakerになった後、ミュート以外画面操作を一切行わないでください\nDiscordバグにより音声が一切入らなくなります" % (role.mention, bbx_mic.mention))
+        await channel0.send(f"{role.mention}\n\n{bbx_mic.mention} を確認して、マイク設定を行ってからの参加をお願いします。\n\n※スマホユーザーの方へ\nspeakerになった後、ミュート以外画面操作を一切行わないでください\nDiscordバグにより音声が一切入らなくなります")
         return
 
     if message.content == "s.stage":
