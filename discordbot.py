@@ -569,7 +569,6 @@ async def on_message(message):
             await channel0.send(f"参加人数が奇数でした。\n{double_pl}さんの対戦が2回行われます。")
             embed.add_field(name=f"Match{counter}", value=f"{playerlist[-1]} `1st` vs {playerlist[0]} `2nd`", inline=False)
         await message.channel.send(embed=embed)
-        await channel0.send()
         embed.title = "対戦カード"
         await channel0.send(role_vc.mention, embed=embed)
         await channel0.send(f"{role.mention}\n\n{bbx_mic.mention} を確認して、マイク設定を行ってからの参加をお願いします。\n\n※スマホユーザーの方へ\nspeakerになった後、ミュート以外画面操作を一切行わないでください\nDiscordバグにより音声が一切入らなくなります")
