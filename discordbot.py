@@ -480,7 +480,7 @@ async def on_message(message):
         bbx_mic = client.get_channel(931781522808262756)  # bbxマイク設定
         chat = client.get_channel(930839018671837184)  # バトスタチャット
         scheduled_events = message.guild.scheduled_events
-        await chat.send(f"{role_vc.mention}\nチャット欄はこちら")
+        await chat.send(f"{role_vc.mention}\nチャット欄はこちら\nchat is here")
         if len(scheduled_events) == 1 and scheduled_events[0].name == "battle stadium":
             try:
                 await scheduled_events[0].start()
