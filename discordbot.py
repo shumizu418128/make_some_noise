@@ -516,8 +516,9 @@ async def on_message(message):
             await interaction.response.send_message(embed=embed, ephemeral=True)
             await message.channel.send(f"エントリー完了：{interaction.user.display_name}", delete_after=3)
             await sleep(3)
-            embed = Embed(title=":warning:", description="バトルを始める際、speakerになった後、ミュート以外画面操作を一切行わないでください\nDiscordバグにより音声が一切入らなくなります", color=0xffff00)
-            await chat.send(interaction.user.mention, embed=embed, delete_after=20)
+            if interaction.user.is_on_mobile():
+                embed = Embed(title=":warning:", description="バトルを始める際、speakerになった後、ミュート以外画面操作を一切行わないでください\nDiscordバグにより音声が一切入らなくなります", color=0xffff00)
+                await chat.send(interaction.user.mention, embed=embed, delete_after=20)
         button.callback = button_callback
         view = View(timeout=None)
         view.add_item(button)
