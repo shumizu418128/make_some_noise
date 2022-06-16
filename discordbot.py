@@ -206,7 +206,7 @@ async def on_message(message):
                 for i in range(7):
                     def check(reaction, user):
                         admin = user.get_role(904368977092964352)  # ビト森杯運営
-                        return admin is not None and str(reaction.emoji) == '⏭️'
+                        return admin is not None and str(reaction.emoji) == '⏭️' and reaction.message == sent_message
                     try:
                         await client.wait_for('reaction_add', timeout=timeout, check=check)
                     except asyncio.TimeoutError:
