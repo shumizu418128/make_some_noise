@@ -453,24 +453,26 @@ async def on_message(message):
             message.guild.voice_client.play(audio)
             embed = Embed(title="投票箱", description=f"`1st:`{names[0]}\n`2nd:`{names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
             role_vc = message.guild.get_role(935073171462307881)  # in a vc
-            await sent_message.edit(role_vc.mention, embed=embed)
+            await sent_message.edit(embed=embed)
             await sent_message.add_reaction("1⃣")
             await sent_message.add_reaction("2⃣")
+            await sent_message.reply(f"{role_vc.mention}\n投票はこちら")
             await sleep(8)
             await sent_message.add_reaction("🦁")
-            await sent_message.edit(f"{role_vc.mention}\nなああああああああああああああああああああああああああああああああああああああああああああああああああ", embed=embed)
+            await sent_message.edit(f"なああああああああああああああああああああああああああああああああああああああああああああああああああ", embed=embed)
             return
         message.guild.voice_client.play(audio)
         embed = Embed(title="投票箱", description=f"`1st:`{names[0]}\n`2nd:`{names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
         role_vc = message.guild.get_role(935073171462307881)  # in a vc
-        await sent_message.edit(role_vc.mention, embed=embed)
+        await sent_message.edit(embed=embed)
         await sent_message.add_reaction("1⃣")
         await sent_message.add_reaction("2⃣")
         await sent_message.add_reaction("🔥")
+        await sent_message.reply(f"{role_vc.mention}\n投票はこちら")
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("msn.mp3"), volume=0.5)
         await sleep(3)
         message.guild.voice_client.play(audio)
-        await sent_message.edit(f"{role_vc.mention}\nmake some noise for the battle!\ncome on!!", embed=embed)
+        await sent_message.edit(f"make some noise for the battle!\ncome on!!", embed=embed)
         return
 
     if message.content == "s.start":
@@ -515,10 +517,6 @@ async def on_message(message):
             embed = Embed(title="受付完了 entry completed", description=description)
             await interaction.response.send_message(embed=embed, ephemeral=True)
             await message.channel.send(f"エントリー完了：{interaction.user.display_name}", delete_after=3)
-            await sleep(3)
-            if interaction.user.is_on_mobile():
-                embed = Embed(title=":warning:", description="バトルを始める際、speakerになった後、ミュート以外画面操作を一切行わないでください\nDiscordバグにより音声が一切入らなくなります", color=0xffff00)
-                await chat.send(interaction.user.mention, embed=embed, delete_after=20)
         button.callback = button_callback
         view = View(timeout=None)
         view.add_item(button)
