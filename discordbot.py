@@ -375,7 +375,7 @@ async def on_message(message):
             if msg2.content.startswith("s.battle"):
                 return
             names = [(j) for j in msg2.content.replace('s.battle', '').split()]
-        embed = Embed(title=f"{names[0]}さん `1st` vs {names[1]}さん `2nd`", description="1分・2ラウンドずつ\n1 minute, 2 rounds each\n\n▶️を押してスタート")
+        embed = Embed(title=f"{names[0]} `1st` vs {names[1]} `2nd`", description="1分・2ラウンドずつ\n1 minute, 2 rounds each\n\n▶️を押してスタート")
         before_start = await message.channel.send(embed=embed)
         await before_start.add_reaction("▶️")
         await before_start.add_reaction("❌")
