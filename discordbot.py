@@ -437,7 +437,7 @@ async def on_message(message):
                     color = 0xff0000
             await sleep(9.9)
             if count <= 3:
-                audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(f"round%sswitch.mp3" % (count + 1)))
+                audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("round%sswitch.mp3" % (count + 1)))
                 connect = VoiceClient.is_connected()
                 if connect is False:
                     await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection")
@@ -459,7 +459,7 @@ async def on_message(message):
             await sent_message.reply(f"{role_vc.mention}\n投票はこちら")
             await sleep(8)
             await sent_message.add_reaction("🦁")
-            await sent_message.edit(f"なああああああああああああああああああああああああああああああああああああああああああああああああああ", embed=embed)
+            await sent_message.edit("なああああああああああああああああああああああああああああああああああああああああああああああああああ", embed=embed)
             return
         message.guild.voice_client.play(audio)
         embed = Embed(title="投票箱", description=f"`1st:`{names[0]}\n`2nd:`{names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
@@ -472,7 +472,7 @@ async def on_message(message):
         audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("msn.mp3"), volume=0.5)
         await sleep(3)
         message.guild.voice_client.play(audio)
-        await sent_message.edit(f"make some noise for the battle!\ncome on!!", embed=embed)
+        await sent_message.edit("make some noise for the battle!\ncome on!!", embed=embed)
         return
 
     if message.content == "s.start":
