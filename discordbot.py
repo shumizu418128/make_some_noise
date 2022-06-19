@@ -556,7 +556,7 @@ async def on_message(message):
             await interaction.response.send_message(embed=embed, ephemeral=True)
             await message.channel.send(f"エントリー完了：{interaction.user.display_name}", delete_after=3)
         button.callback = button_callback
-        view = View(timeout=None)
+        view = View()
         view.add_item(button)
         embed = Embed(
             title="Entry", description="下のボタンを押してエントリー！\npress button to entry")
