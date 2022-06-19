@@ -194,7 +194,7 @@ async def on_message(message):
                     color = 0xff0000
             await sleep(9.9)
             embed = Embed(title="TIME!")
-            await sent_message.edit(embed=embed, delete_after=5)
+            await sent_message.edit(embed=embed, delete_after=10)
             audio = discord.PCMVolumeTransformer(
                 discord.FFmpegPCMAudio("time.mp3"), volume=0.5)
             message.guild.voice_client.play(audio)
@@ -271,7 +271,7 @@ async def on_message(message):
             counter = 50
             color = 0x00ff00
             if connect is False:
-                await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection")
+                await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection", delete_after=5)
                 return
             while True:
                 def check(reaction, user):
