@@ -174,6 +174,7 @@ async def on_message(message):
             connect = VoiceClient.is_connected()
             if connect is False:
                 await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection", delete_after=5)
+                await sent_message.delete()
                 return
             embed = Embed(title="1:00", color=0x00ff00)
             await sent_message.edit(embed=embed)
@@ -187,6 +188,7 @@ async def on_message(message):
                 connect = VoiceClient.is_connected()
                 if connect is False:
                     await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection", delete_after=5)
+                    await sent_message.delete()
                     return
                 if i == 1:
                     color = 0xffff00
@@ -259,17 +261,19 @@ async def on_message(message):
             names.reverse()
         audio = discord.PCMVolumeTransformer(
             discord.FFmpegPCMAudio("countdown.mp3"), volume=0.5)
-        await message.channel.send("3, 2, 1, Beatbox!", delete_after=10)
+        embed = Embed(title="3, 2, 1, Beatbox!")
+        sent_message = await message.channel.send(embed=embed)
         message.guild.voice_client.play(audio)
         await sleep(7)
         await before_start.delete()
-        embed = Embed(
-            title="1:00", description=f"Round{count} {names[0]}", color=0x00ff00)
-        sent_message = await message.channel.send(embed=embed)
         while count <= 4:
+            embed = Embed(
+                title="1:00", description=f"Round{count} {names[0]}", color=0x00ff00)
+            await sent_message.edit(embed=embed)
             timeout = 9.9
             counter = 50
             color = 0x00ff00
+            connect = VoiceClient.is_connected()
             if connect is False:
                 await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection", delete_after=5)
                 return
@@ -283,9 +287,11 @@ async def on_message(message):
                     connect = VoiceClient.is_connected()
                     if connect is False:
                         await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection", delete_after=5)
+                        await sent_message.delete()
                         return
                     if counter == -10:
                         await message.channel.send("Error: timeout\nタイマーを停止しました", delete_after=5)
+                        await sent_message.delete()
                         return
                     embed = Embed(
                         title=f"{counter}", description=f"Round{count} {names[0]}", color=color)
@@ -301,14 +307,12 @@ async def on_message(message):
                     elif counter == -10:
                         timeout = 30
                         if count == 4:
+                            await sent_message.clear_reactions()
                             break
                 else:
+                    await sent_message.clear_reactions()
                     break
             names.reverse()
-            if count <= 3:
-                embed = Embed(
-                    title="1:00", description=f"Round{count} {names[0]}", color=0x00ff00)
-                await sent_message.edit(embed=embed)
             count += 1
         embed = Embed(
             title="TIME!", description="make some noise for the battle!!")
@@ -524,7 +528,7 @@ async def on_message(message):
             await sleep(9.9)
             if count <= 3:
                 audio = discord.PCMVolumeTransformer(
-                    discord.FFmpegPCMAudio(f"round%sswitch.mp3" % (count + 1)))
+                    discord.FFmpegPCMAudio("round%sswitch.mp3" % (count + 1)))
                 connect = VoiceClient.is_connected()
                 if connect is False:
                     await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection")
