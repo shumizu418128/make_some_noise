@@ -220,7 +220,7 @@ async def on_message(message):
                 for i in range(7):
                     def check(reaction, user):
                         admin = user.get_role(904368977092964352)  # ビト森杯運営
-                        return bool(admin) and str(reaction.emoji) == '⏭️' and reaction.message == sent_message
+                        return bool(admin) and reaction.emoji == '⏭️' and reaction.message == sent_message
                     try:
                         await client.wait_for('reaction_add', timeout=timeout, check=check)
                     except asyncio.TimeoutError:
@@ -299,7 +299,7 @@ async def on_message(message):
             color = 0x00ff00
             while True:
                 def check(reaction, user):
-                    return user.bot is False and str(reaction.emoji) == '⏭️'
+                    return user.bot is False and reaction.emoji == '⏭️'
                 try:
                     await client.wait_for('reaction_add', timeout=timeout, check=check)
                 except asyncio.TimeoutError:
@@ -407,7 +407,7 @@ async def on_message(message):
         stamps = ["▶️", "❌"]
 
         def check(reaction, user):
-            return user == message.author and str(reaction.emoji) in stamps and reaction.message == before_start
+            return user == message.author and reaction.emoji in stamps and reaction.message == before_start
 
         try:
             reaction, _ = await client.wait_for('reaction_add', timeout=600, check=check)
