@@ -466,7 +466,7 @@ async def on_message(message):
             await sleep(9.9)
             if count <= 3:
                 audio = discord.PCMVolumeTransformer(
-                    discord.FFmpegPCMAudio("round%sswitch.mp3" % (count + 1)))
+                    discord.FFmpegPCMAudio(f"round%sswitch.mp3" % (count + 1)))
                 connect = VoiceClient.is_connected()
                 if connect is False:
                     await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection")
