@@ -18,10 +18,10 @@ async def on_voice_state_update(member, before, after):
     if member.guild.id != 864475338340171786:  # ビト森ID
         return
     role = member.guild.get_role(935073171462307881)  # in a vc
-    if before.channel is None and after.channel is not None:
+    if before.channel is None and bool(after.channel):
         await member.add_roles(role)
         return
-    if before.channel is not None and after.channel is None:
+    if bool(before.channel) and after.channel is None:
         await member.remove_roles(role)
         return
 
@@ -220,7 +220,7 @@ async def on_message(message):
                 for i in range(7):
                     def check(reaction, user):
                         admin = user.get_role(904368977092964352)  # ビト森杯運営
-                        return admin is not None and str(reaction.emoji) == '⏭️' and reaction.message == sent_message
+                        return bool(admin) and str(reaction.emoji) == '⏭️' and reaction.message == sent_message
                     try:
                         await client.wait_for('reaction_add', timeout=timeout, check=check)
                     except asyncio.TimeoutError:
