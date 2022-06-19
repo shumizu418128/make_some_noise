@@ -146,7 +146,7 @@ async def on_message(message):
             await message.author.voice.channel.connect(reconnect=True)
         ran_int = random.randint(1, 4)
         ran_audio = {1: "dismuch.mp3", 2: "dismuch_2.mp3",
-                    3: "dismuch_3.mp3", 4: "dismuch_4.mp3"}
+                     3: "dismuch_3.mp3", 4: "dismuch_4.mp3"}
         audio = discord.PCMVolumeTransformer(
             discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=1)
         message.guild.voice_client.play(audio)
@@ -200,7 +200,7 @@ async def on_message(message):
             if len(names) == 3:
                 round_count = int(names[2])
                 embed = Embed(title="再開コマンド",
-                            description=f"Round{names[2]}から再開します")
+                              description=f"Round{names[2]}から再開します")
                 await message.channel.send(embed=embed)
                 del names[2]
                 if round_count % 2 == 0:
@@ -400,7 +400,7 @@ async def on_message(message):
                 return
             names = [(j) for j in msg2.content.replace('s.battle', '').split()]
         embed = Embed(title=f"{names[0]} `1st` vs {names[1]} `2nd`",
-                    description="1分・2ラウンドずつ\n1 minute, 2 rounds each\n\n▶️を押してスタート")
+                      description="1分・2ラウンドずつ\n1 minute, 2 rounds each\n\n▶️を押してスタート")
         before_start = await message.channel.send(embed=embed)
         await before_start.add_reaction("▶️")
         await before_start.add_reaction("❌")
@@ -552,7 +552,7 @@ async def on_message(message):
             if interaction.user.is_on_mobile():
                 description += "\n\n※バトルを始める際、speakerになった後、ミュート以外画面操作を一切行わないでください\nDiscordバグにより音声が一切入らなくなります"
             embed = Embed(title="受付完了 entry completed",
-                        description=description)
+                          description=description)
             await interaction.response.send_message(embed=embed, ephemeral=True)
             await message.channel.send(f"エントリー完了：{interaction.user.display_name}", delete_after=3)
         button.callback = button_callback
