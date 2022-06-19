@@ -12,6 +12,7 @@ intents.typing = False  # typingを受け取らないように
 client = discord.Client(intents=intents)
 print("successfully started")
 
+
 @client.event
 async def on_voice_state_update(member, before, after):
     if member.guild.id != 864475338340171786:  # ビト森ID
@@ -23,6 +24,7 @@ async def on_voice_state_update(member, before, after):
     if before.channel is not None and after.channel is None:
         await member.remove_roles(role)
         return
+
 
 @client.event
 async def on_message(message):
@@ -64,7 +66,8 @@ async def on_message(message):
             await message.author.voice.channel.connect(reconnect=True)
         ran_int = random.randint(1, 3)
         ran_audio = {1: "time.mp3", 2: "time_2.mp3", 3: "time_3.mp3"}
-        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
+        audio = discord.PCMVolumeTransformer(
+            discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
         message.guild.voice_client.play(audio)
         return
 
@@ -72,7 +75,8 @@ async def on_message(message):
         await message.delete(delay=1)
         if message.guild.voice_client is None:
             await message.author.voice.channel.connect(reconnect=True)
-        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("kbbtime.mp3"), volume=0.2)
+        audio = discord.PCMVolumeTransformer(
+            discord.FFmpegPCMAudio("kbbtime.mp3"), volume=0.2)
         message.guild.voice_client.play(audio)
         return
 
@@ -82,7 +86,8 @@ async def on_message(message):
             await message.author.voice.channel.connect(reconnect=True)
         ran_int = random.randint(1, 2)
         ran_audio = {1: "kansei.mp3", 2: "kansei_2.mp3"}
-        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
+        audio = discord.PCMVolumeTransformer(
+            discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
         message.guild.voice_client.play(audio)
         return
 
@@ -92,7 +97,8 @@ async def on_message(message):
             await message.author.voice.channel.connect(reconnect=True)
         ran_int = random.randint(1, 2)
         ran_audio = {1: "countdown.mp3", 2: "countdown_2.mp3"}
-        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
+        audio = discord.PCMVolumeTransformer(
+            discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
         message.guild.voice_client.play(audio)
         return
 
@@ -100,7 +106,8 @@ async def on_message(message):
         await message.delete(delay=1)
         if message.guild.voice_client is None:
             await message.author.voice.channel.connect(reconnect=True)
-        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("bunka.mp3"), volume=0.2)
+        audio = discord.PCMVolumeTransformer(
+            discord.FFmpegPCMAudio("bunka.mp3"), volume=0.2)
         message.guild.voice_client.play(audio)
         return
 
@@ -110,7 +117,8 @@ async def on_message(message):
             await message.author.voice.channel.connect(reconnect=True)
         ran_int = random.randint(1, 2)
         ran_audio = {1: "esh.mp3", 2: "esh_2.mp3"}
-        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.4)
+        audio = discord.PCMVolumeTransformer(
+            discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=0.4)
         message.guild.voice_client.play(audio)
         return
 
@@ -118,7 +126,8 @@ async def on_message(message):
         await message.delete(delay=1)
         if message.guild.voice_client is None:
             await message.author.voice.channel.connect(reconnect=True)
-        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("msn.mp3"), volume=0.4)
+        audio = discord.PCMVolumeTransformer(
+            discord.FFmpegPCMAudio("msn.mp3"), volume=0.4)
         message.guild.voice_client.play(audio)
         return
 
@@ -126,7 +135,8 @@ async def on_message(message):
         await message.delete(delay=1)
         if message.guild.voice_client is None:
             await message.author.voice.channel.connect(reconnect=True)
-        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("olala.mp3"), volume=0.4)
+        audio = discord.PCMVolumeTransformer(
+            discord.FFmpegPCMAudio("olala.mp3"), volume=0.4)
         message.guild.voice_client.play(audio)
         return
 
@@ -135,8 +145,10 @@ async def on_message(message):
         if message.guild.voice_client is None:
             await message.author.voice.channel.connect(reconnect=True)
         ran_int = random.randint(1, 4)
-        ran_audio = {1: "dismuch.mp3", 2: "dismuch_2.mp3", 3: "dismuch_3.mp3", 4: "dismuch_4.mp3"}
-        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=1)
+        ran_audio = {1: "dismuch.mp3", 2: "dismuch_2.mp3",
+                    3: "dismuch_3.mp3", 4: "dismuch_4.mp3"}
+        audio = discord.PCMVolumeTransformer(
+            discord.FFmpegPCMAudio(ran_audio[ran_int]), volume=1)
         message.guild.voice_client.play(audio)
         return
 
@@ -187,7 +199,8 @@ async def on_message(message):
             round_count = 1
             if len(names) == 3:
                 round_count = int(names[2])
-                embed = Embed(title="再開コマンド", description=f"Round{names[2]}から再開します")
+                embed = Embed(title="再開コマンド",
+                            description=f"Round{names[2]}から再開します")
                 await message.channel.send(embed=embed)
                 del names[2]
                 if round_count % 2 == 0:
@@ -197,7 +210,8 @@ async def on_message(message):
             await message.channel.send("3, 2, 1, Beatbox!", delete_after=10)
             message.guild.voice_client.play(audio)
             await sleep(7)
-            embed = Embed(title="1:00", description=f"Round{round_count} {names[0]}", color=0x00ff00)
+            embed = Embed(
+                title="1:00", description=f"Round{round_count} {names[0]}", color=0x00ff00)
             sent_message = await message.channel.send(embed=embed)
             while round_count < 5:
                 timeout = 9.9
@@ -213,7 +227,8 @@ async def on_message(message):
                         if counter == -10:
                             await message.channel.send("Error: timeout\nタイマーを停止しました")
                             return
-                        embed = Embed(title=f"{counter}", description=f"Round{round_count} {names[0]}", color=color)
+                        embed = Embed(
+                            title=f"{counter}", description=f"Round{round_count} {names[0]}", color=color)
                         await sent_message.edit(embed=embed)
                         counter -= 10
                         if counter == 30:
@@ -226,7 +241,8 @@ async def on_message(message):
                         elif counter == -10:
                             timeout = 30
                             if round_count == 4:
-                                embed = Embed(title="0", description=f"Round4 {names[0]}", color=color)
+                                embed = Embed(
+                                    title="0", description=f"Round4 {names[0]}", color=color)
                                 await sent_message.edit(embed=embed)
                                 break
                     else:
@@ -238,7 +254,8 @@ async def on_message(message):
                 round_count += 1
                 if round_count < 5:
                     await message.channel.send("SWITCH!", delete_after=5)
-                    embed = Embed(title="1:00", description=f"Round{round_count} {names[0]}", color=0x00ff00)
+                    embed = Embed(
+                        title="1:00", description=f"Round{round_count} {names[0]}", color=0x00ff00)
                     sent_message = await message.channel.send(embed=embed)
             audio = discord.PCMVolumeTransformer(
                 discord.FFmpegPCMAudio("time.mp3"), volume=0.2)
@@ -247,8 +264,10 @@ async def on_message(message):
             audio = discord.PCMVolumeTransformer(
                 discord.FFmpegPCMAudio("msn.mp3"), volume=0.5)
             message.guild.voice_client.play(audio)
-            embed = Embed(title="投票箱", description=f"1⃣ {names[0]}\n2⃣ {names[1]}")
-            channel_judge = message.guild.get_channel(912714891444518943)  # 審査員会議室
+            embed = Embed(
+                title="投票箱", description=f"1⃣ {names[0]}\n2⃣ {names[1]}")
+            channel_judge = message.guild.get_channel(
+                912714891444518943)  # 審査員会議室
             poll = await channel_judge.send(embed=embed)
             await poll.add_reaction("1⃣")
             await poll.add_reaction("2⃣")
@@ -271,7 +290,8 @@ async def on_message(message):
         await message.channel.send("3, 2, 1, Beatbox!", delete_after=10)
         message.guild.voice_client.play(audio)
         await sleep(7)
-        embed = Embed(title="90", description=f"Round{round_count} {names[0]}", color=0x00ff00)
+        embed = Embed(
+            title="90", description=f"Round{round_count} {names[0]}", color=0x00ff00)
         sent_message = await message.channel.send(embed=embed)
         while round_count < 5:
             timeout = 10
@@ -286,7 +306,8 @@ async def on_message(message):
                     if counter == -10:
                         await message.channel.send("Error: timeout\nタイマーを停止しました")
                         return
-                    embed = Embed(title=f"{counter}", description=f"Round{round_count} {names[0]}", color=color)
+                    embed = Embed(
+                        title=f"{counter}", description=f"Round{round_count} {names[0]}", color=color)
                     await sent_message.edit(embed=embed)
                     counter -= 10
                     if counter == 30:
@@ -299,7 +320,8 @@ async def on_message(message):
                     elif counter == -10:
                         timeout = 30
                         if round_count == 4:
-                            embed = Embed(title="0", description=f"Round4 {names[0]}", color=color)
+                            embed = Embed(
+                                title="0", description=f"Round4 {names[0]}", color=color)
                             await sent_message.edit(embed=embed)
                             break
                 else:
@@ -311,7 +333,8 @@ async def on_message(message):
             round_count += 1
             if round_count < 5:
                 await message.channel.send("SWITCH!", delete_after=5)
-                embed = Embed(title="90", description=f"Round{round_count} {names[0]}", color=0x00ff00)
+                embed = Embed(
+                    title="90", description=f"Round{round_count} {names[0]}", color=0x00ff00)
                 sent_message = await message.channel.send(embed=embed)
         audio = discord.PCMVolumeTransformer(
             discord.FFmpegPCMAudio("time.mp3"), volume=0.2)
@@ -355,7 +378,8 @@ async def on_message(message):
             except ValueError:
                 pass
             if 2 <= count <= 4 and len(names) == 3:
-                embed = Embed(title="再開コマンド", description=f"Round{count}から再開します。\n\n※意図していない場合、`s.leave`と入力してbotを停止した後、再度入力してください。")
+                embed = Embed(
+                    title="再開コマンド", description=f"Round{count}から再開します。\n\n※意図していない場合、`s.leave`と入力してbotを停止した後、再度入力してください。")
                 await message.channel.send(embed=embed)
                 del names[2]
         while len(names) != 2:
@@ -375,7 +399,8 @@ async def on_message(message):
             if msg2.content.startswith("s.battle"):
                 return
             names = [(j) for j in msg2.content.replace('s.battle', '').split()]
-        embed = Embed(title=f"{names[0]} `1st` vs {names[1]} `2nd`", description="1分・2ラウンドずつ\n1 minute, 2 rounds each\n\n▶️を押してスタート")
+        embed = Embed(title=f"{names[0]} `1st` vs {names[1]} `2nd`",
+                    description="1分・2ラウンドずつ\n1 minute, 2 rounds each\n\n▶️を押してスタート")
         before_start = await message.channel.send(embed=embed)
         await before_start.add_reaction("▶️")
         await before_start.add_reaction("❌")
@@ -407,7 +432,8 @@ async def on_message(message):
             await me.edit(suppress=False)
         except AttributeError:
             pass
-        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("battle_start.mp3"), volume=0.4)
+        audio = discord.PCMVolumeTransformer(
+            discord.FFmpegPCMAudio("battle_start.mp3"), volume=0.4)
         message.guild.voice_client.play(audio)
         await sleep(11)
         connect = VoiceClient.is_connected()
@@ -418,13 +444,15 @@ async def on_message(message):
         await sent_message.edit(embed=embed)
         await sleep(3)
         while count <= 4:
-            embed = Embed(title="1:00", description=f"Round{count} {names[1 - count % 2]}\n\n{names[0]} vs {names[1]}", color=0x00ff00)
+            embed = Embed(
+                title="1:00", description=f"Round{count} {names[1 - count % 2]}\n\n{names[0]} vs {names[1]}", color=0x00ff00)
             await sent_message.edit(embed=embed)
             counter = 50
             color = 0x00ff00
             for i in range(5):
                 await sleep(9.9)
-                embed = Embed(title=f"{counter}", description=f"Round{count} {names[1 - count % 2]}\n\n{names[0]} vs {names[1]}", color=color)
+                embed = Embed(
+                    title=f"{counter}", description=f"Round{count} {names[1 - count % 2]}\n\n{names[0]} vs {names[1]}", color=color)
                 await sent_message.edit(embed=embed)
                 counter -= 10
                 connect = VoiceClient.is_connected()
@@ -437,21 +465,26 @@ async def on_message(message):
                     color = 0xff0000
             await sleep(9.9)
             if count <= 3:
-                audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("round%sswitch.mp3" % (count + 1)))
+                audio = discord.PCMVolumeTransformer(
+                    discord.FFmpegPCMAudio("round%sswitch.mp3" % (count + 1)))
                 connect = VoiceClient.is_connected()
                 if connect is False:
                     await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection")
                     return
                 message.guild.voice_client.play(audio)
-                embed = Embed(title="TIME!", description=f"Round{count + 1} {names[count % 2]}\nSWITCH!\n\n{names[0]} vs {names[1]}")
+                embed = Embed(
+                    title="TIME!", description=f"Round{count + 1} {names[count % 2]}\nSWITCH!\n\n{names[0]} vs {names[1]}")
                 await sent_message.edit(embed=embed)
                 await sleep(3)
             count += 1
-        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time.mp3"), volume=0.2)
+        audio = discord.PCMVolumeTransformer(
+            discord.FFmpegPCMAudio("time.mp3"), volume=0.2)
         if random.randint(1, 10) == 1:
-            audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("time_3.mp3"), volume=0.3)
+            audio = discord.PCMVolumeTransformer(
+                discord.FFmpegPCMAudio("time_3.mp3"), volume=0.3)
             message.guild.voice_client.play(audio)
-            embed = Embed(title="投票箱", description=f"`1st:`{names[0]}\n`2nd:`{names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
+            embed = Embed(
+                title="投票箱", description=f"`1st:`{names[0]}\n`2nd:`{names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
             role_vc = message.guild.get_role(935073171462307881)  # in a vc
             await sent_message.edit(embed=embed)
             await sent_message.add_reaction("1⃣")
@@ -462,14 +495,16 @@ async def on_message(message):
             await sent_message.edit("なああああああああああああああああああああああああああああああああああああああああああああああああああ", embed=embed)
             return
         message.guild.voice_client.play(audio)
-        embed = Embed(title="投票箱", description=f"`1st:`{names[0]}\n`2nd:`{names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
+        embed = Embed(
+            title="投票箱", description=f"`1st:`{names[0]}\n`2nd:`{names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
         role_vc = message.guild.get_role(935073171462307881)  # in a vc
         await sent_message.edit(embed=embed)
         await sent_message.add_reaction("1⃣")
         await sent_message.add_reaction("2⃣")
         await sent_message.add_reaction("🔥")
         await sent_message.reply(f"{role_vc.mention}\n投票はこちら")
-        audio = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio("msn.mp3"), volume=0.5)
+        audio = discord.PCMVolumeTransformer(
+            discord.FFmpegPCMAudio("msn.mp3"), volume=0.5)
         await sleep(3)
         message.guild.voice_client.play(audio)
         await sent_message.edit("make some noise for the battle!\ncome on!!", embed=embed)
@@ -506,24 +541,29 @@ async def on_message(message):
         for member in role_member:
             await member.remove_roles(role)
         channel1 = client.get_channel(930446820839157820)  # 参加
-        button = Button(label="Entry", style=discord.ButtonStyle.primary, emoji="✅")
+        button = Button(
+            label="Entry", style=discord.ButtonStyle.primary, emoji="✅")
 
         async def button_callback(interaction):
-            role = interaction.guild.get_role(930368130906218526)  # battle stadium
+            role = interaction.guild.get_role(
+                930368130906218526)  # battle stadium
             await interaction.user.add_roles(role)
             description = interaction.user.display_name
             if interaction.user.is_on_mobile():
                 description += "\n\n※バトルを始める際、speakerになった後、ミュート以外画面操作を一切行わないでください\nDiscordバグにより音声が一切入らなくなります"
-            embed = Embed(title="受付完了 entry completed", description=description)
+            embed = Embed(title="受付完了 entry completed",
+                        description=description)
             await interaction.response.send_message(embed=embed, ephemeral=True)
             await message.channel.send(f"エントリー完了：{interaction.user.display_name}", delete_after=3)
         button.callback = button_callback
         view = View(timeout=None)
         view.add_item(button)
-        embed = Embed(title="Entry", description="下のボタンを押してエントリー！\npress button to entry")
+        embed = Embed(
+            title="Entry", description="下のボタンを押してエントリー！\npress button to entry")
         entry_button = await channel1.send(role_vc.mention, embed=embed, view=view)
         await message.channel.send("処理完了")
-        embed = Embed(title="受付開始", description=f"ただいまより参加受付を開始します。\n{channel1.mention}にてエントリーを行ってください。\nentry now accepting at {channel1.mention}", color=0x00bfff)
+        embed = Embed(
+            title="受付開始", description=f"ただいまより参加受付を開始します。\n{channel1.mention}にてエントリーを行ってください。\nentry now accepting at {channel1.mention}", color=0x00bfff)
         await message.channel.send(embed=embed)
         await channel1.send(f"エントリー後に、 {bbx_mic.mention} を確認して、マイク設定を行ってください。", delete_after=60)
         await sleep(30)
@@ -540,12 +580,14 @@ async def on_message(message):
         playerlist = [member.display_name for member in role_member]
         random.shuffle(playerlist)
         if len(playerlist) < 2:
-            embed = Embed(title="Error", description="参加者が不足しています。", color=0xff0000)
+            embed = Embed(
+                title="Error", description="参加者が不足しています。", color=0xff0000)
             await message.channel.send(embed=embed)
             return
         counter = 1
         counter2 = 0
-        dt_now = datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=9)))
+        dt_now = datetime.datetime.now(
+            datetime.timezone(datetime.timedelta(hours=9)))
         date = str(dt_now.strftime('%m月%d日 %H:%M')) + " JST"
         if date[3] == "0":
             date = date[:3] + date[4:]
@@ -553,7 +595,8 @@ async def on_message(message):
             date = date[1:]
         embed = Embed(title="抽選結果", description=f"{date}", color=0xff9900)
         while counter2 + 2 <= len(playerlist):
-            embed.add_field(name=f"Match{counter}", value=f"{playerlist[counter2]} `1st` vs {playerlist[counter2 + 1]} `2nd`", inline=False)
+            embed.add_field(
+                name=f"Match{counter}", value=f"{playerlist[counter2]} `1st` vs {playerlist[counter2 + 1]} `2nd`", inline=False)
             counter += 1
             counter2 += 2
         if len(playerlist) % 2 == 1:
@@ -564,7 +607,8 @@ async def on_message(message):
                 double_pl = double_pl.mention
             await message.channel.send(f"----------------------------------------\n\n参加人数が奇数でした。\n{playerlist[0]}さんの対戦が2回行われます。")
             await channel0.send(f"参加人数が奇数でした。\n{double_pl}さんの対戦が2回行われます。")
-            embed.add_field(name=f"Match{counter}", value=f"{playerlist[-1]} `1st` vs {playerlist[0]} `2nd`", inline=False)
+            embed.add_field(
+                name=f"Match{counter}", value=f"{playerlist[-1]} `1st` vs {playerlist[0]} `2nd`", inline=False)
         await message.channel.send(embed=embed)
         embed.title = "対戦カード"
         await channel0.send(role_vc.mention, embed=embed)
