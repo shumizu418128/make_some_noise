@@ -207,7 +207,6 @@ async def on_message(message):
             return
 
         count = 1
-        notice = None
         if len(names) == 3:
             try:
                 count = int(names[2])
@@ -216,7 +215,7 @@ async def on_message(message):
             if 2 <= count <= 4:
                 embed = Embed(
                     title="再開コマンド", description=f"Round{count}から再開します。\n\n※意図していない場合、`s.leave`と入力してbotを停止した後、再度入力してください。")
-                notice = await message.channel.send(embed=embed, delete_after=20)
+                await message.channel.send(embed=embed, delete_after=60)
                 del names[2]
         while len(names) != 2:
             await message.channel.send("Error: 入力方法が間違っています。\n\n`cancelと入力するとキャンセルできます`\nもう一度入力してください：", delete_after=60)
@@ -252,7 +251,6 @@ async def on_message(message):
         except asyncio.TimeoutError:
             await message.channel.send("Error: timeout", delete_after=5)
             await before_start.delete()
-            await notice.delete()
             return
         if reaction.emoji == "❌":
             await before_start.delete()
