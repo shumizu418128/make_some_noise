@@ -305,7 +305,7 @@ async def on_message(message):
                         color = 0x000000
                         await sent_message.add_reaction("⏭️")
                     elif counter == -10:
-                        timeout = 30
+                        timeout = 60
                         if count == 4:
                             await sent_message.clear_reactions()
                             break
