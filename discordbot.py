@@ -37,6 +37,10 @@ async def on_message(message):
         await message.delete(delay=1)
         return
 
+    if message.content == "s.test":
+        await message.channel.send(f"Make Some Noise! (Server): {client.latency}")
+        return
+
     if message.content == "s.join":
         await message.delete(delay=1)
         if message.author.voice is None:
