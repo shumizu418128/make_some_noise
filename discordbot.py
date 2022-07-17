@@ -430,7 +430,6 @@ async def on_message(message):
 
     if message.content.startswith("s.battle"):
         chat = client.get_channel(930839018671837184)  # バトスタチャット
-        pairing_channel = client.get_channel(930767329137143839)  # 対戦表
         stage_channel = client.get_channel(931462636019802123)  # ステージ
         vc_role = message.guild.get_role(935073171462307881)  # in a vc
         names = [(j) for j in message.content.replace('s.battle', '').split()]
@@ -541,6 +540,7 @@ async def on_message(message):
             count += 1
         audio = discord.PCMVolumeTransformer(
             discord.FFmpegPCMAudio("time.mp3"), volume=0.2)
+        pairing_channel = client.get_channel(930767329137143839)  # 対戦表
         if random.randint(1, 10) == 1:
             audio = discord.PCMVolumeTransformer(
                 discord.FFmpegPCMAudio("time_3.mp3"), volume=0.3)
@@ -554,6 +554,7 @@ async def on_message(message):
             await sleep(8)
             await sent_message.add_reaction("🦁")
             await sent_message.edit("なああああああああああああああああああああああああああああああああああああああああああああああああああ", embed=embed)
+            await chat.send(f"対戦表は {pairing_channel.mention} をご確認ください。")
             return
         message.guild.voice_client.play(audio)
         embed = Embed(
