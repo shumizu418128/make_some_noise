@@ -318,21 +318,16 @@ async def on_message(message):
             count += 1
         embed = Embed(
             title="TIME!", description="make some noise for the battle!!")
+        await sent_message.edit(embed=embed)
         audio = discord.PCMVolumeTransformer(
             discord.FFmpegPCMAudio("time.mp3"), volume=0.2)
         message.guild.voice_client.play(audio)
-        embed = Embed(
-            title="投票箱", description=f"1⃣ {names[0]}\n2⃣ {names[1]}")
-        judge_channel = message.guild.get_channel(
-            912714891444518943)  # 審査員会議室
-        poll = await judge_channel.send(embed=embed)
-        await poll.add_reaction("1⃣")
-        await poll.add_reaction("2⃣")
         await sleep(3)
         audio = discord.PCMVolumeTransformer(
             discord.FFmpegPCMAudio("msn.mp3"), volume=0.5)
         message.guild.voice_client.play(audio)
         await message.delete(delay=1)
+        await sleep(3)
         embed = Embed(
             title="オーディエンス投票受付中", description="YouTube投票機能を利用して集計します")
         embed.add_field(name="※投票できないときは",
