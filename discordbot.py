@@ -20,7 +20,8 @@ async def on_voice_state_update(member, before, after):
         try:
             await member.add_roles(vc_role)
         except discord.errors.Forbidden:
-            pass
+            return
+        await after.channel.send(f"{member.mention}\nチャットはこちら\nchat is here", delete_after=10)
         return
     if bool(before.channel) and after.channel is None:
         try:
