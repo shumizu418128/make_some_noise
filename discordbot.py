@@ -464,7 +464,7 @@ async def on_message(message):
                 return
             if msg2.content.startswith("s.battle"):
                 return
-            names = [(j) for j in msg2.content.replace('s.battle', '').split()]
+            names = [j for j in msg2.content.replace('s.battle', '').split()]
         embed = Embed(title=f"{names[0]} `1st` vs {names[1]} `2nd`",
                       description="1分・2ラウンドずつ\n1 minute, 2 rounds each\n\n▶️を押してスタート")
         before_start = await message.channel.send(embed=embed)
@@ -545,34 +545,31 @@ async def on_message(message):
         audio = discord.PCMVolumeTransformer(
             discord.FFmpegPCMAudio("time.mp3"), volume=0.2)
         pairing_channel = client.get_channel(930767329137143839)  # 対戦表
+        await sent_message.delete()
         if random.randint(1, 10) == 1:
             audio = discord.PCMVolumeTransformer(
                 discord.FFmpegPCMAudio("time_3.mp3"), volume=0.3)
             message.guild.voice_client.play(audio)
             embed = Embed(
                 title="投票箱", description=f"`1st:`{names[0]}\n`2nd:`{names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
-            await sent_message.edit(embed=embed)
-            await sent_message.add_reaction("1⃣")
-            await sent_message.add_reaction("2⃣")
-            await sent_message.reply(f"{vc_role.mention}\n投票はこちら")
-            await sleep(8)
-            await sent_message.add_reaction("🦁")
-            await sent_message.edit("なああああああああああああああああああああああああああああああああああああああああああああああああああ", embed=embed)
+            await sleep(7)
+            poll = await message.channel.send(f"{vc_role.mention}\nなああああああああああああああああああああああああああああああああああああああああああああああああああ", embed=embed)
+            await poll.add_reaction("1⃣")
+            await poll.add_reaction("2⃣")
+            await poll.add_reaction("🦁")
             await chat.send(f"対戦表は {pairing_channel.mention} をご確認ください。")
             return
         message.guild.voice_client.play(audio)
         embed = Embed(
             title="投票箱", description=f"`1st:`{names[0]}\n`2nd:`{names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
-        await sent_message.edit(embed=embed)
-        await sent_message.add_reaction("1⃣")
-        await sent_message.add_reaction("2⃣")
-        await sent_message.add_reaction("🔥")
-        await sent_message.reply(f"{vc_role.mention}\n投票はこちら")
+        poll = await message.channel.send(f"{vc_role.mention}\nmake some noise for the battle!\ncome on!!", embed=embed)
+        await poll.add_reaction("1⃣")
+        await poll.add_reaction("2⃣")
+        await poll.add_reaction("🔥")
         audio = discord.PCMVolumeTransformer(
             discord.FFmpegPCMAudio("msn.mp3"), volume=0.5)
         await sleep(3)
         message.guild.voice_client.play(audio)
-        await sent_message.edit("make some noise for the battle!\ncome on!!", embed=embed)
         await chat.send(f"対戦表は {pairing_channel.mention} をご確認ください。")
         return
 
