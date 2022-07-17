@@ -648,7 +648,7 @@ async def on_message(message):
         counter2 = 0
         dt_now = datetime.datetime.now(
             datetime.timezone(datetime.timedelta(hours=9)))
-        date = str(dt_now.strftime('%m月%d日 %H:%M')) + " Japan time"
+        date = dt_now.strftime('%m月%d日 %H:%M') + " Japan time"
         if date[3] == "0":
             date = date[:3] + date[4:]
         if date[0] == "0":
