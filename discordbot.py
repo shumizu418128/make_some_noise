@@ -15,14 +15,18 @@ print("Make Some Noise! (server): 起動完了")
 
 @client.event
 async def on_voice_state_update(member, before, after):
-    if member.guild.id != 864475338340171786:  # ビト森ID
-        return
     vc_role = member.guild.get_role(935073171462307881)  # in a vc
     if before.channel is None and bool(after.channel):
-        await member.add_roles(vc_role)
+        try:
+            await member.add_roles(vc_role)
+        except discord.errors.Forbidden:
+            pass
         return
     if bool(before.channel) and after.channel is None:
-        await member.remove_roles(vc_role)
+        try:
+            await member.remove_roles(vc_role)
+        except discord.errors.Forbidden:
+            pass
         return
 
 
