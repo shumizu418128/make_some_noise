@@ -21,7 +21,8 @@ async def on_voice_state_update(member, before, after):
             await member.add_roles(vc_role)
         except discord.errors.Forbidden:
             return
-        await after.channel.send(f"{member.mention}\nチャットはこちら\nchat is here", delete_after=10)
+        if after.channel.category.id != 904367314990948422:
+            await after.channel.send(f"{member.mention}\nチャットはこちら\nchat is here", delete_after=10)
         return
     if bool(before.channel) and after.channel is None:
         try:
