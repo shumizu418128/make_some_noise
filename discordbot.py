@@ -429,6 +429,10 @@ async def on_message(message):
         return
 
     if message.content.startswith("s.battle"):
+        chat = client.get_channel(930839018671837184)  # バトスタチャット
+        pairing_channel = client.get_channel(930767329137143839)  # 対戦表
+        stage_channel = client.get_channel(931462636019802123)  # ステージ
+        vc_role = message.guild.get_role(935073171462307881)  # in a vc
         names = [(j) for j in message.content.replace('s.battle', '').split()]
         count = 1
         if len(names) == 3:
@@ -480,7 +484,6 @@ async def on_message(message):
             return
         embed = Embed(title="Are you ready??")
         sent_message = await message.channel.send(embed=embed)
-        stage_channel = client.get_channel(931462636019802123)  # ステージ
         try:
             await stage_channel.connect(reconnect=True)
         except discord.errors.ClientException:
@@ -544,7 +547,6 @@ async def on_message(message):
             message.guild.voice_client.play(audio)
             embed = Embed(
                 title="投票箱", description=f"`1st:`{names[0]}\n`2nd:`{names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
-            vc_role = message.guild.get_role(935073171462307881)  # in a vc
             await sent_message.edit(embed=embed)
             await sent_message.add_reaction("1⃣")
             await sent_message.add_reaction("2⃣")
@@ -556,7 +558,6 @@ async def on_message(message):
         message.guild.voice_client.play(audio)
         embed = Embed(
             title="投票箱", description=f"`1st:`{names[0]}\n`2nd:`{names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
-        vc_role = message.guild.get_role(935073171462307881)  # in a vc
         await sent_message.edit(embed=embed)
         await sent_message.add_reaction("1⃣")
         await sent_message.add_reaction("2⃣")
@@ -567,7 +568,6 @@ async def on_message(message):
         await sleep(3)
         message.guild.voice_client.play(audio)
         await sent_message.edit("make some noise for the battle!\ncome on!!", embed=embed)
-        chat = client.get_channel(930839018671837184)  # バトスタチャット
         await chat.send(f"対戦表は {pairing_channel.mention} をご確認ください。")
         return
 
@@ -577,6 +577,9 @@ async def on_message(message):
         vc_role = message.guild.get_role(935073171462307881)  # in a vc
         bbx_mic = client.get_channel(931781522808262756)  # bbxマイク設定
         chat = client.get_channel(930839018671837184)  # バトスタチャット
+        pairing_channel = client.get_channel(930767329137143839)  # 対戦表
+        bs_role = message.guild.get_role(930368130906218526)  # battle stadium
+        entry_channel = client.get_channel(930446820839157820)  # 参加
         scheduled_events = message.guild.scheduled_events
         await chat.send(f"{vc_role.mention}\nチャット欄はこちら\nchat is here")
         if len(scheduled_events) == 1 and scheduled_events[0].name == "battle stadium":
@@ -595,18 +598,13 @@ async def on_message(message):
             pass
         me = message.guild.me
         await me.edit(suppress=False)
-        pairing_channel = client.get_channel(930767329137143839)  # 対戦表
         await pairing_channel.purge()
-        bs_role = message.guild.get_role(930368130906218526)  # battle stadium
         for member in bs_role.members:
             await member.remove_roles(bs_role)
-        entry_channel = client.get_channel(930446820839157820)  # 参加
         button = Button(
             label="Entry", style=discord.ButtonStyle.primary, emoji="✅")
 
         async def button_callback(interaction):
-            bs_role = interaction.guild.get_role(
-                930368130906218526)  # battle stadium
             await interaction.user.add_roles(bs_role)
             description = interaction.user.display_name
             if interaction.user.is_on_mobile():
@@ -638,12 +636,12 @@ async def on_message(message):
         await message.channel.send("参加受付を締め切りました。\nentry closed\n\n処理中... しばらくお待ちください")
         playerlist = [member.display_name.replace(
             "`", "") for member in bs_role.members]
-        random.shuffle(playerlist)
         if len(playerlist) < 2:
             embed = Embed(
                 title="Error", description="参加者が不足しています。", color=0xff0000)
             await message.channel.send(embed=embed)
             return
+        random.shuffle(playerlist)
         counter = 1
         counter2 = 0
         dt_now = datetime.datetime.now(
@@ -692,16 +690,16 @@ async def on_message(message):
         return
 
     if message.content == "s.end":
+        pairing_channel = client.get_channel(930767329137143839)  # 対戦表
+        bs_role = message.guild.get_role(930368130906218526)  # battle stadium
+        stage = client.get_channel(931462636019802123)  # ステージ
         await message.delete(delay=1)
         scheduled_events = message.guild.scheduled_events
         if len(scheduled_events) == 1 and scheduled_events[0].status == "active":
             await scheduled_events[0].complete()
-        pairing_channel = client.get_channel(930767329137143839)  # 対戦表
         await pairing_channel.purge()
-        bs_role = message.guild.get_role(930368130906218526)  # battle stadium
         for member in bs_role.members:
             await member.remove_roles(bs_role)
-        stage = client.get_channel(931462636019802123)  # ステージ
         try:
             instance = await stage.fetch_instance()
         except discord.errors.NotFound:
