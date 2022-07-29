@@ -610,13 +610,14 @@ async def on_message(message):
             label="Entry", style=discord.ButtonStyle.primary, emoji="✅")
 
         async def button_callback(interaction):
+            await interaction.response.defer(ephemeral=True, invisible=False)
             await interaction.user.add_roles(bs_role)
             description = interaction.user.display_name
             if interaction.user.is_on_mobile():
                 description += "\n\n※バトルを始める際、speakerになった後、ミュート以外画面操作を一切行わないでください\nDiscordバグにより音声が一切入らなくなります"
             embed = Embed(title="受付完了 entry completed",
                           description=description)
-            await interaction.response.send_message(embed=embed, ephemeral=True)
+            await interaction.followup.send(embed=embed, ephemeral=True)
             await message.channel.send(f"エントリー完了：{interaction.user.display_name}", delete_after=3)
         button.callback = button_callback
         view = View()
