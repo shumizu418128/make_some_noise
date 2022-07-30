@@ -696,22 +696,22 @@ async def on_message(message):
         return
 
     if message.content == "s.end":
+        await message.delete(delay=1)
         pairing_channel = client.get_channel(930767329137143839)  # 対戦表
         bs_role = message.guild.get_role(930368130906218526)  # battle stadium
         stage = client.get_channel(931462636019802123)  # ステージ
-        await message.delete(delay=1)
-        scheduled_events = message.guild.scheduled_events
-        if len(scheduled_events) == 1 and scheduled_events[0].status == "active":
-            await scheduled_events[0].complete()
-        await pairing_channel.purge()
-        for member in bs_role.members:
-            await member.remove_roles(bs_role)
         try:
             instance = await stage.fetch_instance()
         except discord.errors.NotFound:
             pass
         else:
             await instance.delete()
+        scheduled_events = message.guild.scheduled_events
+        if len(scheduled_events) == 1 and scheduled_events[0].status == "active":
+            await scheduled_events[0].complete()
+        await pairing_channel.purge()
+        for member in bs_role.members:
+            await member.remove_roles(bs_role)
         return
 
     if "s." not in message.content:
