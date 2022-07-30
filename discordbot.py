@@ -549,9 +549,9 @@ async def on_message(message):
             discord.FFmpegPCMAudio("time.mp3"), volume=0.2)
         pairing_channel = client.get_channel(930767329137143839)  # 対戦表
         await sent_message.delete()
-        if random.randint(1, 10) == 1:
+        if random.randint(1, 20) == 1:
             audio = discord.PCMVolumeTransformer(
-                discord.FFmpegPCMAudio("time_3.mp3"), volume=0.3)
+                discord.FFmpegPCMAudio("time_3.mp3"), volume=0.4)
             message.guild.voice_client.play(audio)
             embed = Embed(
                 title="投票箱", description=f"`1st:`{names[0]}\n`2nd:`{names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
