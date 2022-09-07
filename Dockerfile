@@ -9,6 +9,10 @@ ENV TERM xterm
 RUN pip install git+https://github.com/Pycord-Development/pycord \
     pip install pynacl
 RUN /usr/local/bin/python -m pip install --upgrade pip
+RUN  apt-get update \
+    && apt-get install -y ffmpeg \
+    && apt clean \
+    && rm -rf /var/lib/apt/lists/*
 COPY discordbot.py discordbot.py
 COPY battle_start.mp3 battle_start.mp3
 COPY bunka.mp3 bunka.mp3
