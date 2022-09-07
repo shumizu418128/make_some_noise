@@ -531,10 +531,14 @@ async def on_message(message):
                     color = 0xffff00
                 elif i == 3:
                     color = 0xff0000
-            await sleep(9.9)
+            await sleep(4.9)
+            embed = Embed(
+                    title="5", description=f"Round{count} {names[1 - count % 2]}\n\n{names[0]} vs {names[1]}", color=color)
+            await sent_message.edit(embed=embed)
+            await sleep(4.9)
             if count <= 3:
                 audio = discord.PCMVolumeTransformer(
-                    discord.FFmpegPCMAudio("round%sswitch.mp3" % (count + 1)))
+                    discord.FFmpegPCMAudio(f"round{count + 1}switch.mp3"))
                 connect = VoiceClient.is_connected()
                 if connect is False:
                     await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection")
