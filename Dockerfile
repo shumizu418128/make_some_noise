@@ -33,6 +33,6 @@ COPY round3switch.mp3 round3switch.mp3
 COPY round4switch.mp3 round4switch.mp3
 COPY time.mp3 time.mp3
 COPY time_2.mp3 time_2.mp3
-COPY time_3.mp3 time_3.mp3
+COPY time_fuga.mp3 time_fuga.mp3
 CMD ["python", "-u", "discordbot.py"]
 ARG EnvironmentVariable
