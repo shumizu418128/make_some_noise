@@ -533,7 +533,7 @@ async def on_message(message):
                     color = 0xff0000
             await sleep(4.9)
             embed = Embed(
-                    title="5", description=f"Round{count} {names[1 - count % 2]}\n\n{names[0]} vs {names[1]}", color=color)
+                title="5", description=f"Round{count} {names[1 - count % 2]}\n\n{names[0]} vs {names[1]}", color=color)
             await sent_message.edit(embed=embed)
             await sleep(4.9)
             if count <= 3:
