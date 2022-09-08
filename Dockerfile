@@ -14,7 +14,9 @@ RUN  apt-get update \
     && apt clean \
     && rm -rf /var/lib/apt/lists/*
 COPY discordbot.py discordbot.py
-COPY battle_start.mp3 battle_start.mp3
+COPY BattleStart_1.mp3 BattleStart_1.mp3
+COPY BattleStart_2.mp3 BattleStart_2.mp3
+COPY BattleStart_3.mp3 BattleStart_3.mp3
 COPY bunka.mp3 bunka.mp3
 COPY countdown.mp3 countdown.mp3
 COPY dismuch.mp3 dismuch.mp3
@@ -28,10 +30,16 @@ COPY kansei_2.mp3 kansei_2.mp3
 COPY kbbtime.mp3 kbbtime.mp3
 COPY msn.mp3 msn.mp3
 COPY olala.mp3 olala.mp3
-COPY round2switch.mp3 round2switch.mp3
-COPY round3switch.mp3 round3switch.mp3
-COPY round4switch.mp3 round4switch.mp3
-COPY time.mp3 time.mp3
+COPY round2switch_1.mp3 round2switch_1.mp3
+COPY round2switch_2.mp3 round2switch_2.mp3
+COPY round2switch_3.mp3 round2switch_3.mp3
+COPY round3switch_1.mp3 round3switch_1.mp3
+COPY round3switch_2.mp3 round3switch_2.mp3
+COPY round3switch_3.mp3 round3switch_3.mp3
+COPY round4switch_1.mp3 round4switch_1.mp3
+COPY round4switch_2.mp3 round4switch_2.mp3
+COPY round4switch_3.mp3 round4switch_3.mp3
+COPY time_1.mp3 time_1.mp3
 COPY time_2.mp3 time_2.mp3
 COPY time_fuga.mp3 time_fuga.mp3
 CMD ["python", "-u", "discordbot.py"]
