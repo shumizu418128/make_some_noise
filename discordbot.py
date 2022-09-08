@@ -500,10 +500,14 @@ async def on_message(message):
             await me.edit(suppress=False)
         except AttributeError:
             pass
+        random_start = random.randint(1, 3)
         audio = discord.PCMVolumeTransformer(
-            discord.FFmpegPCMAudio("battle_start.mp3"), volume=0.4)
+            discord.FFmpegPCMAudio(f"BattleStart_{random_start}.mp3"), volume=0.4)
         message.guild.voice_client.play(audio)
-        await sleep(11)
+        if random_start == 1:
+            await sleep(9)
+        else:
+            await sleep(11)
         connect = VoiceClient.is_connected()
         if connect is False:
             await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection")
@@ -550,7 +554,7 @@ async def on_message(message):
                 await sleep(3)
             count += 1
         audio = discord.PCMVolumeTransformer(
-            discord.FFmpegPCMAudio("time.mp3"), volume=0.2)
+            discord.FFmpegPCMAudio(f"time_{random.randint(1, 2)}.mp3"), volume=0.2)
         pairing_channel = client.get_channel(930767329137143839)  # 対戦表
         await sent_message.delete()
         if random.randint(1, 20) == 1:
