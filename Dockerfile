@@ -28,7 +28,9 @@ COPY esh_2.mp3 esh_2.mp3
 COPY kansei.mp3 kansei.mp3
 COPY kansei_2.mp3 kansei_2.mp3
 COPY kbbtime.mp3 kbbtime.mp3
-COPY msn.mp3 msn.mp3
+COPY msn_1.mp3 msn_1.mp3
+COPY msn_2.mp3 msn_2.mp3
+COPY msn_3.mp3 msn_3.mp3
 COPY olala.mp3 olala.mp3
 COPY round2switch_1.mp3 round2switch_1.mp3
 COPY round2switch_2.mp3 round2switch_2.mp3
