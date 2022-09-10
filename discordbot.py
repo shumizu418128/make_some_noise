@@ -345,7 +345,7 @@ async def on_message(message):
     if message.content.startswith("s.bj"):
         if message.guild.voice_client is None:
             await message.author.voice.channel.connect(reconnect=True)
-        names = [(j) for j in message.content.split()]
+        names = [j for j in message.content.split()]
         names.remove("s.bj")
         round_count = 1
         if len(names) != 2:
