@@ -727,7 +727,7 @@ async def on_message(message):
             return
         elif message.channel.id == 930447365536612353:  # バトスタbot
             await message.delete(delay=1)
-        elif message.channel.type == "text":
+        elif message.channel.type == discord.ChannelType.text:
             emoji = random.choice(message.guild.emojis)
             await message.add_reaction(emoji)
             await sleep(600)
