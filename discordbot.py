@@ -723,10 +723,14 @@ async def on_message(message):
         return
 
     if "s." not in message.content:
-        if message.author.bot:
+        if message.author.bot or message.channel.type == "voice":
             return
         elif message.channel.id == 930447365536612353:  # バトスタbot
             await message.delete(delay=1)
+        emoji = random.choice(message.guild.emojis)
+        await message.add_reaction(emoji)
+        await sleep(600)
+        await message.remove_reaction(emoji, message.guild.me)
         return
 
 client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
