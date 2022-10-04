@@ -731,7 +731,10 @@ async def on_message(message):
             emoji = random.choice(message.guild.emojis)
             await message.add_reaction(emoji)
             await sleep(600)
-            await message.remove_reaction(emoji, message.guild.me)
+            try:
+                await message.remove_reaction(emoji, message.guild.me)
+            except Exception:
+                return
         return
 
 client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
