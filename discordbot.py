@@ -595,16 +595,11 @@ async def on_message(message):
         entry_channel = client.get_channel(930446820839157820)  # 参加
         scheduled_events = message.guild.scheduled_events
         await chat.send(f"{vc_role.mention}\nチャット欄はこちら\nchat is here")
-        if len(scheduled_events) == 1 and scheduled_events[0].name == "battle stadium":
-            try:
-                await scheduled_events[0].start()
-            except discord.errors.HTTPException:
-                pass
-        else:
-            try:
-                await stage_channel.create_instance(topic="battle stadium")
-            except discord.errors.HTTPException:
-                pass
+        try:
+            await stage_channel.create_instance(topic="battle stadium", send_notification=True)
+            await scheduled_events[0].start()
+        except discord.errors.HTTPException:
+            pass
         try:
             await stage_channel.connect(reconnect=True)
         except discord.errors.ClientException:
