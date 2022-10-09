@@ -709,7 +709,7 @@ async def on_message(message):
         bs_role = message.guild.get_role(930368130906218526)  # battle stadium
         stage = client.get_channel(931462636019802123)  # ステージ
         scheduled_events = message.guild.scheduled_events
-        if len(scheduled_events) == 1 and scheduled_events[0].status == "active":
+        if len(scheduled_events) == 1 and scheduled_events[0].status == discord.ScheduledEventStatus.active:
             await scheduled_events[0].complete()
         try:
             instance = await stage.fetch_instance()
