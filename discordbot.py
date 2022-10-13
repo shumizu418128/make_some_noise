@@ -23,7 +23,7 @@ async def on_voice_state_update(member, before, after):
             return
         if after.channel.category.id != 904367314990948422:
             try:
-                await after.channel.send(f"{member.mention}\nチャットはこちら\nchat is here", delete_after=10)
+                await after.channel.send(f"{member.mention}\nチャットはこちら\nchat is here", delete_after=60)
             except AttributeError:
                 return
     if bool(before.channel) and after.channel is None:
