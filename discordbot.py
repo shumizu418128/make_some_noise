@@ -43,7 +43,7 @@ async def on_message(message):
         elif message.channel.type == discord.ChannelType.text:
             emoji = random.choice(message.guild.emojis)
             await message.add_reaction(emoji)
-            await sleep(600)
+            await sleep(3600)
             try:
                 await message.remove_reaction(emoji, message.guild.me)
             except Exception:
