@@ -38,7 +38,7 @@ async def on_message(message):
     if not message.content.startswith("s."):
         if message.author.bot:
             return
-        elif message.channel.id == 930447365536612353:  # バトスタbot
+        elif message.channel.id in [930447365536612353, 930767329137143839]:  # バトスタbot, バトスタ対戦表
             await message.delete(delay=1)
         elif message.channel.type == discord.ChannelType.text:
             emoji = random.choice(message.guild.emojis)
@@ -47,16 +47,9 @@ async def on_message(message):
             try:
                 await message.remove_reaction(emoji, message.guild.me)
             except Exception:
-                return
-        return
+                pass
 
     if message.channel.id == 930839018671837184:  # バトスタチャット
-        return
-
-    if message.channel.id == 930767329137143839:  # バトスタ対戦表
-        if message.author.bot:
-            return
-        await message.delete(delay=1)
         return
 
     if message.content == "s.test":
