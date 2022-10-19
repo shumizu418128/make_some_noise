@@ -146,7 +146,7 @@ async def on_message(message):
         if message.guild.voice_client is None:
             await message.author.voice.channel.connect(reconnect=True)
         audio = discord.PCMVolumeTransformer(
-            discord.FFmpegPCMAudio("msn.mp3"), volume=0.4)
+            discord.FFmpegPCMAudio(f"msn_{random.randint(1, 3)}.mp3"), volume=0.4)
         message.guild.voice_client.play(audio)
         return
 
