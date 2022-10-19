@@ -447,7 +447,7 @@ async def on_message(message):
         chat = client.get_channel(930839018671837184)  # バトスタチャット
         stage_channel = client.get_channel(931462636019802123)  # ステージ
         vc_role = message.guild.get_role(935073171462307881)  # in a vc
-        names = [(j) for j in message.content.replace('s.battle', '').split()]
+        names = message.content.replace("vs", "").replace('s.battle', '').split()
         count = 1
         if len(names) == 3:
             try:
@@ -671,7 +671,7 @@ async def on_message(message):
         embed = Embed(title="抽選結果", description=f"{date}", color=0xff9900)
         while counter2 + 2 <= len(playerlist):
             embed.add_field(
-                name=f"Match{counter}", value=f"{playerlist[counter2]} `1st` vs {playerlist[counter2 + 1]} `2nd`", inline=False)
+                name=f"Match{counter}", value=f"`1st` {playerlist[counter2]} vs {playerlist[counter2 + 1]} `2nd`", inline=False)
             counter += 1
             counter2 += 2
         if len(playerlist) % 2 == 1:
