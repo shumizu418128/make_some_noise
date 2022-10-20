@@ -38,7 +38,8 @@ async def on_message(message):
     if not message.content.startswith("s."):
         if message.author.bot:
             return
-        elif message.channel.id in [930447365536612353, 930767329137143839]:  # バトスタbot, バトスタ対戦表
+        # バトスタbot, バトスタ対戦表
+        elif message.channel.id in [930447365536612353, 930767329137143839]:
             await message.delete(delay=1)
         elif message.channel.type == discord.ChannelType.text:
             emoji = random.choice(message.guild.emojis)
@@ -255,7 +256,7 @@ async def on_message(message):
                 return
             names = [(j)
                      for j in msg2.content.replace('s.c', '').split()]
-        embed = Embed(title=f"{names[0]} `1st` vs {names[1]} `2nd`",
+        embed = Embed(title=f"`[1st]` {names[0]} vs {names[1]} `[2nd]`",
                       description="1分・2ラウンドずつ\n1 minute, 2 rounds each\n\n▶️を押してスタート")
         before_start = await message.channel.send(embed=embed)
         await before_start.add_reaction("▶️")
@@ -447,7 +448,8 @@ async def on_message(message):
         chat = client.get_channel(930839018671837184)  # バトスタチャット
         stage_channel = client.get_channel(931462636019802123)  # ステージ
         vc_role = message.guild.get_role(935073171462307881)  # in a vc
-        names = message.content.replace("vs", "").replace('s.battle', '').split()
+        names = message.content.replace(
+            "vs", "").replace('s.battle', '').split()
         count = 1
         if len(names) == 3:
             try:
@@ -476,7 +478,7 @@ async def on_message(message):
             if msg2.content.startswith("s.battle"):
                 return
             names = [j for j in msg2.content.replace('s.battle', '').split()]
-        embed = Embed(title=f"{names[0]} `1st` vs {names[1]} `2nd`",
+        embed = Embed(title=f"`[1st]` {names[0]} vs {names[1]} `[2nd]`",
                       description="1分・2ラウンドずつ\n1 minute, 2 rounds each\n\n▶️を押してスタート")
         before_start = await message.channel.send(embed=embed)
         await before_start.add_reaction("▶️")
@@ -570,7 +572,7 @@ async def on_message(message):
                 discord.FFmpegPCMAudio("time_fuga.mp3"), volume=0.4)
             message.guild.voice_client.play(audio)
             embed = Embed(
-                title="投票箱", description=f"`1st:`{names[0]}\n`2nd:`{names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
+                title="投票箱", description=f"`[1st]:`{names[0]}\n`[2nd]:`{names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
             await sleep(7)
             poll = await message.channel.send(f"{vc_role.mention}\nなああああああああああああああああああああああああああああああああああああああああああああああああああ", embed=embed)
             await poll.add_reaction("1⃣")
@@ -580,7 +582,7 @@ async def on_message(message):
             return
         message.guild.voice_client.play(audio)
         embed = Embed(
-            title="投票箱", description=f"`1st:`{names[0]}\n`2nd:`{names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
+            title="投票箱", description=f"`[1st]:`{names[0]}\n`[2nd]:`{names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
         poll = await message.channel.send(f"{vc_role.mention}\nmake some noise for the battle!\ncome on!!", embed=embed)
         await poll.add_reaction("1⃣")
         await poll.add_reaction("2⃣")
@@ -671,7 +673,7 @@ async def on_message(message):
         embed = Embed(title="抽選結果", description=f"{date}", color=0xff9900)
         while counter2 + 2 <= len(playerlist):
             embed.add_field(
-                name=f"Match{counter}", value=f"`1st` {playerlist[counter2]} vs {playerlist[counter2 + 1]} `2nd`", inline=False)
+                name=f"Match{counter}", value=f"`[1st]` {playerlist[counter2]} vs {playerlist[counter2 + 1]} `[2nd]`", inline=False)
             counter += 1
             counter2 += 2
         if len(playerlist) % 2 == 1:
@@ -683,7 +685,7 @@ async def on_message(message):
             await message.channel.send(f"----------------------------------------\n\n参加人数が奇数でした。\n{playerlist[0]}さんの対戦が2回行われます。")
             await pairing_channel.send(f"参加人数が奇数でした。\n{double_pl}さんの対戦が2回行われます。")
             embed.add_field(
-                name=f"Match{counter}", value=f"{playerlist[-1]} `1st` vs {playerlist[0]} `2nd`", inline=False)
+                name=f"Match{counter}", value=f"`[1st]` {playerlist[-1]} vs {playerlist[0]} `[2nd]`", inline=False)
         await message.channel.send(embed=embed)
         embed.title = "対戦カード"
         await pairing_channel.send(vc_role.mention, embed=embed)
