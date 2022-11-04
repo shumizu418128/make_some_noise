@@ -736,7 +736,7 @@ async def on_message(message):
         end_time = datetime.datetime(
             dt_now.year, dt_now.month, dt_now.day, 22, 30, 0, 0, JST) + sat
         stage = client.get_channel(931462636019802123)  # battle stadium
-        event = await message.guild.create_scheduled_event(name="test", start_time=start_time, end_time=end_time, location=stage)
+        event = await message.guild.create_scheduled_event(name="battle stadium", start_time=start_time, end_time=end_time, location=stage)
         embed = Embed(title="battle stadium 開催のお知らせ", description="```今週もやります！\nこのイベントの趣旨は「とにかくBeatbox battleをすること」です。いつでも何回でも参加可能です。\nぜひご参加ください！\n観戦も可能です。観戦中、マイクがオンになることはありません。\n\n※エントリー受付・当日の進行はすべてbotが行います。\n※エントリー受付開始時間は、バトル開始1分前です。```", color=0x00bfff)
         embed.add_field(name="日時 date", value=start_time.strftime('%m/%d 21:30 - 22:30 Japan time'), inline=False)
         embed.add_field(name="場所 place", value=f'stage channel {stage.mention}', inline=False)
