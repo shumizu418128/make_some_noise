@@ -256,7 +256,7 @@ async def on_message(message):
                 return
             names = [(j)
                      for j in msg2.content.replace('s.c', '').split()]
-        embed = Embed(title=f"`[1st]` {names[0]} vs {names[1]} `[2nd]`",
+        embed = Embed(title=f"1️⃣ {names[0]} vs {names[1]} 2️⃣",
                       description="1分・2ラウンドずつ\n1 minute, 2 rounds each\n\n▶️を押してスタート")
         before_start = await message.channel.send(embed=embed)
         await before_start.add_reaction("▶️")
@@ -477,8 +477,8 @@ async def on_message(message):
                 return
             if msg2.content.startswith("s.battle"):
                 return
-            names = [j for j in msg2.content.replace('s.battle', '').split()]
-        embed = Embed(title=f"`[1st]` {names[0]} vs {names[1]} `[2nd]`",
+            names = msg2.content.replace('s.battle', '').split()
+        embed = Embed(title=f"1️⃣ {names[0]} vs {names[1]} 2️⃣",
                       description="1分・2ラウンドずつ\n1 minute, 2 rounds each\n\n▶️を押してスタート")
         before_start = await message.channel.send(embed=embed)
         await before_start.add_reaction("▶️")
@@ -572,7 +572,7 @@ async def on_message(message):
                 discord.FFmpegPCMAudio("time_fuga.mp3"), volume=0.4)
             message.guild.voice_client.play(audio)
             embed = Embed(
-                title="投票箱", description=f"`[1st]:`{names[0]}\n`[2nd]:`{names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
+                title="投票箱", description=f"1️⃣ {names[0]}\n2️⃣ {names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
             await sleep(7)
             poll = await message.channel.send(f"{vc_role.mention}\nなああああああああああああああああああああああああああああああああああああああああああああああああああ", embed=embed)
             await poll.add_reaction("1⃣")
@@ -582,7 +582,7 @@ async def on_message(message):
             return
         message.guild.voice_client.play(audio)
         embed = Embed(
-            title="投票箱", description=f"`[1st]:`{names[0]}\n`[2nd]:`{names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
+            title="投票箱", description=f"1️⃣ {names[0]}\n2️⃣ {names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
         poll = await message.channel.send(f"{vc_role.mention}\nmake some noise for the battle!\ncome on!!", embed=embed)
         await poll.add_reaction("1⃣")
         await poll.add_reaction("2⃣")
@@ -606,16 +606,15 @@ async def on_message(message):
         scheduled_events = message.guild.scheduled_events
         await chat.send(f"{vc_role.mention}\nチャット欄はこちら\nchat is here")
         try:
-            await stage_channel.create_instance(topic="battle stadium", send_notification=True)
             await scheduled_events[0].start()
+            await stage_channel.create_instance(topic="battle stadium", send_notification=True)
         except discord.errors.HTTPException:
             pass
         try:
             await stage_channel.connect(reconnect=True)
         except discord.errors.ClientException:
             pass
-        me = message.guild.me
-        await me.edit(suppress=False)
+        await message.guild.me.edit(suppress=False)
         await pairing_channel.purge()
         for member in bs_role.members:
             await member.remove_roles(bs_role)
@@ -663,8 +662,8 @@ async def on_message(message):
         random.shuffle(playerlist)
         counter = 1
         counter2 = 0
-        dt_now = datetime.datetime.now(
-            datetime.timezone(datetime.timedelta(hours=9)))
+        JST = datetime.timezone(datetime.timedelta(hours=9))
+        dt_now = datetime.datetime.now(JST)
         date = dt_now.strftime('%m月%d日 %H:%M') + " Japan time"
         if date[3] == "0":
             date = date[:3] + date[4:]
@@ -673,7 +672,7 @@ async def on_message(message):
         embed = Embed(title="抽選結果", description=f"{date}", color=0xff9900)
         while counter2 + 2 <= len(playerlist):
             embed.add_field(
-                name=f"Match{counter}", value=f"`[1st]` {playerlist[counter2]} vs {playerlist[counter2 + 1]} `[2nd]`", inline=False)
+                name=f"Match{counter}", value=f"1️⃣ {playerlist[counter2]} vs {playerlist[counter2 + 1]} 2️⃣", inline=False)
             counter += 1
             counter2 += 2
         if len(playerlist) % 2 == 1:
@@ -685,7 +684,7 @@ async def on_message(message):
             await message.channel.send(f"----------------------------------------\n\n参加人数が奇数でした。\n{playerlist[0]}さんの対戦が2回行われます。")
             await pairing_channel.send(f"参加人数が奇数でした。\n{double_pl}さんの対戦が2回行われます。")
             embed.add_field(
-                name=f"Match{counter}", value=f"`[1st]` {playerlist[-1]} vs {playerlist[0]} `[2nd]`", inline=False)
+                name=f"Match{counter}", value=f"1️⃣ {playerlist[-1]} vs {playerlist[0]} 2️⃣", inline=False)
         await message.channel.send(embed=embed)
         embed.title = "対戦カード"
         await pairing_channel.send(vc_role.mention, embed=embed)
@@ -725,6 +724,24 @@ async def on_message(message):
         await pairing_channel.purge()
         for member in bs_role.members:
             await member.remove_roles(bs_role)
+        return
+
+    if message.content.startswith("s.bs"):
+        await message.delete(delay=1)
+        JST = datetime.timezone(datetime.timedelta(hours=9))
+        dt_now = datetime.datetime.now(JST)
+        sat = datetime.timedelta(days=6 - int(dt_now.strftime("%w")))
+        start_time = datetime.datetime(
+            dt_now.year, dt_now.month, dt_now.day, 21, 30, 0, 0, JST) + sat
+        end_time = datetime.datetime(
+            dt_now.year, dt_now.month, dt_now.day, 22, 30, 0, 0, JST) + sat
+        stage = client.get_channel(931462636019802123)  # battle stadium
+        event = await message.guild.create_scheduled_event(name="test", start_time=start_time, end_time=end_time, location=stage)
+        embed = Embed(title="battle stadium 開催のお知らせ", description="```今週もやります！\nこのイベントの趣旨は「とにかくBeatbox battleをすること」です。いつでも何回でも参加可能です。\nぜひご参加ください！\n観戦も可能です。観戦中、マイクがオンになることはありません。\n\n※エントリー受付・当日の進行はすべてbotが行います。\n※エントリー受付開始時間は、バトル開始1分前です。```", color=0x00bfff)
+        embed.add_field(name="日時 date", value=start_time.strftime('%m/%d 21:30 - 22:30 Japan time'), inline=False)
+        embed.add_field(name="場所 place", value=f'stage channel {stage.mention}', inline=False)
+        await message.channel.send(embed=embed)
+        await message.channel.send(event.url)
         return
 
 client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
