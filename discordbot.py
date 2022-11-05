@@ -16,16 +16,17 @@ print("Make Some Noise! (server): 起動完了")
 @client.event
 async def on_voice_state_update(member, before, after):
     vc_role = member.guild.get_role(935073171462307881)  # in a vc
-    if before.channel is None and bool(after.channel):
+    if all([before.channel is None, bool(after.channel)]):
         try:
             await member.add_roles(vc_role)
         except discord.errors.Forbidden:
             return
-        if after.channel.category.id != 904367314990948422:
-            try:
-                await after.channel.send(f"{member.mention}\nチャットはこちら\nchat is here", delete_after=60)
-            except AttributeError:
-                return
+        if member.id == 412082841829113877:  # tari3210
+            return
+        try:
+            await after.channel.send(f"{member.mention}\nチャットはこちら\nchat is here", delete_after=60)
+        except AttributeError:
+            return
     if bool(before.channel) and after.channel is None:
         try:
             await member.remove_roles(vc_role)
