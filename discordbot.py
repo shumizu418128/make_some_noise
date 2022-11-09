@@ -19,18 +19,18 @@ async def on_voice_state_update(member, before, after):
     if all([before.channel is None, bool(after.channel)]):
         try:
             await member.add_roles(vc_role)
-        except discord.errors.Forbidden:
+        except Exception:
             return
         if member.id == 412082841829113877:  # tari3210
             return
         try:
             await after.channel.send(f"{member.mention}\nチャットはこちら\nchat is here", delete_after=60)
-        except AttributeError:
+        except Exception:
             return
     if bool(before.channel) and after.channel is None:
         try:
             await member.remove_roles(vc_role)
-        except discord.errors.Forbidden:
+        except Exception:
             pass
 
 
