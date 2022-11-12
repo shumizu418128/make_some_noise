@@ -606,6 +606,7 @@ async def on_message(message):
         entry_channel = client.get_channel(930446820839157820)  # 参加
         scheduled_events = message.guild.scheduled_events
         await chat.send(f"{vc_role.mention}\nチャット欄はこちら\nchat is here")
+        await chat.send(f"対戦表： {pairing_channel.mention}\nエントリー： {entry_channel.mention}\nbattleタイマー： {message.channel.mention}")
         try:
             await scheduled_events[0].start()
             await stage_channel.create_instance(topic="battle stadium", send_notification=True)
