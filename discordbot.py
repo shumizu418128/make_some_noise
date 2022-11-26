@@ -478,7 +478,7 @@ async def on_message(message):
                 return
             if msg2.content.startswith("s.battle"):
                 return
-            names = msg2.content.replace('s.battle', '').split()
+            names = msg2.content.replace('s.battle', '').replace("vs", "").split()
         embed = Embed(title=f"1️⃣ {names[0]} vs {names[1]} 2️⃣",
                       description="1分・2ラウンドずつ\n1 minute, 2 rounds each\n\n▶️を押してスタート")
         before_start = await message.channel.send(embed=embed)
@@ -655,7 +655,7 @@ async def on_message(message):
         await entry_button.delete()
         await message.channel.send("参加受付を締め切りました。\nentry closed\n\n処理中... しばらくお待ちください")
         playerlist = [member.display_name.replace(
-            "`", "") for member in bs_role.members]
+            "`", "").replace(" ", "-") for member in bs_role.members]
         if len(playerlist) < 2:
             embed = Embed(
                 title="Error", description="参加者が不足しています。", color=0xff0000)
