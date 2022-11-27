@@ -478,7 +478,8 @@ async def on_message(message):
                 return
             if msg2.content.startswith("s.battle"):
                 return
-            names = msg2.content.replace('s.battle', '').replace("vs", "").split()
+            names = msg2.content.replace(
+                's.battle', '').replace("vs", "").split()
         embed = Embed(title=f"1️⃣ {names[0]} vs {names[1]} 2️⃣",
                       description="1分・2ラウンドずつ\n1 minute, 2 rounds each\n\n▶️を押してスタート")
         before_start = await message.channel.send(embed=embed)
@@ -565,7 +566,7 @@ async def on_message(message):
                 await sleep(3)
             count += 1
         audio = discord.PCMVolumeTransformer(
-            discord.FFmpegPCMAudio(f"time_{random.randint(1, 2)}.mp3"), volume=0.2)
+            discord.FFmpegPCMAudio(f"time_{random.randint(1, 2)}.mp3"), volume=0.3)
         pairing_channel = client.get_channel(930767329137143839)  # 対戦表
         await sent_message.delete()
         if random.randint(1, 20) == 1:
@@ -574,6 +575,8 @@ async def on_message(message):
             message.guild.voice_client.play(audio)
             embed = Embed(
                 title="投票箱", description=f"1️⃣ {names[0]}\n2️⃣ {names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
+            tari3210 = message.guild.get_member(412082841829113877)
+            embed.set_footer(text=f"bot開発者: {tari3210.name}#{tari3210.discriminator}", icon_url=tari3210.display_avatar.url)
             await sleep(7)
             poll = await message.channel.send(f"{vc_role.mention}\nなああああああああああああああああああああああああああああああああああああああああああああああああああ", embed=embed)
             await poll.add_reaction("1⃣")
@@ -584,13 +587,15 @@ async def on_message(message):
         message.guild.voice_client.play(audio)
         embed = Embed(
             title="投票箱", description=f"1️⃣ {names[0]}\n2️⃣ {names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
+        tari3210 = message.guild.get_member(412082841829113877)
+        embed.set_footer(text=f"bot開発者: {tari3210.name}#{tari3210.discriminator}", icon_url=tari3210.display_avatar.url)
         poll = await message.channel.send(f"{vc_role.mention}\nmake some noise for the battle!\ncome on!!", embed=embed)
         await poll.add_reaction("1⃣")
         await poll.add_reaction("2⃣")
         await poll.add_reaction("🔥")
         audio = discord.PCMVolumeTransformer(
             discord.FFmpegPCMAudio(f"msn_{random.randint(1, 3)}.mp3"), volume=0.4)
-        await sleep(5)
+        await sleep(4.5)
         message.guild.voice_client.play(audio)
         await chat.send(f"対戦表は {pairing_channel.mention} をご確認ください。")
         return
@@ -687,6 +692,9 @@ async def on_message(message):
             await pairing_channel.send(f"参加人数が奇数でした。\n{double_pl}さんの対戦が2回行われます。")
             embed.add_field(
                 name=f"Match{counter}", value=f"1️⃣ {playerlist[-1]} vs {playerlist[0]} 2️⃣", inline=False)
+        tari3210 = message.guild.get_member(412082841829113877)
+        embed.set_footer(
+            text=f"bot開発者: {tari3210.name}#{tari3210.discriminator}", icon_url=tari3210.display_avatar.url)
         await message.channel.send(embed=embed)
         embed.title = "対戦カード"
         await pairing_channel.send(vc_role.mention, embed=embed)
@@ -740,8 +748,10 @@ async def on_message(message):
         stage = client.get_channel(931462636019802123)  # battle stadium
         event = await message.guild.create_scheduled_event(name="battle stadium", start_time=start_time, end_time=end_time, location=stage)
         embed = Embed(title="battle stadium 開催のお知らせ", description="```今週もやります！\nこのイベントの趣旨は「とにかくBeatbox battleをすること」です。いつでも何回でも参加可能です。\nぜひご参加ください！\n観戦も可能です。観戦中、マイクがオンになることはありません。\n\n※エントリー受付・当日の進行はすべてbotが行います。\n※エントリー受付開始時間は、バトル開始1分前です。```", color=0x00bfff)
-        embed.add_field(name="日時 date", value=start_time.strftime('%m/%d 21:30 - 22:30 Japan time'), inline=False)
-        embed.add_field(name="場所 place", value=f'stage channel {stage.mention}', inline=False)
+        embed.add_field(name="日時 date", value=start_time.strftime(
+            '%m/%d 21:30 - 22:30 Japan time'), inline=False)
+        embed.add_field(name="場所 place",
+                        value=f'stage channel {stage.mention}', inline=False)
         await message.channel.send(embed=embed)
         await message.channel.send(event.url)
         return
