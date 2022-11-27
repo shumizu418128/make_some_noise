@@ -493,8 +493,8 @@ async def on_message(message):
         try:
             reaction, _ = await client.wait_for('reaction_add', timeout=600, check=check)
         except asyncio.TimeoutError:
-            await before_start.delete()
-            await message.channel.send("Error: timeout")
+            await before_start.clear_reactions()
+            await before_start.reply("Error: timeout")
             return
         await before_start.clear_reactions()
         if reaction.emoji == "❌":
@@ -611,7 +611,6 @@ async def on_message(message):
         entry_channel = client.get_channel(930446820839157820)  # 参加
         scheduled_events = message.guild.scheduled_events
         await chat.send(f"{vc_role.mention}\nチャット欄はこちら\nchat is here")
-        await chat.send(f"対戦表： {pairing_channel.mention}\nエントリー： {entry_channel.mention}\nbattleタイマー： {message.channel.mention}")
         try:
             await scheduled_events[0].start()
             await stage_channel.create_instance(topic="battle stadium", send_notification=True)
@@ -632,8 +631,7 @@ async def on_message(message):
             await interaction.response.defer(ephemeral=True, invisible=False)
             await interaction.user.add_roles(bs_role)
             description = interaction.user.display_name
-            if interaction.user.is_on_mobile():
-                description += "\n\n※バトルを始める際、speakerになった後、ミュート以外画面操作を一切行わないでください\nDiscordバグにより音声が一切入らなくなります"
+            description += "※バトルを始める際、speakerになった後、ミュート以外画面操作を一切行わないでください\n\nDiscordバグにより音声が一切入らなくなります"
             embed = Embed(title="受付完了 entry completed",
                           description=description)
             await interaction.followup.send(embed=embed, ephemeral=True)
@@ -652,6 +650,7 @@ async def on_message(message):
         await sleep(30)
         embed = Embed(title="あと30秒で締め切ります", color=0xffff00)
         await message.channel.send(embed=embed)
+        await chat.send(f"対戦表： {pairing_channel.mention}\nエントリー： {entry_channel.mention}\nbattleタイマー： {message.channel.mention}")
         await entry_channel.send(f"{vc_role.mention}\nボタンを押してエントリー！\npress button to entry", delete_after=30)
         await sleep(20)
         embed = Embed(title="締め切り10秒前", color=0xff0000)
@@ -699,7 +698,7 @@ async def on_message(message):
         embed.title = "対戦カード"
         await pairing_channel.send(vc_role.mention, embed=embed)
         await pairing_channel.send(f"{bs_role.mention}\n\n{bbx_mic.mention} を確認して、マイク設定を行ってからの参加をお願いします。\n\n※スマホユーザーの方へ\nspeakerになった後、ミュート以外画面操作を一切行わないでください\nDiscordバグにより音声が一切入らなくなります")
-        await chat.send(f"対戦表は {pairing_channel.mention} をご確認ください。")
+        await chat.send(f"{vc_role.mention}\nチャット欄はこちら chat is here\n\n対戦表： {pairing_channel.mention}\nbattleタイマー： {message.channel.mention}")
         return
 
     if message.content == "s.stage":
