@@ -450,7 +450,7 @@ async def on_message(message):
         stage_channel = client.get_channel(931462636019802123)  # ステージ
         vc_role = message.guild.get_role(935073171462307881)  # in a vc
         names = message.content.replace(
-            "vs", "").replace('s.battle', '').split()
+            " vs", "").replace('s.battle', '').split()
         count = 1
         if len(names) == 3:
             try:
@@ -479,7 +479,7 @@ async def on_message(message):
             if msg2.content.startswith("s.battle"):
                 return
             names = msg2.content.replace(
-                's.battle', '').replace("vs", "").split()
+                's.battle', '').replace(" vs", "").split()
         embed = Embed(title=f"1️⃣ {names[0]} vs {names[1]} 2️⃣",
                       description="1分・2ラウンドずつ\n1 minute, 2 rounds each\n\n▶️を押してスタート")
         before_start = await message.channel.send(embed=embed)
