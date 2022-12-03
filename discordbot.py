@@ -725,8 +725,9 @@ async def on_message(message):
         bs_role = message.guild.get_role(930368130906218526)  # battle stadium
         stage = client.get_channel(931462636019802123)  # ステージ
         scheduled_events = message.guild.scheduled_events
-        if len(scheduled_events) == 1 and scheduled_events[0].status == discord.ScheduledEventStatus.active:
-            await scheduled_events[0].complete()
+        for scheduled_event in scheduled_events:
+            if scheduled_event.status == discord.ScheduledEventStatus.active and scheduled_event.name == "battle stadium":
+                await scheduled_event.complete()
         try:
             instance = await stage.fetch_instance()
         except discord.errors.NotFound:
