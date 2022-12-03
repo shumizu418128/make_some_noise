@@ -4,7 +4,7 @@ import random
 from asyncio import sleep
 
 import discord
-import youtube_dl
+from yt_dlp import YoutubeDL
 from discord import Embed
 from discord.ui import Button, View
 
@@ -760,6 +760,23 @@ async def on_message(message):
                         value=f'stage channel {stage.mention}', inline=False)
         await message.channel.send(embed=embed)
         await message.channel.send(event.url)
+        return
+
+    if message.content.startswith("s.yt"):
+        url = message.content[5:]
+        # 初期設定
+        ydl_opts = {'format': 'best',
+                    'outtmpl': r"\tmp\%(title)s.mp3",
+                    'postprocessors': [{'key': 'FFmpegExtractAudio',
+                                        'preferredcodec': 'mp3',
+                                        'preferredquality': '320',
+                                    }]}
+        # ,"quiet":True,"no_warnings":True
+        ydl = YoutubeDL(ydl_opts)
+        with ydl:
+            ydl.download([url])
+            file = discord.file(r"\tmp\%(title)s.mp3")
+            await message.channel.send(file=file)
         return
 
 client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
