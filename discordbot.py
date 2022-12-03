@@ -577,7 +577,8 @@ async def on_message(message):
             embed = Embed(
                 title="投票箱", description=f"1️⃣ {names[0]}\n2️⃣ {names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
             tari3210 = message.guild.get_member(412082841829113877)
-            embed.set_footer(text=f"bot開発者: {tari3210.name}#{tari3210.discriminator}", icon_url=tari3210.display_avatar.url)
+            embed.set_footer(
+                text=f"bot開発者: {tari3210.name}#{tari3210.discriminator}", icon_url=tari3210.display_avatar.url)
             await sleep(7)
             poll = await message.channel.send(f"{vc_role.mention}\nなああああああああああああああああああああああああああああああああああああああああああああああああああ", embed=embed)
             await poll.add_reaction("1⃣")
@@ -589,7 +590,8 @@ async def on_message(message):
         embed = Embed(
             title="投票箱", description=f"1️⃣ {names[0]}\n2️⃣ {names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
         tari3210 = message.guild.get_member(412082841829113877)
-        embed.set_footer(text=f"bot開発者: {tari3210.name}#{tari3210.discriminator}", icon_url=tari3210.display_avatar.url)
+        embed.set_footer(
+            text=f"bot開発者: {tari3210.name}#{tari3210.discriminator}", icon_url=tari3210.display_avatar.url)
         poll = await message.channel.send(f"{vc_role.mention}\nmake some noise for the battle!\ncome on!!", embed=embed)
         await poll.add_reaction("1⃣")
         await poll.add_reaction("2⃣")
@@ -758,25 +760,6 @@ async def on_message(message):
                         value=f'stage channel {stage.mention}', inline=False)
         await message.channel.send(embed=embed)
         await message.channel.send(event.url)
-        return
-
-    if message.content.startswith("s.yt"):
-        url = message.content[5:]
-        # 初期設定
-        ydl_opts = {'format': 'bestaudio/best',
-                    'outtmpl':  r"\tmp\%(title)s.mp3",  # パス
-                    'postprocessors': [
-                        {'key': 'FFmpegExtractAudio',
-                        'preferredcodec': 'mp3',
-                        'preferredquality': '192'},
-                        {'key': 'FFmpegMetadata'},
-                        ],
-                    }
-        ydl = youtube_dl.YoutubeDL(ydl_opts)  # ,"quiet":True,"no_warnings":True
-        with ydl:
-            ydl.download([url])
-            file = discord.File(r"\tmp\%(title)s.mp3")
-            await message.channel.send(file=file)
         return
 
 client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
