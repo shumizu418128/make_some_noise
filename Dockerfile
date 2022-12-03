@@ -8,7 +8,7 @@ ENV TZ JST-9
 ENV TERM xterm
 RUN pip install git+https://github.com/Pycord-Development/pycord \
     pip install pynacl \
-    pip install yt-dlp
+    pip install git+https://github.com/yt-dlp/yt-dlp
 RUN /usr/local/bin/python -m pip install --upgrade pip
 RUN  apt-get update \
     && apt-get install -y ffmpeg \
