@@ -4,7 +4,6 @@ import random
 from asyncio import sleep
 
 import discord
-from yt_dlp import YoutubeDL
 from discord import Embed
 from discord.ui import Button, View
 
