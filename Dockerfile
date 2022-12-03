@@ -1,4 +1,4 @@
-FROM python:3.11
+FROM python:3.9
 USER root
 
 ENV LANG ja_JP.UTF-8
@@ -7,7 +7,8 @@ ENV LC_ALL ja_JP.UTF-8
 ENV TZ JST-9
 ENV TERM xterm
 RUN pip install git+https://github.com/Pycord-Development/pycord \
-    pip install pynacl
+    pip install pynacl \
+    pip install youtube_dl
 RUN /usr/local/bin/python -m pip install --upgrade pip
 RUN  apt-get update \
     && apt-get install -y ffmpeg \
