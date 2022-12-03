@@ -764,7 +764,7 @@ async def on_message(message):
         url = message.content[5:]
         # 初期設定
         ydl_opts = {'format': 'bestaudio/best',
-                    'outtmpl':  r"D:\makesomenoise-local\%(title)s.mp3",  # パス
+                    'outtmpl':  r"\tmp\%(title)s.mp3",  # パス
                     'postprocessors': [
                         {'key': 'FFmpegExtractAudio',
                         'preferredcodec': 'mp3',
@@ -775,6 +775,8 @@ async def on_message(message):
         ydl = youtube_dl.YoutubeDL(ydl_opts)  # ,"quiet":True,"no_warnings":True
         with ydl:
             ydl.download([url])
+            file = discord.File(r"\tmp\%(title)s.mp3")
+            await message.channel.send(file=file)
         return
 
 client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
