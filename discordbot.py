@@ -609,16 +609,16 @@ async def on_message(message):
         bbx_mic = client.get_channel(931781522808262756)  # bbxマイク設定
         chat = client.get_channel(930839018671837184)  # バトスタチャット
         pairing_channel = client.get_channel(930767329137143839)  # 対戦表
-        bs_role = message.guild.get_role(930368130906218526)  # battle stadium
+        bs_role = message.guild.get_role(930368130906218526)  # BATTLE STADIUM
         entry_channel = client.get_channel(930446820839157820)  # 参加
         scheduled_events = message.guild.scheduled_events
         await chat.send(f"{vc_role.mention}\nチャット欄はこちら\nchat is here")
         try:
             for scheduled_event in scheduled_events:
-                if scheduled_event.name == "battle stadium":
+                if scheduled_event.name == "BATTLE STADIUM":
                     await scheduled_event.start()
                     break
-            await stage_channel.create_instance(topic="battle stadium", send_notification=True)
+            await stage_channel.create_instance(topic="BATTLE STADIUM", send_notification=True)
         except discord.errors.HTTPException:
             pass
         try:
@@ -710,7 +710,7 @@ async def on_message(message):
         await message.delete(delay=1)
         stage_channel = client.get_channel(931462636019802123)  # ステージ
         try:
-            await stage_channel.create_instance(topic="battle stadium")
+            await stage_channel.create_instance(topic="BATTLE STADIUM")
         except discord.errors.HTTPException:
             pass
         try:
@@ -724,11 +724,11 @@ async def on_message(message):
     if message.content == "s.end":
         await message.delete(delay=1)
         pairing_channel = client.get_channel(930767329137143839)  # 対戦表
-        bs_role = message.guild.get_role(930368130906218526)  # battle stadium
+        bs_role = message.guild.get_role(930368130906218526)  # BATTLE STADIUM
         stage = client.get_channel(931462636019802123)  # ステージ
         scheduled_events = message.guild.scheduled_events
         for scheduled_event in scheduled_events:
-            if scheduled_event.status == discord.ScheduledEventStatus.active and scheduled_event.name == "battle stadium":
+            if scheduled_event.status == discord.ScheduledEventStatus.active and scheduled_event.name == "BATTLE STADIUM":
                 await scheduled_event.complete()
         try:
             instance = await stage.fetch_instance()
@@ -750,9 +750,9 @@ async def on_message(message):
             dt_now.year, dt_now.month, dt_now.day, 21, 30, 0, 0, JST) + sat
         end_time = datetime.datetime(
             dt_now.year, dt_now.month, dt_now.day, 22, 30, 0, 0, JST) + sat
-        stage = client.get_channel(931462636019802123)  # battle stadium
-        event = await message.guild.create_scheduled_event(name="battle stadium", start_time=start_time, end_time=end_time, location=stage)
-        embed = Embed(title="battle stadium 開催のお知らせ", description="```今週もやります！\nこのイベントの趣旨は「とにかくBeatbox battleをすること」です。いつでも何回でも参加可能です。\nぜひご参加ください！\n観戦も可能です。観戦中、マイクがオンになることはありません。\n\n※エントリー受付・当日の進行はすべてbotが行います。\n※エントリー受付開始時間は、バトル開始1分前です。```", color=0x00bfff)
+        stage = client.get_channel(931462636019802123)  # BATTLE STADIUM
+        event = await message.guild.create_scheduled_event(name="BATTLE STADIUM", start_time=start_time, end_time=end_time, location=stage)
+        embed = Embed(title="BATTLE STADIUM 開催のお知らせ", description="```今週もやります！\nこのイベントの趣旨は「とにかくBeatboxバトルをすること」です。いつでも何回でも参加可能です。\nぜひご参加ください！\n観戦も可能です。観戦中、マイクがオンになることはありません。\n\n※エントリー受付・当日の進行はすべてbotが行います。\n※エントリー受付開始時間は、バトル開始1分前です。```", color=0x00bfff)
         embed.add_field(name="日時 date", value=start_time.strftime(
             '%m/%d 21:30 - 22:30 Japan time'), inline=False)
         embed.add_field(name="場所 place",
