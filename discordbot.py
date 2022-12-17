@@ -20,7 +20,7 @@ async def on_voice_state_update(member, before, after):
         try:
             await member.add_roles(vc_role)
         except Exception:
-            return
+            pass
         if member.id == 412082841829113877:  # tari3210
             return
         try:
