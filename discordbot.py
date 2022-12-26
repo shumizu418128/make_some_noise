@@ -43,7 +43,7 @@ async def on_message(message):
         if message.channel.id in [930447365536612353, 930767329137143839]:
             await message.delete(delay=1)
             return
-        if "gbb" in message.content.lower() and any["?" in message.content, "？" in message.content]:
+        if "gbb" in message.content.lower() and any(["?" in message.content, "？" in message.content]):
             embed = Embed(title="GBB 2023 TOKYO の最新情報はこちら", color=0xF0632F)
             embed.add_field(name="GBBINFO-JPN",
                             value="https://gbbinfo-jpn.jimdofree.com/")
