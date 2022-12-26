@@ -10,7 +10,7 @@ from discord.ui import Button, View
 intents = discord.Intents.all()  # デフォルトのIntentsオブジェクトを生成
 intents.typing = False  # typingを受け取らないように
 client = discord.Client(intents=intents)
-print("Make Some Noise! (server): 起動完了")
+print(f"Make Some Noise! (server): {discord.__version__}")
 
 
 @client.event
