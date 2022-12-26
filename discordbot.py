@@ -40,9 +40,17 @@ async def on_message(message):
         if message.author.bot:
             return
         # バトスタbot, バトスタ対戦表
-        elif message.channel.id in [930447365536612353, 930767329137143839]:
+        if message.channel.id in [930447365536612353, 930767329137143839]:
             await message.delete(delay=1)
-        elif message.channel.type == discord.ChannelType.text:
+            return
+        if "gbb" in message.content.lower() and any["?" in message.content, "？" in message.content]:
+            embed = Embed(title="GBB 2023 TOKYO の最新情報はこちら", color=0xF0632F)
+            embed.add_field(name="GBBINFO-JPN",
+                            value="https://gbbinfo-jpn.jimdofree.com/")
+            embed.add_field(name="swissbeatbox 公式インスタグラム",
+                            value="https://www.instagram.com/swissbeatbox/")
+            await message.reply(embed=embed)
+        if message.channel.type == discord.ChannelType.text:
             emoji = random.choice(message.guild.emojis)
             await message.add_reaction(emoji)
             await sleep(3600)
@@ -50,6 +58,7 @@ async def on_message(message):
                 await message.remove_reaction(emoji, message.guild.me)
             except Exception:
                 pass
+            return
 
     if message.channel.id == 930839018671837184:  # バトスタチャット
         return
