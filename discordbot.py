@@ -452,6 +452,8 @@ async def on_message(message):
         chat = client.get_channel(930839018671837184)  # バトスタチャット
         stage_channel = client.get_channel(931462636019802123)  # ステージ
         vc_role = message.guild.get_role(935073171462307881)  # in a vc
+        embed_chat_info = Embed(title="チャット欄はこちら chat is here", description=f"対戦表： {pairing_channel.mention}\nエントリー： {entry_channel.mention}\nbattleタイマー： {message.channel.mention}", color=0x00bfff)
+        await chat.send(embed=embed_chat_info)
         names = message.content.replace(
             " vs", "").replace('s.battle', '').split()
         count = 1
@@ -572,28 +574,27 @@ async def on_message(message):
             discord.FFmpegPCMAudio(f"time_{random.randint(1, 2)}.mp3"), volume=0.3)
         pairing_channel = client.get_channel(930767329137143839)  # 対戦表
         await sent_message.delete()
+        tari3210 = message.guild.get_member(412082841829113877)
         if random.randint(1, 20) == 1:
             audio = discord.PCMVolumeTransformer(
                 discord.FFmpegPCMAudio("time_fuga.mp3"), volume=0.4)
             message.guild.voice_client.play(audio)
             embed = Embed(
                 title="投票箱", description=f"1️⃣ {names[0]}\n2️⃣ {names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
-            tari3210 = message.guild.get_member(412082841829113877)
             embed.set_footer(
-                text=f"bot開発者: {tari3210.name}#{tari3210.discriminator}", icon_url=tari3210.display_avatar.url)
+                text=f"bot開発者: {str(tari3210)}", icon_url=tari3210.display_avatar.url)
             await sleep(7)
-            poll = await message.channel.send(f"{vc_role.mention}\nなああああああああああああああああああああああああああああああああああああああああああああああああああ", embed=embed)
+            poll = await message.channel.send(f"{vc_role.mention}\nなあああああああああああああああああああああああああああああああああああああああああああああああああああああああああ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！", embed=embed)
             await poll.add_reaction("1⃣")
             await poll.add_reaction("2⃣")
             await poll.add_reaction("🦁")
-            await chat.send(f"対戦表は {pairing_channel.mention} をご確認ください。")
+            await chat.send(embed=embed_chat_info)
             return
         message.guild.voice_client.play(audio)
         embed = Embed(
             title="投票箱", description=f"1️⃣ {names[0]}\n2️⃣ {names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
-        tari3210 = message.guild.get_member(412082841829113877)
         embed.set_footer(
-            text=f"bot開発者: {tari3210.name}#{tari3210.discriminator}", icon_url=tari3210.display_avatar.url)
+            text=f"bot開発者: {str(tari3210)}", icon_url=tari3210.display_avatar.url)
         poll = await message.channel.send(f"{vc_role.mention}\nmake some noise for the battle!\ncome on!!", embed=embed)
         await poll.add_reaction("1⃣")
         await poll.add_reaction("2⃣")
@@ -602,7 +603,7 @@ async def on_message(message):
             discord.FFmpegPCMAudio(f"msn_{random.randint(1, 3)}.mp3"), volume=0.4)
         await sleep(4.5)
         message.guild.voice_client.play(audio)
-        await chat.send(f"対戦表は {pairing_channel.mention} をご確認ください。")
+        await chat.send(embed=embed_chat_info)
         return
 
     if message.content == "s.start":
@@ -615,7 +616,8 @@ async def on_message(message):
         bs_role = message.guild.get_role(930368130906218526)  # BATTLE STADIUM
         entry_channel = client.get_channel(930446820839157820)  # 参加
         scheduled_events = message.guild.scheduled_events
-        await chat.send(f"{vc_role.mention}\nチャット欄はこちら\nchat is here")
+        embed_chat_info = Embed(title="チャット欄はこちら chat is here", description=f"対戦表： {pairing_channel.mention}\nエントリー： {entry_channel.mention}\nbattleタイマー： {message.channel.mention}", color=0x00bfff)
+        await chat.send(vc_role.mention, embed=embed_chat_info)
         try:
             for scheduled_event in scheduled_events:
                 if scheduled_event.name == "BATTLE STADIUM":
@@ -638,19 +640,18 @@ async def on_message(message):
         async def button_callback(interaction):
             await interaction.response.defer(ephemeral=True, invisible=False)
             await interaction.user.add_roles(bs_role)
-            description = interaction.user.display_name
-            description += "※バトルを始める際、speakerになった後、ミュート以外画面操作を一切行わないでください\n\nDiscordバグにより音声が一切入らなくなります"
             embed = Embed(title="受付完了 entry completed",
-                          description=description)
-            await interaction.followup.send(embed=embed, ephemeral=True)
+                          description="※バトルを始める際、speakerになった後、ミュート以外画面操作を一切行わないでください\n\nDiscordバグにより音声が一切入らなくなります")
             await message.channel.send(f"エントリー完了：{interaction.user.display_name}", delete_after=3)
+            await interaction.followup.send(embed=embed, ephemeral=True)
+
         button.callback = button_callback
         view = View()
         view.add_item(button)
         embed = Embed(
             title="Entry", description="下のボタンを押してエントリー！\npress button to entry")
         entry_button = await entry_channel.send(vc_role.mention, embed=embed, view=view)
-        await message.channel.send("処理完了")
+        entry_button2 = await chat.send("このボタンからもエントリーできます", embed=embed, view=view)
         embed = Embed(
             title="受付開始", description=f"ただいまより参加受付を開始します。\n{entry_channel.mention}にてエントリーを行ってください。\nentry now accepting at {entry_channel.mention}", color=0x00bfff)
         await message.channel.send(embed=embed)
@@ -658,13 +659,14 @@ async def on_message(message):
         await sleep(30)
         embed = Embed(title="あと30秒で締め切ります", color=0xffff00)
         await message.channel.send(embed=embed)
-        await chat.send(f"対戦表： {pairing_channel.mention}\nエントリー： {entry_channel.mention}\nbattleタイマー： {message.channel.mention}")
+        await chat.send(embed=embed_chat_info)
         await entry_channel.send(f"{vc_role.mention}\nボタンを押してエントリー！\npress button to entry", delete_after=30)
         await sleep(20)
         embed = Embed(title="締め切り10秒前", color=0xff0000)
         await message.channel.send(embed=embed)
         await sleep(10)
         await entry_button.delete()
+        await entry_button2.delete()
         await message.channel.send("参加受付を締め切りました。\nentry closed\n\n処理中... しばらくお待ちください")
         playerlist = [member.display_name.replace(
             "`", "").replace(" ", "-") for member in bs_role.members]
@@ -676,14 +678,7 @@ async def on_message(message):
         random.shuffle(playerlist)
         counter = 1
         counter2 = 0
-        JST = datetime.timezone(datetime.timedelta(hours=9))
-        dt_now = datetime.datetime.now(JST)
-        date = dt_now.strftime('%m月%d日 %H:%M') + " Japan time"
-        if date[3] == "0":
-            date = date[:3] + date[4:]
-        if date[0] == "0":
-            date = date[1:]
-        embed = Embed(title="抽選結果", description=f"{date}", color=0xff9900)
+        embed = Embed(title="抽選結果", color=0xff9900)
         while counter2 + 2 <= len(playerlist):
             embed.add_field(
                 name=f"Match{counter}", value=f"1️⃣ {playerlist[counter2]} vs {playerlist[counter2 + 1]} 2️⃣", inline=False)
@@ -697,16 +692,19 @@ async def on_message(message):
                 double_pl = double_pl.mention
             await message.channel.send(f"----------------------------------------\n\n参加人数が奇数でした。\n{playerlist[0]}さんの対戦が2回行われます。")
             await pairing_channel.send(f"参加人数が奇数でした。\n{double_pl}さんの対戦が2回行われます。")
+            await chat.send(f"参加人数が奇数でした。\nあと1人参加できます。ご希望の方はこのチャットにご記入ください。")
             embed.add_field(
                 name=f"Match{counter}", value=f"1️⃣ {playerlist[-1]} vs {playerlist[0]} 2️⃣", inline=False)
         tari3210 = message.guild.get_member(412082841829113877)
         embed.set_footer(
-            text=f"bot開発者: {tari3210.name}#{tari3210.discriminator}", icon_url=tari3210.display_avatar.url)
+            text=f"bot開発者: {str(tari3210)}", icon_url=tari3210.display_avatar.url)
+        JST = datetime.timezone(datetime.timedelta(hours=9))
+        embed.timestamp = datetime.datetime.now(JST)
         await message.channel.send(embed=embed)
         embed.title = "対戦カード"
         await pairing_channel.send(vc_role.mention, embed=embed)
         await pairing_channel.send(f"{bs_role.mention}\n\n{bbx_mic.mention} を確認して、マイク設定を行ってからの参加をお願いします。\n\n※スマホユーザーの方へ\nspeakerになった後、ミュート以外画面操作を一切行わないでください\nDiscordバグにより音声が一切入らなくなります")
-        await chat.send(f"{vc_role.mention}\nチャット欄はこちら chat is here\n\n対戦表： {pairing_channel.mention}\nbattleタイマー： {message.channel.mention}")
+        await chat.send(embeds=[embed, embed_chat_info])
         return
 
     if message.content == "s.stage":
