@@ -452,6 +452,8 @@ async def on_message(message):
         chat = client.get_channel(930839018671837184)  # バトスタチャット
         stage_channel = client.get_channel(931462636019802123)  # ステージ
         vc_role = message.guild.get_role(935073171462307881)  # in a vc
+        pairing_channel = client.get_channel(930767329137143839)  # 対戦表
+        entry_channel = client.get_channel(930446820839157820)  # 参加
         embed_chat_info = Embed(title="チャット欄はこちら chat is here", description=f"対戦表： {pairing_channel.mention}\nエントリー： {entry_channel.mention}\nbattleタイマー： {message.channel.mention}", color=0x00bfff)
         await chat.send(embed=embed_chat_info)
         names = message.content.replace(
@@ -692,7 +694,7 @@ async def on_message(message):
                 double_pl = double_pl.mention
             await message.channel.send(f"----------------------------------------\n\n参加人数が奇数でした。\n{playerlist[0]}さんの対戦が2回行われます。")
             await pairing_channel.send(f"参加人数が奇数でした。\n{double_pl}さんの対戦が2回行われます。")
-            await chat.send(f"参加人数が奇数でした。\nあと1人参加できます。ご希望の方はこのチャットにご記入ください。")
+            await chat.send("参加人数が奇数でした。\nあと1人参加できます。ご希望の方はこのチャットにご記入ください。")
             embed.add_field(
                 name=f"Match{counter}", value=f"1️⃣ {playerlist[-1]} vs {playerlist[0]} 2️⃣", inline=False)
         tari3210 = message.guild.get_member(412082841829113877)
