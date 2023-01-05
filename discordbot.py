@@ -448,6 +448,16 @@ async def on_message(message):
         await sent_message.delete(delay=5)
         return
 
+    if "judge" in message.content:
+        embed = Embed(title="GBB 2023 TOKYO の最新情報はこちら", color=0xF0632F)
+        embed.add_field(name="GBBINFO-JPN",
+                        value="https://gbbinfo-jpn.jimdofree.com/")
+        embed.add_field(name="swissbeatbox 公式インスタグラム",
+                        value="https://www.instagram.com/swissbeatbox/")
+        file = discord.File("fotor_2023-1-5_23_8_44.png")
+        await message.channel.send(embed=embed, file=file)
+        return
+
     if message.content.startswith("s.battle"):
         chat = client.get_channel(930839018671837184)  # バトスタチャット
         stage_channel = client.get_channel(931462636019802123)  # ステージ
