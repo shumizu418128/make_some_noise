@@ -44,5 +44,6 @@ COPY round4switch_3.mp3 round4switch_3.mp3
 COPY time_1.mp3 time_1.mp3
 COPY time_2.mp3 time_2.mp3
 COPY time_fuga.mp3 time_fuga.mp3
+COPY fotor_2023-1-5_23_8_44.png fotor_2023-1-5_23_8_44.png
 CMD ["python", "-u", "discordbot.py"]
 ARG EnvironmentVariable
