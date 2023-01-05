@@ -454,7 +454,8 @@ async def on_message(message):
         vc_role = message.guild.get_role(935073171462307881)  # in a vc
         pairing_channel = client.get_channel(930767329137143839)  # 対戦表
         entry_channel = client.get_channel(930446820839157820)  # 参加
-        embed_chat_info = Embed(title="チャット欄はこちら chat is here", description=f"対戦表： {pairing_channel.mention}\nエントリー： {entry_channel.mention}\nbattleタイマー： {message.channel.mention}", color=0x00bfff)
+        embed_chat_info = Embed(title="チャット欄はこちら chat is here",
+                                description=f"対戦表： {pairing_channel.mention}\nエントリー： {entry_channel.mention}\nbattleタイマー： {message.channel.mention}", color=0x00bfff)
         await chat.send(embed=embed_chat_info)
         names = message.content.replace(
             " vs", "").replace('s.battle', '').split()
@@ -618,7 +619,8 @@ async def on_message(message):
         bs_role = message.guild.get_role(930368130906218526)  # BATTLE STADIUM
         entry_channel = client.get_channel(930446820839157820)  # 参加
         scheduled_events = message.guild.scheduled_events
-        embed_chat_info = Embed(title="チャット欄はこちら chat is here", description=f"対戦表： {pairing_channel.mention}\nエントリー： {entry_channel.mention}\nbattleタイマー： {message.channel.mention}", color=0x00bfff)
+        embed_chat_info = Embed(title="チャット欄はこちら chat is here",
+                                description=f"対戦表： {pairing_channel.mention}\nエントリー： {entry_channel.mention}\nbattleタイマー： {message.channel.mention}", color=0x00bfff)
         await chat.send(vc_role.mention, embed=embed_chat_info)
         try:
             for scheduled_event in scheduled_events:
@@ -754,7 +756,7 @@ async def on_message(message):
         end_time = datetime.datetime(
             dt_now.year, dt_now.month, dt_now.day, 22, 30, 0, 0, JST) + sat
         stage = client.get_channel(931462636019802123)  # BATTLE STADIUM
-        event = await message.guild.create_scheduled_event(name="BATTLE STADIUM", start_time=start_time, end_time=end_time, location=stage)
+        event = await message.guild.create_scheduled_event(name="BATTLE STADIUM", description="今週もやります！\nこのイベントの趣旨は「とにかくBeatboxバトルをすること」です。いつでも何回でも参加可能です。\nぜひご参加ください！\n観戦も可能です。観戦中、マイクがオンになることはありません。\n\n※エントリー受付・当日の進行はすべてbotが行います。\n※エントリー受付開始時間は、バトル開始1分前です。", start_time=start_time, end_time=end_time, location=stage)
         embed = Embed(title="BATTLE STADIUM 開催のお知らせ", description="```今週もやります！\nこのイベントの趣旨は「とにかくBeatboxバトルをすること」です。いつでも何回でも参加可能です。\nぜひご参加ください！\n観戦も可能です。観戦中、マイクがオンになることはありません。\n\n※エントリー受付・当日の進行はすべてbotが行います。\n※エントリー受付開始時間は、バトル開始1分前です。```", color=0x00bfff)
         embed.add_field(name="日時 date", value=start_time.strftime(
             '%m/%d 21:30 - 22:30 Japan time'), inline=False)
