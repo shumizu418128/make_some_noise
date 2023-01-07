@@ -44,7 +44,7 @@ async def on_message(message):
             await message.delete(delay=1)
             return
         if "m!judge" in message.content:
-            embed = Embed(title="GBB 2023 TOKYO の最新情報はこちら", color=0xF0632F)
+            embed = Embed(title="GBBの最新情報はこちら", color=0xF0632F)
             embed.add_field(name="GBBINFO-JPN",
                             value="https://gbbinfo-jpn.jimdofree.com/")
             embed.add_field(name="swissbeatbox 公式インスタグラム",
@@ -52,7 +52,7 @@ async def on_message(message):
             file = discord.File("fotor_2023-1-5_23_8_44.png")
             await message.channel.send(embed=embed, file=file)
         elif "gbb" in message.content.lower() and any(["?" in message.content, "？" in message.content]):
-            embed = Embed(title="GBB 2023 TOKYO の最新情報はこちら", color=0xF0632F)
+            embed = Embed(title="GBBの最新情報はこちら", color=0xF0632F)
             embed.add_field(name="GBBINFO-JPN",
                             value="https://gbbinfo-jpn.jimdofree.com/")
             embed.add_field(name="swissbeatbox 公式インスタグラム",
