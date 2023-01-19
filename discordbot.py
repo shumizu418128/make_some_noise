@@ -43,20 +43,15 @@ async def on_message(message):
         if message.channel.id in [930447365536612353, 930767329137143839]:
             await message.delete(delay=1)
             return
+        embed = Embed(title="GBBの最新情報はこちら", color=0xF0632F)
+        embed.add_field(name="GBBINFO-JPN 日本非公式情報サイト",
+                        value="https://gbbinfo-jpn.jimdofree.com/")
+        embed.add_field(name="swissbeatbox 公式instagram",
+                        value="https://www.instagram.com/swissbeatbox/")
         if "m!judge" in message.content:
-            embed = Embed(title="GBBの最新情報はこちら", color=0xF0632F)
-            embed.add_field(name="GBBINFO-JPN",
-                            value="https://gbbinfo-jpn.jimdofree.com/")
-            embed.add_field(name="swissbeatbox 公式インスタグラム",
-                            value="https://www.instagram.com/swissbeatbox/")
             file = discord.File("fotor_2023-1-5_23_8_44.png")
             await message.channel.send(embed=embed, file=file)
         elif "gbb" in message.content.lower() and any(["?" in message.content, "？" in message.content]):
-            embed = Embed(title="GBBの最新情報はこちら", color=0xF0632F)
-            embed.add_field(name="GBBINFO-JPN",
-                            value="https://gbbinfo-jpn.jimdofree.com/")
-            embed.add_field(name="swissbeatbox 公式インスタグラム",
-                            value="https://www.instagram.com/swissbeatbox/")
             await message.reply(embed=embed)
         if message.channel.type == discord.ChannelType.text:
             emoji = random.choice(message.guild.emojis)
