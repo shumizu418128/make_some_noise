@@ -53,7 +53,7 @@ async def on_message(message):
             await message.channel.send(embed=embed, file=file)
         elif "gbb" in message.content.lower() and any(["?" in message.content, "？" in message.content]):
             await message.reply(embed=embed)
-        elif "gbb" in message.content.lower() and random.randint(1, 5) == 1:
+        elif "gbb" in message.content.lower():
             await sleep(1)
             await message.channel.send(embed=embed)
         if message.channel.type == discord.ChannelType.text:
