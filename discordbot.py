@@ -37,7 +37,7 @@ async def on_voice_state_update(member, before, after):
 @client.event
 async def on_message(message):
     if not message.content.startswith("s."):
-        if message.author.bot:
+        if message.author.bot or "https://gbbinfo-jpn.jimdofree.com/" in message.content:
             return
         # バトスタbot, バトスタ対戦表
         if message.channel.id in [930447365536612353, 930767329137143839]:
@@ -770,6 +770,22 @@ async def on_message(message):
                         value=f'stage channel {stage.mention}', inline=False)
         await message.channel.send(embed=embed)
         await message.channel.send(event.url)
+        return
+
+    if message.content.startswith("s.gbb"):
+        await message.delete(delay=1)
+        JST = datetime.timezone(datetime.timedelta(hours=9))
+        dt_now = datetime.datetime.now(JST)
+        for i in range(3):
+            days = 5 - int(dt_now.strftime("%w")) + i
+            if days < 0:
+                days += 7
+            week = datetime.timedelta(days=days)
+            start_time = datetime.datetime(
+                dt_now.year, dt_now.month, dt_now.day, 22, 0, 0, 0, JST) + week
+            channel = client.get_channel(886099822770290748)  # リアタイ部屋
+            event = await message.guild.create_scheduled_event(name="GBB23 Wildcard鑑賞会", start_time=start_time, location=channel)
+            await message.channel.send(event.url)
         return
 
 client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
