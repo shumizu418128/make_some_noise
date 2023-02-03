@@ -784,7 +784,7 @@ async def on_message(message):
             start_time = datetime.datetime(
                 dt_now.year, dt_now.month, dt_now.day, 22, 0, 0, 0, JST) + week
             channel = client.get_channel(886099822770290748)  # リアタイ部屋
-            event = await message.guild.create_scheduled_event(name="GBB23 Wildcard鑑賞会", start_time=start_time, location=channel)
+            event = await message.guild.create_scheduled_event(name="GBB23 Wildcard鑑賞会", description="毎週金・土・日\n22:00 - 24:00\n聴き専でもOK! 一緒に「金の卵」を見つけましょう！", start_time=start_time, location=channel)
             await message.channel.send(event.url)
         return
 
