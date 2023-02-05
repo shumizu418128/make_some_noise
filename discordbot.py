@@ -40,13 +40,12 @@ async def on_member_join(member):
     events = channel.guild.scheduled_events
     if bool(events) is False:
         return
-    min = [None, events[0].start_time]
+    closest_event = events[0]
     for event in events:
-        if event.start_time < min[1]:
-            min = [event, event.start_time]
-    event = min[0]
+        if event.start_time < closest_event.start_time:
+            closest_event = event
     await sleep(1)
-    await channel.send(event.url)
+    await channel.send(closest_event.url)
 
 
 @client.event
