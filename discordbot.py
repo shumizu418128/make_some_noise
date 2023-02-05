@@ -15,23 +15,23 @@ print(f"Make Some Noise! (server): {discord.__version__}")
 
 @client.event
 async def on_voice_state_update(member, before, after):
-    vc_role = member.guild.get_role(935073171462307881)  # in a vc
-    if all([before.channel is None, bool(after.channel)]):
-        try:
-            await member.add_roles(vc_role)
-        except Exception:
-            pass
-        if member.id == 412082841829113877:  # tari3210
-            return
+    if member.id == 412082841829113877:  # tari3210
+        return
+    try:
+        vc_role = member.guild.get_role(935073171462307881)  # in a vc
+    except Exception:
+        return
+    if before.channel is None and bool(after.channel):
         try:
             await after.channel.send(f"{member.mention}\nチャットはこちら\nchat is here", delete_after=60)
+            await member.add_roles(vc_role)
         except Exception:
             return
     if bool(before.channel) and after.channel is None:
         try:
             await member.remove_roles(vc_role)
         except Exception:
-            pass
+            return
 
 
 @client.event
