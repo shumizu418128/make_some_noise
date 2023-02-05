@@ -35,6 +35,21 @@ async def on_voice_state_update(member, before, after):
 
 
 @client.event
+async def on_member_join(member):
+    channel = client.get_channel(864475338340171791)  # 全体チャット
+    events = channel.guild.scheduled_events
+    min = [None, datetime.datetime.max]
+    for event in events:
+        if event.start_time < min[1]:
+            min = [event, event.start_time]
+    event = min[0]
+    if event is None:
+        return
+    await sleep(1)
+    await channel.send(event.url)
+
+
+@client.event
 async def on_message(message):
     if not message.content.startswith("s."):
         if message.author.bot or "https://gbbinfo-jpn.jimdofree.com/" in message.content:
