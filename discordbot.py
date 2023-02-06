@@ -42,7 +42,7 @@ async def on_member_join(member):
         return
     closest_event = events[0]
     for event in events:
-        if event.status != discord.ScheduledEventStatus.scheduled:
+        if event.status in [discord.ScheduledEventStatus.completed, discord.ScheduledEventStatus.canceled]:
             continue
         if event.start_time < closest_event.start_time:
             closest_event = event
