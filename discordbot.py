@@ -42,12 +42,11 @@ async def on_member_join(member):
         return
     closest_event = events[0]
     for event in events:
-        if event.status in [discord.ScheduledEventStatus.completed, discord.ScheduledEventStatus.canceled]:
-            continue
-        if event.start_time < closest_event.start_time:
+        if event.status in [discord.ScheduledEventStatus.scheduled, discord.ScheduledEventStatus.active] and event.start_time < closest_event.start_time:
             closest_event = event
-    await sleep(1)
-    await channel.send(closest_event.url)
+    if closest_event.status in [discord.ScheduledEventStatus.scheduled, discord.ScheduledEventStatus.active]:
+        await sleep(1)
+        await channel.send(closest_event.url)
 
 
 @client.event
