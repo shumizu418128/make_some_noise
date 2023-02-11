@@ -40,7 +40,7 @@ async def on_member_join(member):
     events = channel.guild.scheduled_events
     if bool(events) is False:
         return
-    closest_event = events[0]
+    closest_event = events[-1]
     for event in events:
         if event.status in [discord.ScheduledEventStatus.scheduled, discord.ScheduledEventStatus.active] and event.start_time < closest_event.start_time:
             closest_event = event
