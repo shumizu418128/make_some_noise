@@ -22,16 +22,11 @@ async def on_voice_state_update(member, before, after):
     except Exception:
         return
     if before.channel is None and bool(after.channel):
-        try:
-            await after.channel.send(f"{member.mention}\nチャットはこちら\nchat is here", delete_after=60)
-            await member.add_roles(vc_role)
-        except Exception:
-            return
+        await after.channel.send(f"{member.mention}\nチャットはこちら\nchat is here", delete_after=60)
+        await member.add_roles(vc_role)
     if bool(before.channel) and after.channel is None:
-        try:
-            await member.remove_roles(vc_role)
-        except Exception:
-            return
+        await member.remove_roles(vc_role)
+
 
 
 @client.event
