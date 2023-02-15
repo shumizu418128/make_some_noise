@@ -28,7 +28,6 @@ async def on_voice_state_update(member, before, after):
         await member.remove_roles(vc_role)
 
 
-
 @client.event
 async def on_member_join(member):
     channel = client.get_channel(864475338340171791)  # 全体チャット
