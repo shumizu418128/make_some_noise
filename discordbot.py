@@ -22,16 +22,10 @@ async def on_voice_state_update(member, before, after):
     except Exception:
         return
     if before.channel is None and bool(after.channel):
-        try:
-            await after.channel.send(f"{member.mention}\nチャットはこちら\nchat is here", delete_after=60)
-            await member.add_roles(vc_role)
-        except Exception:
-            return
+        await after.channel.send(f"{member.mention}\nチャットはこちら\nchat is here", delete_after=60)
+        await member.add_roles(vc_role)
     if bool(before.channel) and after.channel is None:
-        try:
-            await member.remove_roles(vc_role)
-        except Exception:
-            return
+        await member.remove_roles(vc_role)
 
 
 @client.event
@@ -804,7 +798,7 @@ async def on_message(message):
             week = datetime.timedelta(days=days)
             start_time = datetime.datetime(
                 dt_now.year, dt_now.month, dt_now.day, 22, 0, 0, 0, JST) + week
-            event = await message.guild.create_scheduled_event(name="GBB23 Wildcard鑑賞会", description="毎週金・土・日\n22:00 - 24:00\n聴き専でもOK! 一緒に「金の卵」を見つけましょう！", start_time=start_time, location=channel)
+            event = await message.guild.create_scheduled_event(name="GBB23 Wildcard鑑賞会", description="毎週金・土・日\n22:00 - 25:00\n聴き専でもOK! 一緒に「金の卵」を見つけましょう！", start_time=start_time, location=channel)
             await message.channel.send(event.url)
         return
 
