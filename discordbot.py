@@ -58,6 +58,11 @@ async def on_message(message):
         if message.channel.id in [930447365536612353, 930767329137143839]:
             await message.delete(delay=1)
             return
+        if message.content == "💜❤💙💚" or "brez" in message.content.lower():
+            await message.add_reaction("💜")
+            await message.add_reaction("❤")
+            await message.add_reaction("💙")
+            await message.add_reaction("💚")
         embed = Embed(title="GBBの最新情報はこちら", color=0xF0632F)
         embed.add_field(name="GBBINFO-JPN 日本非公式情報サイト",
                         value="https://gbbinfo-jpn.jimdofree.com/")
