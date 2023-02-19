@@ -52,7 +52,7 @@ async def on_message(message):
         if message.channel.id in [930447365536612353, 930767329137143839]:
             await message.delete(delay=1)
             return
-        if any([message.content == "💜❤💙💚", "brez" in message.content.lower(), "ぶれず" in message.content]):
+        if any(["💜❤💙💚" in message.content, "brez" in message.content.lower(), "ぶれず" in message.content, "ブレズ" in message.content]):
             await message.add_reaction("💜")
             await message.add_reaction("❤")
             await message.add_reaction("💙")
