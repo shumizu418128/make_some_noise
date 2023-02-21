@@ -41,6 +41,12 @@ async def on_member_join(member):
     if closest_event.status in [discord.ScheduledEventStatus.scheduled, discord.ScheduledEventStatus.active]:
         await sleep(1)
         await channel.send(closest_event.url)
+    embed = Embed(title="GBBの最新情報はこちら", color=0xF0632F)
+    embed.add_field(name="GBBINFO-JPN 日本非公式情報サイト",
+                    value="https://gbbinfo-jpn.jimdofree.com/")
+    embed.add_field(name="swissbeatbox 公式instagram",
+                    value="https://www.instagram.com/swissbeatbox/")
+    await channel.send(embed=embed)
 
 
 @client.event
