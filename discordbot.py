@@ -72,7 +72,7 @@ async def on_message(message):
             await message.channel.send("**Wildcard結果・出場者一覧 はこちら**\nhttps://gbbinfo-jpn.jimdofree.com/20230222/")
         elif "gbb" in message.content.lower() and any(["?" in message.content, "？" in message.content]):
             await message.reply(embed=embed)
-        elif "gbb" in message.content.lower():
+        elif any(["gbb" in message.content.lower(), "wildcard" in message.content.lower(), "ワイカ" in message.content, "ワイルドカード" in message.content]):
             await sleep(1)
             await message.channel.send(embed=embed)
         if message.channel.type == discord.ChannelType.text:
