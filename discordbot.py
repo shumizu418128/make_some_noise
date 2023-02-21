@@ -68,6 +68,7 @@ async def on_message(message):
         embed.add_field(name="swissbeatbox 公式instagram",
                         value="https://www.instagram.com/swissbeatbox/")
         if "m!wc" in message.content.lower():
+            await message.channel.send(embed=embed)
             await message.channel.send("**Wildcard結果・出場者一覧 はこちら**\nhttps://gbbinfo-jpn.jimdofree.com/20230222/")
         elif "gbb" in message.content.lower() and any(["?" in message.content, "？" in message.content]):
             await message.reply(embed=embed)
