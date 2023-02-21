@@ -36,6 +36,7 @@ async def on_member_join(member):
                     value="https://gbbinfo-jpn.jimdofree.com/")
     embed.add_field(name="swissbeatbox 公式instagram",
                     value="https://www.instagram.com/swissbeatbox/")
+    await channel.send("https://note.com/me1o_crew/n/nf2971acd1f1a")
     await channel.send(embed=embed)
     events = channel.guild.scheduled_events
     if bool(events) is False:
