@@ -74,7 +74,6 @@ async def on_message(message):
         elif "gbb" in message.content.lower() and any(["?" in message.content, "？" in message.content]):
             await message.reply(embed=embed)
         elif any(["gbb" in message.content.lower(), "wildcard" in message.content.lower(), "ワイカ" in message.content, "ワイルドカード" in message.content]):
-            await sleep(1)
             await message.channel.send(embed=embed)
         if message.channel.type == discord.ChannelType.text:
             emoji = random.choice(message.guild.emojis)
