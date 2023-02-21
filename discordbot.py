@@ -31,6 +31,12 @@ async def on_voice_state_update(member, before, after):
 @client.event
 async def on_member_join(member):
     channel = client.get_channel(864475338340171791)  # 全体チャット
+    embed = Embed(title="GBBの最新情報はこちら", color=0xF0632F)
+    embed.add_field(name="GBBINFO-JPN 日本非公式情報サイト",
+                    value="https://gbbinfo-jpn.jimdofree.com/")
+    embed.add_field(name="swissbeatbox 公式instagram",
+                    value="https://www.instagram.com/swissbeatbox/")
+    await channel.send(embed=embed)
     events = channel.guild.scheduled_events
     if bool(events) is False:
         return
@@ -41,12 +47,6 @@ async def on_member_join(member):
     if closest_event.status in [discord.ScheduledEventStatus.scheduled, discord.ScheduledEventStatus.active]:
         await sleep(1)
         await channel.send(closest_event.url)
-    embed = Embed(title="GBBの最新情報はこちら", color=0xF0632F)
-    embed.add_field(name="GBBINFO-JPN 日本非公式情報サイト",
-                    value="https://gbbinfo-jpn.jimdofree.com/")
-    embed.add_field(name="swissbeatbox 公式instagram",
-                    value="https://www.instagram.com/swissbeatbox/")
-    await channel.send(embed=embed)
 
 
 @client.event
