@@ -73,8 +73,7 @@ async def on_message(message):
             await message.channel.send("**Wildcard結果・出場者一覧 はこちら**\nhttps://gbbinfo-jpn.jimdofree.com/20230222/")
         elif "gbb" in message.content.lower() and any(["?" in message.content, "？" in message.content]):
             await message.reply("https://gbbinfo-jpn.jimdofree.com/")
-            await sleep(5)
-            await message.channel.send(embed=embed)
+            await message.reply(embed=embed)
         elif any(["gbb" in message.content.lower(), "wildcard" in message.content.lower(), "ワイカ" in message.content, "ワイルドカード" in message.content]):
             await message.channel.send(embed=embed)
             await message.channel.send("https://gbbinfo-jpn.jimdofree.com/")
