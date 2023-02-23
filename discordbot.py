@@ -15,7 +15,7 @@ print(f"Make Some Noise! (server): {discord.__version__}")
 
 @client.event
 async def on_voice_state_update(member, before, after):
-    if member.id == 412082841829113877:  # tari3210
+    if member.id == 412082841829113877 or member.bot:  # tari3210
         return
     try:
         vc_role = member.guild.get_role(935073171462307881)  # in a vc
