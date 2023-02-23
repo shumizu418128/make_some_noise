@@ -74,9 +74,11 @@ async def on_message(message):
         elif "gbb" in message.content.lower() and any(["?" in message.content, "？" in message.content]):
             await message.reply("https://gbbinfo-jpn.jimdofree.com/")
             await message.reply(embed=embed)
-        elif any(["gbb" in message.content.lower(), "wildcard" in message.content.lower(), "ワイカ" in message.content, "ワイルドカード" in message.content]):
-            await message.channel.send(embed=embed)
-            await message.channel.send("https://gbbinfo-jpn.jimdofree.com/")
+        else:
+            for word in ["gbb", "wildcard", "ワイカ", "ワイルドカード", "結果"]:
+                if word in message.content.lower():
+                    await message.channel.send(embed=embed)
+                    await message.channel.send("https://gbbinfo-jpn.jimdofree.com/")
         if message.channel.type == discord.ChannelType.text:
             emoji = random.choice(message.guild.emojis)
             await message.add_reaction(emoji)
