@@ -39,15 +39,18 @@ async def on_member_join(member):
     await channel.send(f"{member.mention}\nあつまれ！ビートボックスの森 へようこそ！\nhttps://note.com/me1o_crew/n/nf2971acd1f1a")
     await channel.send(embed=embed)
     events = channel.guild.scheduled_events
-    if bool(events) is False:
-        return
-    closest_event = events[-1]
+    events_exist = []
     for event in events:
-        if event.status in [discord.ScheduledEventStatus.scheduled, discord.ScheduledEventStatus.active] and event.start_time < closest_event.start_time:
+        if event.status in [discord.ScheduledEventStatus.scheduled, discord.ScheduledEventStatus.active]:
+            events_exist.append(event)
+    if bool(events_exist) is False:
+        return
+    closest_event = events_exist[0]
+    for event in events_exist:
+        if event.start_time < closest_event.start_time:
             closest_event = event
-    if closest_event.status in [discord.ScheduledEventStatus.scheduled, discord.ScheduledEventStatus.active]:
-        await sleep(1)
-        await channel.send(closest_event.url)
+    await sleep(1)
+    await channel.send(closest_event.url)
 
 
 @client.event
