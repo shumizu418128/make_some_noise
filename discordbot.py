@@ -37,7 +37,7 @@ async def on_member_join(member):
                     value="https://gbbinfo-jpn.jimdofree.com/")
     embed.add_field(name="swissbeatbox 公式instagram",
                     value="https://www.instagram.com/swissbeatbox/")
-    await channel.send(f"{member.mention}\nあつまれ！ビートボックスの森 へようこそ！", embeds=[embed, embed_discord])
+    await channel.send(f"{member.mention}\nあつまれ！ビートボックスの森 へようこそ！", embeds=[embed_discord, embed])
     events = channel.guild.scheduled_events
     events_exist = []
     for event in events:
