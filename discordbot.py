@@ -31,13 +31,13 @@ async def on_voice_state_update(member, before, after):
 @client.event
 async def on_member_join(member):
     channel = client.get_channel(864475338340171791)  # 全体チャット
+    embed_discord = Embed(title="Discordの使い方", description="https://note.com/me1o_crew/n/nf2971acd1f1a")
     embed = Embed(title="GBBの最新情報はこちら", color=0xF0632F)
     embed.add_field(name="GBBINFO-JPN 日本非公式情報サイト",
                     value="https://gbbinfo-jpn.jimdofree.com/")
     embed.add_field(name="swissbeatbox 公式instagram",
                     value="https://www.instagram.com/swissbeatbox/")
-    await channel.send(f"{member.mention}\nあつまれ！ビートボックスの森 へようこそ！\nhttps://note.com/me1o_crew/n/nf2971acd1f1a")
-    await channel.send(embed=embed)
+    await channel.send(f"{member.mention}\nあつまれ！ビートボックスの森 へようこそ！", embed=[embed, embed_discord])
     events = channel.guild.scheduled_events
     events_exist = []
     for event in events:
