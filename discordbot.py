@@ -84,7 +84,6 @@ async def on_message(message):
                         await message.reply(embed=embed)
                     else:
                         await message.channel.send(embed=embed)
-                        await message.channel.send("https://gbbinfo-jpn.jimdofree.com/")
                     break
             await sleep(3600)
             try:
