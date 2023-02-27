@@ -74,23 +74,22 @@ async def on_message(message):
         if "m!wc" in message.content.lower():
             await message.channel.send(embed=embed)
             await message.channel.send("**Wildcard結果・出場者一覧 はこちら**\nhttps://gbbinfo-jpn.jimdofree.com/20230222/")
-        elif "gbb" in message.content.lower() and any(["?" in message.content, "？" in message.content]):
-            await message.reply("https://gbbinfo-jpn.jimdofree.com/")
-            await message.reply(embed=embed)
-        else:
-            for word in ["gbb", "wildcard", "ワイカ", "ワイルドカード", "結果"]:
-                if word in message.content.lower():
-                    await message.channel.send(embed=embed)
-                    await message.channel.send("https://gbbinfo-jpn.jimdofree.com/")
         if message.channel.type == discord.ChannelType.text:
             emoji = random.choice(message.guild.emojis)
             await message.add_reaction(emoji)
+            if "gbb" in message.content.lower() and any(["?" in message.content, "？" in message.content]):
+                await message.reply("https://gbbinfo-jpn.jimdofree.com/")
+                await message.reply(embed=embed)
+            else:
+                for word in ["gbb", "wildcard", "ワイカ", "ワイルドカード", "結果"]:
+                    if word in message.content.lower():
+                        await message.channel.send(embed=embed)
+                        await message.channel.send("https://gbbinfo-jpn.jimdofree.com/")
             await sleep(3600)
             try:
                 await message.remove_reaction(emoji, message.guild.me)
             except Exception:
                 pass
-            return
 
     if message.channel.id == 930839018671837184:  # バトスタチャット
         return
