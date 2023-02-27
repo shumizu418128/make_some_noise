@@ -77,14 +77,15 @@ async def on_message(message):
         if message.channel.type == discord.ChannelType.text:
             emoji = random.choice(message.guild.emojis)
             await message.add_reaction(emoji)
-            if "gbb" in message.content.lower() and any(["?" in message.content, "？" in message.content]):
-                await message.reply("https://gbbinfo-jpn.jimdofree.com/")
-                await message.reply(embed=embed)
-            else:
-                for word in ["gbb", "wildcard", "ワイカ", "ワイルドカード", "結果"]:
-                    if word in message.content.lower():
+            for word in ["gbb", "wildcard", "ワイカ", "ワイルドカード", "結果"]:
+                if word in message.content.lower():
+                    if any(["?" in message.content, "？" in message.content]):
+                        await message.reply("https://gbbinfo-jpn.jimdofree.com/")
+                        await message.reply(embed=embed)
+                    else:
                         await message.channel.send(embed=embed)
                         await message.channel.send("https://gbbinfo-jpn.jimdofree.com/")
+                    break
             await sleep(3600)
             try:
                 await message.remove_reaction(emoji, message.guild.me)
