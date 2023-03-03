@@ -519,6 +519,9 @@ async def on_message(message):
                 return
             names = msg2.content.replace(
                 's.battle', '').replace(" vs", "").split()
+        embed = Embed(title=f"先攻・後攻の抽選を行います", description="抽選中...")
+        for _ in range(1000):
+            random.shuffle(names)
         embed = Embed(title=f"1️⃣ {names[0]} vs {names[1]} 2️⃣",
                       description="1分・2ラウンドずつ\n1 minute, 2 rounds each\n\n▶️を押してスタート")
         before_start = await message.channel.send(embed=embed)
@@ -713,7 +716,7 @@ async def on_message(message):
         random.shuffle(playerlist)
         counter = 1
         counter2 = 0
-        embed = Embed(title="抽選結果", color=0xff9900)
+        embed = Embed(title="抽選結果", description="先攻・後攻は、バトル直前に抽選を行います", color=0xff9900)
         while counter2 + 2 <= len(playerlist):
             embed.add_field(
                 name=f"Match{counter}", value=f"1️⃣ {playerlist[counter2]} vs {playerlist[counter2 + 1]} 2️⃣", inline=False)
@@ -729,7 +732,7 @@ async def on_message(message):
             await pairing_channel.send(f"参加人数が奇数でした。\n{double_pl}さんの対戦が2回行われます。")
             await chat.send("参加人数が奇数でした。\nあと1人参加できます。ご希望の方はこのチャットにご記入ください。")
             embed.add_field(
-                name=f"Match{counter}", value=f"1️⃣ {playerlist[-1]} vs {playerlist[0]} 2️⃣", inline=False)
+                name=f"Match{counter}", value=f"{playerlist[-1]} vs {playerlist[0]}", inline=False)
         tari3210 = message.guild.get_member(412082841829113877)
         embed.set_footer(
             text=f"bot開発者: {str(tari3210)}", icon_url=tari3210.display_avatar.url)
