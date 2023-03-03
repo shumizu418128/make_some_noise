@@ -519,7 +519,7 @@ async def on_message(message):
                 return
             names = msg2.content.replace(
                 's.battle', '').replace(" vs", "").split()
-        embed = Embed(title=f"先攻・後攻の抽選を行います", description="抽選中...")
+        embed = Embed(title="先攻・後攻の抽選を行います", description="抽選中...")
         before_start = await message.channel.send(embed=embed)
         for _ in range(1000):
             random.shuffle(names)
