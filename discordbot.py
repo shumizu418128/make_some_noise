@@ -520,11 +520,12 @@ async def on_message(message):
             names = msg2.content.replace(
                 's.battle', '').replace(" vs", "").split()
         embed = Embed(title=f"先攻・後攻の抽選を行います", description="抽選中...")
+        before_start = await message.channel.send(embed=embed)
         for _ in range(1000):
             random.shuffle(names)
         embed = Embed(title=f"1️⃣ {names[0]} vs {names[1]} 2️⃣",
                       description="1分・2ラウンドずつ\n1 minute, 2 rounds each\n\n▶️を押してスタート")
-        before_start = await message.channel.send(embed=embed)
+        await before_start.edit(embed=embed)
         await before_start.add_reaction("▶️")
         await before_start.add_reaction("❌")
         stamps = ["▶️", "❌"]
