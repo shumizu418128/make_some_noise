@@ -12,20 +12,19 @@ intents.typing = False  # typingを受け取らないように
 client = discord.Client(intents=intents)
 print(f"Make Some Noise! (server): {discord.__version__}")
 
-
 @client.event
 async def on_voice_state_update(member, before, after):
     if member.id == 412082841829113877 or member.bot:  # tari3210
         return
     try:
         vc_role = member.guild.get_role(935073171462307881)  # in a vc
+        if before.channel is None and bool(after.channel):
+            await after.channel.send(f"{member.mention}\nチャットはこちら\nchat is here", delete_after=60)
+            await member.add_roles(vc_role)
+        if bool(before.channel) and after.channel is None:
+            await member.remove_roles(vc_role)
     except Exception:
         return
-    if before.channel is None and bool(after.channel):
-        await after.channel.send(f"{member.mention}\nチャットはこちら\nchat is here", delete_after=60)
-        await member.add_roles(vc_role)
-    if bool(before.channel) and after.channel is None:
-        await member.remove_roles(vc_role)
 
 
 @client.event
