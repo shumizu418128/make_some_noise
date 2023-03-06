@@ -803,20 +803,4 @@ async def on_message(message):
         await message.channel.send(event.url)
         return
 
-    if message.content.startswith("s.gbb"):
-        await message.delete(delay=1)
-        channel = client.get_channel(886099822770290748)  # リアタイ部屋
-        JST = datetime.timezone(datetime.timedelta(hours=9))
-        dt_now = datetime.datetime.now(JST)
-        for i in range(3):
-            days = 5 - int(dt_now.strftime("%w")) + i
-            if days <= 0:
-                days += 7
-            week = datetime.timedelta(days=days)
-            start_time = datetime.datetime(
-                dt_now.year, dt_now.month, dt_now.day, 22, 0, 0, 0, JST) + week
-            event = await message.guild.create_scheduled_event(name="GBB23 Wildcard鑑賞会", description="毎週金・土・日\n22:00 - 25:00\n聴き専でもOK! 一緒に「金の卵」を見つけましょう！", start_time=start_time, location=channel)
-            await message.channel.send(event.url)
-        return
-
 client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
