@@ -64,7 +64,7 @@ async def on_message(message):
         if message.channel.id in [930447365536612353, 930767329137143839]:
             await message.delete(delay=1)
             return
-        for word in ["💜❤💙💚", "brez", "ぶれず", "ブレズ"]:
+        for word in ["💜❤💙💚", "brez", "ぶれず", "ブレズ", "愛"]:
             if word in message.content.lower():
                 for stamp in ["💜", "❤", "💙", "💚"]:
                     await message.add_reaction(stamp)
