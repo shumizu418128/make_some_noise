@@ -500,7 +500,7 @@ async def on_message(message):
                 pass
             if 2 <= count <= 4:
                 embed = Embed(
-                    title="再開コマンド", description=f"Round{count}から再開します。\n\n※意図していない場合、`s.leave`と入力してbotを停止した後、再度入力してください。")
+                    title="再開コマンド", description=f"Round{count}から再開します。\n\n※キャンセルする場合、❌を押してbotを停止した後、再度入力してください。")
                 await message.channel.send(embed=embed)
                 del names[2]
         while len(names) != 2:
