@@ -734,9 +734,10 @@ async def on_message(message):
                 double_pl = playerlist[0]
             else:
                 double_pl = double_pl.mention
-            await message.channel.send(f"----------------------------------------\n\n参加人数が奇数でした。\n{playerlist[0]}さんの対戦が2回行われます。")
-            await pairing_channel.send(f"参加人数が奇数でした。\n{double_pl}さんの対戦が2回行われます。")
-            await chat.send("参加人数が奇数でした。\nあと1人参加できます。ご希望の方はこのチャットにご記入ください。")
+            await message.channel.send(f"----------------------------------------\n\n参加人数が奇数でした。\n{playerlist[0]}さんの対戦が2回行われます。\n\n※あと1人参加者が追加された場合、{playerlist[0]}さんと交代になります。")
+            await pairing_channel.send(f"参加人数が奇数でした。\n{double_pl}さんの対戦が2回行われます。\n\n※あと1人参加者が追加された場合、{double_pl}さんと交代になります。")
+            embed_double = Embed(title="参加人数が奇数でした", description=f"あと1人参加できます。ご希望の方はこのチャットにご記入ください。\n\n※参加者が追加された場合、{playerlist[0]}さんと交代になります。", color=0xff9900)
+            await chat.send(embed=embed_double)
             embed.add_field(
                 name=f"Match{counter}", value=f"{playerlist[-1]} vs {playerlist[0]}", inline=False)
         tari3210 = message.guild.get_member(412082841829113877)
