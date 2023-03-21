@@ -482,8 +482,8 @@ async def on_message(message):
         return
 
     if message.content.startswith("s.battle"):
-        chat = client.get_channel(930839018671837184)  # バトスタチャット
         stage_channel = client.get_channel(931462636019802123)  # ステージ
+        chat = stage_channel # client.get_channel(930839018671837184)  # バトスタチャット
         vc_role = message.guild.get_role(935073171462307881)  # in a vc
         pairing_channel = client.get_channel(930767329137143839)  # 対戦表
         entry_channel = client.get_channel(930446820839157820)  # 参加
@@ -652,9 +652,9 @@ async def on_message(message):
     if message.content == "s.start":
         await message.channel.send("処理中...")
         stage_channel = client.get_channel(931462636019802123)  # ステージ
+        chat = stage_channel # client.get_channel(930839018671837184)  # バトスタチャット
         vc_role = message.guild.get_role(935073171462307881)  # in a vc
         bbx_mic = client.get_channel(931781522808262756)  # bbxマイク設定
-        chat = client.get_channel(930839018671837184)  # バトスタチャット
         pairing_channel = client.get_channel(930767329137143839)  # 対戦表
         bs_role = message.guild.get_role(930368130906218526)  # BATTLE STADIUM
         entry_channel = client.get_channel(930446820839157820)  # 参加
