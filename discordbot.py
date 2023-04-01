@@ -725,7 +725,7 @@ async def on_message(message):
         embed = Embed(title="抽選結果", description="先攻・後攻は、バトル直前に抽選を行います", color=0xff9900)
         while counter2 + 2 <= len(playerlist):
             embed.add_field(
-                name=f"Match{counter}", value=f"1️⃣ {playerlist[counter2]} vs {playerlist[counter2 + 1]} 2️⃣", inline=False)
+                name=f"Match{counter}", value=f"{playerlist[counter2]} vs {playerlist[counter2 + 1]}", inline=False)
             counter += 1
             counter2 += 2
         if len(playerlist) % 2 == 1:
