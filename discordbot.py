@@ -48,7 +48,7 @@ async def on_member_join(member):
     events = channel.guild.scheduled_events
     events_exist = []
     for event in events:
-        if event.status in [discord.ScheduledEventStatus.scheduled, discord.ScheduledEventStatus.active]:
+        if event.status in [discord.EventStatus.scheduled, discord.EventStatus.active]:
             events_exist.append(event)
     if bool(events_exist) is False:
         return
