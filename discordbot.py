@@ -84,7 +84,7 @@ async def on_message(message):
         if message.channel.type == discord.ChannelType.text:
             emoji = random.choice(message.guild.emojis)
             await message.add_reaction(emoji)
-            for word in ["gbb", "wildcard", "ワイカ", "ワイルドカード", "結果", "colaps"]:
+            for word in ["gbb", "wildcard", "ワイカ", "ワイルドカード", "結果", "出場", "通過", "チケット", "ルール", "審査員", "ジャッジ", "日本人", "colaps"]:
                 if word in message.content.lower():
                     if any(["?" in message.content, "？" in message.content]):
                         await message.reply("https://gbbinfo-jpn.jimdofree.com/")
