@@ -691,13 +691,10 @@ async def on_message(message):
         try:
             for scheduled_event in scheduled_events:
                 if scheduled_event.name == "BATTLE STADIUM":
-                    try:
-                        await scheduled_event.start()
-                    except Exception:
-                        pass
+                    await scheduled_event.start()
                     break
             await stage_channel.create_instance(topic="BATTLE STADIUM", send_notification=True)
-        except discord.errors.HTTPException:
+        except Exception:
             pass
         try:
             await stage_channel.connect(reconnect=True)
