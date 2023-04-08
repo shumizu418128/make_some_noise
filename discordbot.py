@@ -518,7 +518,7 @@ async def on_message(message):
                     await message.channel.send(embed=embed)
                     await chat.send(embed=embed)
                     break
-            await message.channel.send("Error: 入力方法が間違っています。\n\n`cancelと入力するとキャンセルできます`\n↓もう一度入力してください↓")
+            await message.channel.send(f"Error: 入力方法が間違っています。\n入力内容：{names}\n\n`cancelと入力するとキャンセルできます`\n↓もう一度入力してください↓")
 
             def check(m):
                 return m.channel == message.channel and m.author == message.author
@@ -711,7 +711,7 @@ async def on_message(message):
             await interaction.response.defer(ephemeral=True, thinking=False)
             await interaction.user.add_roles(bs_role)
             embed = Embed(title="受付完了 entry completed",
-                          description="※バトルを始める際、speakerになった後、ミュート以外画面操作を一切行わないでください\n\nDiscordバグにより音声が一切入らなくなります")
+                          description=f"**注意事項**\n\n・バトルを始める際、speakerになった後、ミュート以外画面操作を一切行わないでください。Discordバグにより音声が一切入らなくなります\n\n・ノイズキャンセル設定に問題がある方が非常に増えています。\n必ず {bbx_mic.mention} を確認して、マイク設定を行ってからの参加をお願いします。", color=0xffff00)
             await message.channel.send(f"エントリー完了：{interaction.user.display_name}", delete_after=3)
             await interaction.followup.send(embed=embed, ephemeral=True)
 
@@ -806,7 +806,7 @@ async def on_message(message):
                 await scheduled_event.complete()
         try:
             instance = await stage.fetch_instance()
-        except discord.errors.NotFound:
+        except Exception:
             pass
         else:
             await instance.delete()
