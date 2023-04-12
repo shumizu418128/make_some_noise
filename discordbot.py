@@ -520,7 +520,7 @@ async def on_message(message):
                 except Exception:
                     pass
                 audio = discord.PCMVolumeTransformer(
-                    discord.FFmpegPCMAudio(f"timer_stop.mp3"))
+                    discord.FFmpegPCMAudio("timer_stop.mp3"))
                 message.guild.voice_client.play(audio)
                 embed = Embed(
                     title="TIMER STOPPED", description="問題が発生したため、タイマーを停止しました\nまもなく、停止時のラウンドからバトルを再開します", color=0xff0000)
@@ -553,7 +553,7 @@ async def on_message(message):
                     await chat.send(embed=embed)
                     break
             embed = Embed(title="Error: 入力方法が間違っています",
-                          description=f"入力内容：{names}\n\n`cancelと入力するとキャンセルできます`\n↓もう一度入力してください↓",  color=0xff0000)
+                          description=f"入力内容：{names}\n\n`cancelと入力するとキャンセルできます`\n↓もう一度入力してください↓", color=0xff0000)
             await message.channel.send(embed=embed)
 
             def check(m):
@@ -750,7 +750,8 @@ async def on_message(message):
         await chat.send(embed=embed_chat_info)
         await entry_channel.send(f"{vc_role.mention}\nボタンを押してエントリー！\npress button to entry", delete_after=30)
         await sleep(20)
-        embed = Embed(title="バトル中に、音声バグが発生する場合があります", description=f"Beatboxerの音声が聞こえない場合、チャットにてお知らせください\n`タイマーを停止し、バトルを中断することがあります`\n\nBATTLEタイマーはこちら {message.channel.mention}", color=0xffff00)
+        embed = Embed(title="バトル中に、音声バグが発生する場合があります",
+                      description=f"Beatboxerの音声が聞こえない場合、チャットにてお知らせください\n`タイマーを停止し、バトルを中断することがあります`\n\nBATTLEタイマーはこちら {message.channel.mention}", color=0xffff00)
         await chat.send(embed=embed)
         embed = Embed(title="締め切り10秒前", color=0xff0000)
         await message.channel.send(embed=embed)
@@ -781,7 +782,8 @@ async def on_message(message):
                 double_pl = playerlist[0]
             else:
                 double_pl = double_pl.mention
-            embed = Embed(title="参加人数が奇数でした", description=f"{playerlist[0]}さんの対戦が2回行われます\n\n※あと1人参加者が追加された場合、{playerlist[0]}さんと交代になります。", color=0xff9900)
+            embed = Embed(
+                title="参加人数が奇数でした", description=f"{playerlist[0]}さんの対戦が2回行われます\n\n※あと1人参加者が追加された場合、{playerlist[0]}さんと交代になります。", color=0xff9900)
             await message.channel.send(embed=embed)
             await pairing_channel.send(f"参加人数が奇数でした。\n{double_pl}さんの対戦が2回行われます。\n\n※あと1人参加者が追加された場合、{double_pl}さんと交代になります。")
             embed = Embed(
