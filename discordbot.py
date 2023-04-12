@@ -520,9 +520,10 @@ async def on_message(message):
                 except Exception:
                     pass
                 embed = Embed(
-                    title="TIMER STOPPED", description="問題が発生したため、タイマーを停止しました", color=0xff0000)
+                    title="TIMER STOPPED", description="問題が発生したため、タイマーを停止しました\nまもなく、停止時のラウンドからバトルを再開します", color=0xff0000)
                 await message.channel.send(embed=embed)
                 await chat.send(embed=embed)
+                await message.guild.voice_client.disconnect()
                 return False
 
         await chat.send(embed=embed_chat_info)
@@ -726,7 +727,7 @@ async def on_message(message):
             await interaction.response.defer(ephemeral=True, thinking=False)
             await interaction.user.add_roles(bs_role)
             embed = Embed(title="受付完了 entry completed",
-                          description=f"**注意事項**\n\n・バトルを始める際、speakerになった後、ミュート以外画面操作を一切行わないでください。Discordバグにより音声が一切入らなくなります\n\n・ノイズキャンセル設定に問題がある方が非常に増えています。\n必ず {bbx_mic.mention} を確認して、マイク設定を行ってからの参加をお願いします。\n\n・Discordの音声バグにより、バトルを中断することがあります。", color=0xffff00)
+                          description=f"**注意事項**・ノイズキャンセル設定に問題がある方が非常に増えています。\n必ず {bbx_mic.mention} を確認して、マイク設定を行ってからの参加をお願いします。\n\n・Discordの音声バグが多発しています。発生した場合、バトルを中断し、途中のラウンドからバトルを再開することがあります。\n※音声バグ発生時の対応は状況によって異なります。ご了承ください。", color=0xffff00)
             await message.channel.send(f"エントリー完了：{interaction.user.display_name}", delete_after=3)
             await interaction.followup.send(embed=embed, ephemeral=True)
 
