@@ -67,6 +67,8 @@ async def on_message(message):
             return
         # バトスタbot, バトスタ対戦表
         if message.channel.id in [930447365536612353, 930767329137143839]:
+            if message.content.startswith("l."):
+                return
             await message.delete(delay=1)
             return
         for word in ["💜❤💙💚", "brez", "ぶれず", "ブレズ", "愛", "sar", "oras"]:
@@ -495,6 +497,29 @@ async def on_message(message):
         JST = datetime.timezone(datetime.timedelta(hours=9))
         embed_chat_info = Embed(title="チャット欄はこちら chat is here",
                                 description=f"対戦表： {pairing_channel.mention}\nエントリー： {entry_channel.mention}\nBATTLEタイマー： {message.channel.mention}", color=0x00bfff)
+        VoiceClient = message.guild.voice_client
+
+        async def connection():
+            connect = VoiceClient.is_connected()
+            if connect is False:
+                embed = Embed(
+                    title="Error", description="接続が失われたため、タイマーを停止しました\nlost connection", color=0xff0000)
+                await message.channel.send(embed=embed)
+                await chat.send(embed=embed)
+
+        async def timer(time: float, msg: discord.Message):
+            def check(reaction, user):
+                return user == message.author and str(reaction.emoji) == '❌' and reaction.message == msg
+            try:
+                _, _ = await client.wait_for('reaction_add', timeout=time, check=check)
+            except asyncio.TimeoutError:
+                pass
+            else:
+                embed = Embed(
+                    title="TIMER STOPPED", description="問題が発生したため、タイマーを停止しました", color=0xff0000)
+                await message.channel.send(embed=embed)
+                await chat.send(embed=embed)
+
         await chat.send(embed=embed_chat_info)
         count = 1
         names = message.content.replace(
@@ -547,30 +572,22 @@ async def on_message(message):
             stamps = ["▶️", "❌"]
             return user == message.author and reaction.emoji in stamps and reaction.message == before_start
 
-        try:
-            reaction, _ = await client.wait_for('reaction_add', timeout=600, check=check)
-        except asyncio.TimeoutError:
-            await before_start.clear_reactions()
-            await before_start.reply("Error: timeout")
-            return
+        reaction, _ = await client.wait_for('reaction_add', check=check)
         await before_start.clear_reactions()
         if reaction.emoji == "❌":
             await before_start.delete()
             return
         embed = Embed(title="Are you ready??", color=0x00ff00)
         sent_message = await message.channel.send(embed=embed)
+        await sent_message.add_reaction("❌")
         embed.description = f"BATTLEタイマーはこちら {message.channel.mention}"
         await chat.send(embed=embed)
-        try:
-            await stage_channel.connect(reconnect=True)
-        except discord.errors.ClientException:
-            pass
-        VoiceClient = message.guild.voice_client
-        me = message.guild.me
-        try:
-            await me.edit(suppress=False)
-        except AttributeError:
-            pass
+        if VoiceClient is False:
+            try:
+                await stage_channel.connect(reconnect=True)
+                await message.guild.me.edit(suppress=False)
+            except Exception:
+                pass
         random_start = random.randint(1, 3)
         audio = discord.PCMVolumeTransformer(
             discord.FFmpegPCMAudio(f"BattleStart_{random_start}.mp3"), volume=0.4)
@@ -579,19 +596,14 @@ async def on_message(message):
             await sleep(9)
         else:
             await sleep(11)
-        connect = VoiceClient.is_connected()
-        if connect is False:
-            embed = Embed(
-                title="Error", description="接続が失われたため、タイマーを停止しました\nlost connection", color=0xff0000)
-            await message.channel.send(embed=embed)
-            await chat.send(embed=embed)
-            return
+        await connection()
         embed = Embed(title="🔥🔥 3, 2, 1, Beatbox! 🔥🔥", color=0xff0000)
         await sent_message.edit(embed=embed)
         embed.description = f"BATTLEタイマーはこちら {message.channel.mention}"
         await chat.send(embed=embed)
         await sleep(3)
         stamps = {1: "1️⃣", 2: "2️⃣", 3: "3️⃣", 4: "4️⃣"}
+
         while count <= 4:
             embed = Embed(
                 title="1:00", description=f"Round {stamps[count]}  **{names[1 - count % 2]}**\n\n{names[0]} vs {names[1]}", color=0x00ff00)
@@ -599,42 +611,30 @@ async def on_message(message):
             counter = 50
             color = 0x00ff00
             for i in range(5):
-                await sleep(9.9)
+                await timer(9.9, sent_message)
                 embed = Embed(
                     title=f"{counter}", description=f"Round {stamps[count]}  **{names[1 - count % 2]}**\n\n{names[0]} vs {names[1]}", color=color)
                 await sent_message.edit(embed=embed)
                 counter -= 10
-                connect = VoiceClient.is_connected()
-                if connect is False:
-                    embed = Embed(
-                        title="Error", description="接続が失われたため、タイマーを停止しました\nlost connection", color=0xff0000)
-                    await message.channel.send(embed=embed)
-                    await chat.send(embed=embed)
-                    return
+                await connection()
                 if i == 1:
                     color = 0xffff00
                 elif i == 3:
                     color = 0xff0000
-            await sleep(4.9)
+            await timer(4.9, sent_message)
             embed = Embed(
                 title="5", description=f"Round {stamps[count]}  **{names[1 - count % 2]}**\n\n{names[0]} vs {names[1]}", color=color)
             await sent_message.edit(embed=embed)
-            await sleep(4.9)
+            await timer(4.9, sent_message)
             if count <= 3:
                 audio = discord.PCMVolumeTransformer(
                     discord.FFmpegPCMAudio(f"round{count + 1}switch_{random.randint(1, 3)}.mp3"), volume=2)
-                connect = VoiceClient.is_connected()
-                if connect is False:
-                    embed = Embed(
-                        title="Error", description="接続が失われたため、タイマーを停止しました\nlost connection", color=0xff0000)
-                    await message.channel.send(embed=embed)
-                    await chat.send(embed=embed)
-                    return
+                await connection()
                 message.guild.voice_client.play(audio)
                 embed = Embed(
                     title="TIME!", description=f"Round {stamps[count + 1]}  **{names[count % 2]}**\nSWITCH!\n\n{names[0]} vs {names[1]}")
                 await sent_message.edit(embed=embed)
-                await sleep(3)
+                await timer(3, sent_message)
             count += 1
         audio = discord.PCMVolumeTransformer(
             discord.FFmpegPCMAudio(f"time_{random.randint(1, 2)}.mp3"), volume=0.3)
@@ -677,7 +677,6 @@ async def on_message(message):
     if message.content == "s.start":
         await message.channel.send("処理中...")
         stage_channel = client.get_channel(931462636019802123)  # ステージ
-        # client.get_channel(930839018671837184)  # バトスタチャット
         chat = stage_channel
         vc_role = message.guild.get_role(935073171462307881)  # in a vc
         bbx_mic = client.get_channel(931781522808262756)  # bbxマイク設定
