@@ -598,11 +598,11 @@ async def on_message(message):
             discord.FFmpegPCMAudio(f"BattleStart_{random_start}.mp3"), volume=0.4)
         message.guild.voice_client.play(audio)
         if random_start == 1:
-            check_timer = await timer(9, sent_message, VoiceClient)
+            check_timer = await timer(10, sent_message, VoiceClient)
             if check_timer is False:
                 return
         else:
-            check_timer = await timer(11, sent_message, VoiceClient)
+            check_timer = await timer(12, sent_message, VoiceClient)
             if check_timer is False:
                 return
         embed = Embed(title="🔥🔥 3, 2, 1, Beatbox! 🔥🔥", color=0xff0000)
