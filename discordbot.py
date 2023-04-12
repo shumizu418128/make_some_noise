@@ -497,37 +497,43 @@ async def on_message(message):
         JST = datetime.timezone(datetime.timedelta(hours=9))
         embed_chat_info = Embed(title="チャット欄はこちら chat is here",
                                 description=f"対戦表： {pairing_channel.mention}\nエントリー： {entry_channel.mention}\nBATTLEタイマー： {message.channel.mention}", color=0x00bfff)
-        VoiceClient = message.guild.voice_client
 
-        async def connection():
-            connect = VoiceClient.is_connected()
-            if connect is False:
+        async def connection(VoiceClient):
+            if VoiceClient.is_connected is False:
                 embed = Embed(
                     title="Error", description="接続が失われたため、タイマーを停止しました\nlost connection", color=0xff0000)
                 await message.channel.send(embed=embed)
                 await chat.send(embed=embed)
 
-        async def timer(time: float, msg: discord.Message):
+        async def timer(time: float, msg: discord.Message, VoiceClient: discord.VoiceClient):
+            await connection(VoiceClient)
+
             def check(reaction, user):
                 return user == message.author and str(reaction.emoji) == '❌' and reaction.message == msg
             try:
                 _, _ = await client.wait_for('reaction_add', timeout=time, check=check)
             except asyncio.TimeoutError:
-                pass
+                await connection(VoiceClient)
             else:
+                try:
+                    VoiceClient.stop()
+                except Exception:
+                    pass
                 embed = Embed(
                     title="TIMER STOPPED", description="問題が発生したため、タイマーを停止しました", color=0xff0000)
                 await message.channel.send(embed=embed)
                 await chat.send(embed=embed)
+                return False
 
         await chat.send(embed=embed_chat_info)
-        count = 1
+        count = 0
         names = message.content.replace(
             " vs", "").replace('s.battle', '').split()
         while True:
             embed = Embed(title="処理中...")
             before_start = await message.channel.send(embed=embed)
             if len(names) == 2:
+                count = 1
                 embed = Embed(title="先攻・後攻の抽選を行います", description="抽選中...")
                 await before_start.edit(embed=embed)
                 random.shuffle(names)
@@ -537,17 +543,18 @@ async def on_message(message):
                     count = int(names[2])
                 except ValueError:
                     pass
-                if 2 <= count <= 4:
+                if 1 <= count <= 4:
                     embed = Embed(
                         title="再開コマンド", description=f"Round{count}から再開します。")
                     await message.channel.send(embed=embed)
                     await chat.send(embed=embed)
                     break
-            await message.channel.send(f"Error: 入力方法が間違っています。\n入力内容：{names}\n\n`cancelと入力するとキャンセルできます`\n↓もう一度入力してください↓")
+            embed = Embed(title="Error: 入力方法が間違っています",
+                          description=f"入力内容：{names}\n\n`cancelと入力するとキャンセルできます`\n↓もう一度入力してください↓",  color=0xff0000)
+            await message.channel.send(embed=embed)
 
             def check(m):
                 return m.channel == message.channel and m.author == message.author
-
             try:
                 msg = await client.wait_for('message', timeout=60.0, check=check)
             except asyncio.TimeoutError:
@@ -571,37 +578,37 @@ async def on_message(message):
         def check(reaction, user):
             stamps = ["▶️", "❌"]
             return user == message.author and reaction.emoji in stamps and reaction.message == before_start
-
         reaction, _ = await client.wait_for('reaction_add', check=check)
         await before_start.clear_reactions()
         if reaction.emoji == "❌":
             await before_start.delete()
             return
+        VoiceClient = await stage_channel.connect(reconnect=True)
+        await message.guild.me.edit(suppress=False)
         embed = Embed(title="Are you ready??", color=0x00ff00)
         sent_message = await message.channel.send(embed=embed)
         await sent_message.add_reaction("❌")
         embed.description = f"BATTLEタイマーはこちら {message.channel.mention}"
         await chat.send(embed=embed)
-        if VoiceClient is False:
-            try:
-                await stage_channel.connect(reconnect=True)
-                await message.guild.me.edit(suppress=False)
-            except Exception:
-                pass
         random_start = random.randint(1, 3)
         audio = discord.PCMVolumeTransformer(
             discord.FFmpegPCMAudio(f"BattleStart_{random_start}.mp3"), volume=0.4)
         message.guild.voice_client.play(audio)
         if random_start == 1:
-            await sleep(9)
+            check_timer = await timer(9, sent_message, VoiceClient)
+            if check_timer is False:
+                return
         else:
-            await sleep(11)
-        await connection()
+            check_timer = await timer(11, sent_message, VoiceClient)
+            if check_timer is False:
+                return
         embed = Embed(title="🔥🔥 3, 2, 1, Beatbox! 🔥🔥", color=0xff0000)
         await sent_message.edit(embed=embed)
         embed.description = f"BATTLEタイマーはこちら {message.channel.mention}"
         await chat.send(embed=embed)
-        await sleep(3)
+        check_timer = await timer(3, sent_message, VoiceClient)
+        if check_timer is False:
+            return
         stamps = {1: "1️⃣", 2: "2️⃣", 3: "3️⃣", 4: "4️⃣"}
 
         while count <= 4:
@@ -611,30 +618,39 @@ async def on_message(message):
             counter = 50
             color = 0x00ff00
             for i in range(5):
-                await timer(9.9, sent_message)
+                check_timer = await timer(9.9, sent_message, VoiceClient)
+                if check_timer is False:
+                    return
                 embed = Embed(
                     title=f"{counter}", description=f"Round {stamps[count]}  **{names[1 - count % 2]}**\n\n{names[0]} vs {names[1]}", color=color)
                 await sent_message.edit(embed=embed)
                 counter -= 10
-                await connection()
                 if i == 1:
                     color = 0xffff00
+                    embed = Embed(
+                        title="音声バグが発生する場合があります", description=f"Beatboxerの音声が聞こえない場合、チャットにてお知らせください\n`タイマーを停止し、バトルを中断することがあります`\n\nBATTLEタイマーはこちら {message.channel.mention}", color=0xffff00)
+                    await chat.send(embed=embed)
                 elif i == 3:
                     color = 0xff0000
-            await timer(4.9, sent_message)
+            check_timer = await timer(4.9, sent_message, VoiceClient)
+            if check_timer is False:
+                return
             embed = Embed(
                 title="5", description=f"Round {stamps[count]}  **{names[1 - count % 2]}**\n\n{names[0]} vs {names[1]}", color=color)
             await sent_message.edit(embed=embed)
-            await timer(4.9, sent_message)
+            check_timer = await timer(4.9, sent_message, VoiceClient)
+            if check_timer is False:
+                return
             if count <= 3:
                 audio = discord.PCMVolumeTransformer(
                     discord.FFmpegPCMAudio(f"round{count + 1}switch_{random.randint(1, 3)}.mp3"), volume=2)
-                await connection()
                 message.guild.voice_client.play(audio)
                 embed = Embed(
                     title="TIME!", description=f"Round {stamps[count + 1]}  **{names[count % 2]}**\nSWITCH!\n\n{names[0]} vs {names[1]}")
                 await sent_message.edit(embed=embed)
-                await timer(3, sent_message)
+                check_timer = await timer(3, sent_message, VoiceClient)
+                if check_timer is False:
+                    return
             count += 1
         audio = discord.PCMVolumeTransformer(
             discord.FFmpegPCMAudio(f"time_{random.randint(1, 2)}.mp3"), volume=0.3)
@@ -669,7 +685,7 @@ async def on_message(message):
         await poll.add_reaction("🔥")
         audio = discord.PCMVolumeTransformer(
             discord.FFmpegPCMAudio(f"msn_{random.randint(1, 3)}.mp3"), volume=0.4)
-        await sleep(4.5)
+        await sleep(4.0)
         message.guild.voice_client.play(audio)
         await chat.send(embed=embed_chat_info)
         return
@@ -710,7 +726,7 @@ async def on_message(message):
             await interaction.response.defer(ephemeral=True, thinking=False)
             await interaction.user.add_roles(bs_role)
             embed = Embed(title="受付完了 entry completed",
-                          description=f"**注意事項**\n\n・バトルを始める際、speakerになった後、ミュート以外画面操作を一切行わないでください。Discordバグにより音声が一切入らなくなります\n\n・ノイズキャンセル設定に問題がある方が非常に増えています。\n必ず {bbx_mic.mention} を確認して、マイク設定を行ってからの参加をお願いします。", color=0xffff00)
+                          description=f"**注意事項**\n\n・バトルを始める際、speakerになった後、ミュート以外画面操作を一切行わないでください。Discordバグにより音声が一切入らなくなります\n\n・ノイズキャンセル設定に問題がある方が非常に増えています。\n必ず {bbx_mic.mention} を確認して、マイク設定を行ってからの参加をお願いします。\n\n・Discordの音声バグにより、バトルを中断することがあります。", color=0xffff00)
             await message.channel.send(f"エントリー完了：{interaction.user.display_name}", delete_after=3)
             await interaction.followup.send(embed=embed, ephemeral=True)
 
@@ -731,6 +747,8 @@ async def on_message(message):
         await chat.send(embed=embed_chat_info)
         await entry_channel.send(f"{vc_role.mention}\nボタンを押してエントリー！\npress button to entry", delete_after=30)
         await sleep(20)
+        embed = Embed(title="バトル中に、音声バグが発生する場合があります", description=f"Beatboxerの音声が聞こえない場合、チャットにてお知らせください\n`タイマーを停止し、バトルを中断することがあります`\n\nBATTLEタイマーはこちら {message.channel.mention}", color=0xffff00)
+        await chat.send(embed=embed)
         embed = Embed(title="締め切り10秒前", color=0xff0000)
         await message.channel.send(embed=embed)
         await sleep(10)
@@ -747,7 +765,7 @@ async def on_message(message):
         random.shuffle(playerlist)
         counter = 1
         counter2 = 0
-        embed = Embed(
+        embed_pairing = Embed(
             title="抽選結果", description="先攻・後攻は、バトル直前に抽選を行います", color=0xff9900)
         while counter2 + 2 <= len(playerlist):
             embed.add_field(
@@ -760,23 +778,24 @@ async def on_message(message):
                 double_pl = playerlist[0]
             else:
                 double_pl = double_pl.mention
-            await message.channel.send(f"----------------------------------------\n\n参加人数が奇数でした。\n{playerlist[0]}さんの対戦が2回行われます。\n\n※あと1人参加者が追加された場合、{playerlist[0]}さんと交代になります。")
+            embed = Embed(title="参加人数が奇数でした", description=f"{playerlist[0]}さんの対戦が2回行われます\n\n※あと1人参加者が追加された場合、{playerlist[0]}さんと交代になります。", color=0xff9900)
+            await message.channel.send(embed=embed)
             await pairing_channel.send(f"参加人数が奇数でした。\n{double_pl}さんの対戦が2回行われます。\n\n※あと1人参加者が追加された場合、{double_pl}さんと交代になります。")
-            embed_double = Embed(
+            embed = Embed(
                 title="参加人数が奇数でした", description=f"あと1人参加できます。ご希望の方はこのチャットにご記入ください。\n\n※参加者が追加された場合、{playerlist[0]}さんと交代になります。", color=0xff9900)
-            await chat.send(embed=embed_double)
-            embed.add_field(
+            await chat.send(embed=embed)
+            embed_pairing.add_field(
                 name=f"Match{counter}", value=f"{playerlist[-1]} vs {playerlist[0]}", inline=False)
         tari3210 = message.guild.get_member(412082841829113877)
-        embed.set_footer(
+        embed_pairing.set_footer(
             text=f"bot開発者: {str(tari3210)}", icon_url=tari3210.display_avatar.url)
         JST = datetime.timezone(datetime.timedelta(hours=9))
-        embed.timestamp = datetime.datetime.now(JST)
-        await message.channel.send(embed=embed)
-        embed.title = "対戦カード"
-        await pairing_channel.send(vc_role.mention, embed=embed)
+        embed_pairing.timestamp = datetime.datetime.now(JST)
+        await message.channel.send(embed=embed_pairing)
+        embed_pairing.title = "対戦カード"
+        await pairing_channel.send(vc_role.mention, embed=embed_pairing)
         await pairing_channel.send(f"{bs_role.mention}\n\n{bbx_mic.mention} を確認して、マイク設定を行ってからの参加をお願いします。\n\n※スマホユーザーの方へ\nspeakerになった後、ミュート以外画面操作を一切行わないでください\nDiscordバグにより音声が一切入らなくなります")
-        await chat.send(embeds=[embed, embed_chat_info])
+        await chat.send(embeds=[embed_pairing, embed_chat_info])
         return
 
     if message.content == "s.stage":
