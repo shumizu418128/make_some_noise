@@ -519,11 +519,13 @@ async def on_message(message):
                     VoiceClient.stop()
                 except Exception:
                     pass
+                audio = discord.PCMVolumeTransformer(
+                    discord.FFmpegPCMAudio(f"timer_stop.mp3"))
+                message.guild.voice_client.play(audio)
                 embed = Embed(
                     title="TIMER STOPPED", description="問題が発生したため、タイマーを停止しました\nまもなく、停止時のラウンドからバトルを再開します", color=0xff0000)
                 await message.channel.send(embed=embed)
                 await chat.send(embed=embed)
-                await message.guild.voice_client.disconnect()
                 return False
 
         await chat.send(embed=embed_chat_info)
