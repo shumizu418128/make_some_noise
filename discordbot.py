@@ -702,10 +702,12 @@ async def on_message(message):
         pairing_channel = client.get_channel(930767329137143839)  # 対戦表
         bs_role = message.guild.get_role(930368130906218526)  # BATTLE STADIUM
         entry_channel = client.get_channel(930446820839157820)  # 参加
+        general = message.guild.get_channel(864475338340171791)  # 全体チャット
         scheduled_events = message.guild.scheduled_events
         embed_chat_info = Embed(title="チャット欄はこちら chat is here",
                                 description=f"対戦表： {pairing_channel.mention}\nエントリー： {entry_channel.mention}\nBATTLEタイマー： {message.channel.mention}", color=0x00bfff)
-        await chat.send(vc_role.mention, embed=embed_chat_info)
+        await chat.send("ただいま準備中...", embed=embed_chat_info)
+        await message.channel.send("処理中...")
         try:
             for scheduled_event in scheduled_events:
                 if scheduled_event.name == "BATTLE STADIUM":
@@ -714,12 +716,10 @@ async def on_message(message):
             await stage_channel.create_instance(topic="BATTLE STADIUM", send_notification=True)
         except Exception:
             pass
-        try:
-            await stage_channel.connect(reconnect=True)
-        except discord.errors.ClientException:
-            pass
+        await stage_channel.connect(reconnect=True)
         await message.guild.me.edit(suppress=False)
         await pairing_channel.purge()
+        await general.send(stage_channel.jump_url, file=discord.File("battlestadium.gif"))
         for member in bs_role.members:
             await member.remove_roles(bs_role)
         button = Button(
@@ -740,6 +740,9 @@ async def on_message(message):
             title="Entry", description="下のボタンを押してエントリー！\npress button to entry")
         entry_button = await entry_channel.send(vc_role.mention, embed=embed, view=view)
         entry_button2 = await chat.send("このボタンからもエントリーできます", embed=embed, view=view)
+        audio = discord.PCMVolumeTransformer(
+            discord.FFmpegPCMAudio("announce.mp3"))
+        message.guild.voice_client.play(audio)
         embed = Embed(
             title="受付開始", description=f"ただいまより参加受付を開始します。\n{entry_channel.mention}にてエントリーを行ってください。\nentry now accepting at {entry_channel.mention}", color=0x00bfff)
         await message.channel.send(embed=embed)
