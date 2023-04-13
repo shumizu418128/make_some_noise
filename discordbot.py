@@ -716,10 +716,10 @@ async def on_message(message):
             await stage_channel.create_instance(topic="BATTLE STADIUM", send_notification=True)
         except Exception:
             pass
+        await general.send(stage_channel.jump_url, file=discord.File("battlestadium.gif"))
         await stage_channel.connect(reconnect=True)
         await message.guild.me.edit(suppress=False)
         await pairing_channel.purge()
-        await general.send(stage_channel.jump_url, file=discord.File("battlestadium.gif"))
         for member in bs_role.members:
             await member.remove_roles(bs_role)
         button = Button(
