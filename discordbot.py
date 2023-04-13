@@ -842,6 +842,8 @@ async def on_message(message):
         return
 
     if message.content.startswith("s.bs"):
+        general = message.guild.get_channel(864475338340171791)  # 全体チャット
+        announce = message.guild.get_channel(885462548055461898)  # お知らせ
         await message.delete(delay=1)
         JST = datetime.timezone(datetime.timedelta(hours=9))
         dt_now = datetime.datetime.now(JST)
@@ -852,13 +854,10 @@ async def on_message(message):
             dt_now.year, dt_now.month, dt_now.day, 22, 30, 0, 0, JST) + sat
         stage = client.get_channel(931462636019802123)  # BATTLE STADIUM
         event = await message.guild.create_scheduled_event(name="BATTLE STADIUM", description="今週もやります！\nこのイベントの趣旨は「とにかくBeatboxバトルをすること」です。いつでも何回でも参加可能です。\nぜひご参加ください！\n観戦も可能です。観戦中、マイクがオンになることはありません。\n\n※エントリー受付・当日の進行はすべてbotが行います。\n※エントリー受付開始時間は、バトル開始1分前です。", start_time=start_time, end_time=end_time, channel=stage, privacy_level=discord.PrivacyLevel.guild_only)
-        embed = Embed(title="BATTLE STADIUM 開催のお知らせ", description="```今週もやります！\nこのイベントの趣旨は「とにかくBeatboxバトルをすること」です。いつでも何回でも参加可能です。\nぜひご参加ください！\n観戦も可能です。観戦中、マイクがオンになることはありません。\n\n※エントリー受付・当日の進行はすべてbotが行います。\n※エントリー受付開始時間は、バトル開始1分前です。```", color=0x00bfff)
-        embed.add_field(name="日時 date", value=start_time.strftime(
-            '%m/%d 21:30 - 22:30 Japan time'), inline=False)
-        embed.add_field(name="場所 place",
-                        value=f'stage channel {stage.mention}', inline=False)
-        await message.channel.send(embed=embed)
-        await message.channel.send(event.url)
+        await announce.send(file=discord.File("battlestadium.gif"))
+        await announce.send(event.url)
+        await general.send(file=discord.File("battlestadium.gif"))
+        await general.send(event.url)
         return
 
 client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
