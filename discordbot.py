@@ -3,6 +3,7 @@ import datetime
 import random
 from asyncio import sleep
 
+import discord
 from discord import *
 from discord.ui import *
 from discord.errors import *
@@ -10,7 +11,7 @@ from discord.errors import *
 intents = Intents.all()  # デフォルトのIntentsオブジェクトを生成
 intents.typing = False  # typingを受け取らないように
 c = Client(intents=intents)
-print(f"Make Some Noise! (server): {__version__}")
+print(f"Make Some Noise! (server): {discord.__version__}")
 
 
 @c.event
@@ -104,7 +105,7 @@ async def on_message(message):
         return
 
     if message.content == "s.test":
-        await message.channel.send(f"{str(c.user)}\n{__version__}")
+        await message.channel.send(f"{str(c.user)}\n{discord.__version__}")
         return
 
     if message.content == "s.join":
