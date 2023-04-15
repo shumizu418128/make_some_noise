@@ -47,5 +47,6 @@ COPY time_fuga.mp3 time_fuga.mp3
 COPY timer_stop.mp3 timer_stop.mp3
 COPY battlestadium.gif battlestadium.gif
 COPY announce.mp3 announce.mp3
+COPY battle_stadium.py battle_stadium.py
 CMD ["python", "-u", "discordbot.py"]
 ARG EnvironmentVariable
