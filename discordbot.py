@@ -4,7 +4,7 @@ import random
 from asyncio import sleep
 
 from discord import *
-from discord.ui import Button, View
+from discord.ui import *
 from discord.errors import *
 
 intents = Intents.all()  # デフォルトのIntentsオブジェクトを生成
