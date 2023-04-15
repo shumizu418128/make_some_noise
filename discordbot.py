@@ -657,7 +657,6 @@ async def on_message(message):
             count += 1
         audio = discord.PCMVolumeTransformer(
             discord.FFmpegPCMAudio(f"time_{random.randint(1, 2)}.mp3"), volume=0.3)
-        pairing_channel = client.get_channel(930767329137143839)  # 対戦表
         await sent_message.delete()
         tari3210 = message.guild.get_member(412082841829113877)
         if random.randint(1, 20) == 1:
@@ -775,7 +774,7 @@ async def on_message(message):
         embed_pairing = Embed(
             title="抽選結果", description="先攻・後攻は、バトル直前に抽選を行います", color=0xff9900)
         while counter2 + 2 <= len(playerlist):
-            embed.add_field(
+            embed_pairing.add_field(
                 name=f"Match{counter}", value=f"{playerlist[counter2]} vs {playerlist[counter2 + 1]}", inline=False)
             counter += 1
             counter2 += 2
