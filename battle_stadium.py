@@ -38,8 +38,7 @@ async def start(client: Client):
     await pairing_channel.purge()
     for member in bs_role.members:
         await member.remove_roles(bs_role)
-    button = Button(
-        label="Entry", style=ButtonStyle.primary, emoji="✅")
+    button = Button(label="Entry", style=ButtonStyle.primary, emoji="✅")
 
     async def button_callback(interaction):
         await interaction.response.defer(ephemeral=True, thinking=False)
@@ -56,8 +55,7 @@ async def start(client: Client):
         title="Entry", description="下のボタンを押してエントリー！\npress button to entry")
     entry_button = await entry_channel.send(vc_role.mention, embed=embed, view=view)
     entry_button2 = await chat.send("このボタンからもエントリーできます", embed=embed, view=view)
-    audio = PCMVolumeTransformer(
-        FFmpegPCMAudio("announce.mp3"))
+    audio = PCMVolumeTransformer(FFmpegPCMAudio("announce.mp3"))
     chat.guild.voice_client.play(audio)
     embed = Embed(
         title="受付開始", description=f"ただいまより参加受付を開始します。\n{entry_channel.mention}にてエントリーを行ってください。\nentry now accepting at {entry_channel.mention}", color=0x00bfff)
@@ -78,11 +76,11 @@ async def start(client: Client):
     await entry_button.delete()
     await entry_button2.delete()
     await bot_channel.send("参加受付を締め切りました。\nentry closed\n\n処理中... しばらくお待ちください")
-    playerlist = [member.display_name.replace(
-        "`", "").replace(" ", "-") for member in bs_role.members]
+    playerlist = [member.display_name.replace("`", "").replace(
+        " ", "-") for member in bs_role.members]
     if len(playerlist) < 2:
-        embed = Embed(
-            title="Error", description="参加者が不足しています。", color=0xff0000)
+        embed = Embed(title="Error", description="参加者が不足しています。",
+                      color=0xff0000)
         await bot_channel.send(embed=embed)
         return
     random.shuffle(playerlist)
@@ -101,12 +99,12 @@ async def start(client: Client):
             double_pl = playerlist[0]
         else:
             double_pl = double_pl.mention
-        embed = Embed(
-            title="参加人数が奇数でした", description=f"{playerlist[0]}さんの対戦が2回行われます\n\n※あと1人参加者が追加された場合、{playerlist[0]}さんと交代になります。", color=0xff9900)
+        embed = Embed(title="参加人数が奇数でした",
+                      description=f"{playerlist[0]}さんの対戦が2回行われます\n\n※あと1人参加者が追加された場合、{playerlist[0]}さんと交代になります。", color=0xff9900)
         await bot_channel.send(embed=embed)
         await pairing_channel.send(f"参加人数が奇数でした。\n{double_pl}さんの対戦が2回行われます。\n\n※あと1人参加者が追加された場合、{double_pl}さんと交代になります。")
-        embed = Embed(
-            title="参加人数が奇数でした", description=f"あと1人参加できます。ご希望の方はこのチャットにご記入ください。\n\n※参加者が追加された場合、{playerlist[0]}さんと交代になります。", color=0xff9900)
+        embed = Embed(title="参加人数が奇数でした",
+                      description=f"あと1人参加できます。ご希望の方はこのチャットにご記入ください。\n\n※参加者が追加された場合、{playerlist[0]}さんと交代になります。", color=0xff9900)
         await chat.send(embed=embed)
         embed_pairing.add_field(
             name=f"Match{counter}", value=f"{playerlist[-1]} vs {playerlist[0]}", inline=False)
@@ -161,7 +159,7 @@ async def battle(text: str, client: Client):
         random.shuffle(names)
 
     if count == 0 or count > 4:  # countが0 == nameの取得失敗
-        embed = Embed(title="Error: 入力方法が間違っています",
+        embed = Embed(title="Error: 対戦カード読み込み失敗",
                       description=f"入力内容：{names}\n\n`cancelと入力するとキャンセルできます`\n↓もう一度入力してください↓", color=0xff0000)
         await bot_channel.send(embed=embed)
 
@@ -216,8 +214,8 @@ async def battle(text: str, client: Client):
                 chat.guild.voice_client.play(audio)
             except Exception:
                 pass
-            embed = Embed(
-                title="TIMER STOPPED", description="問題が発生したため、タイマーを停止しました\ntimer stopped due to a problem\n\nまもなく、自動でバトル再開準備を行います", color=0xff0000)
+            embed = Embed(title="TIMER STOPPED",
+                          description="問題が発生したため、タイマーを停止しました\ntimer stopped due to a problem\n\nまもなく、自動でバトル再開準備を行います", color=0xff0000)
             await bot_channel.send(embed=embed)
             await chat.send(embed=embed)
             await sleep(3)
@@ -253,8 +251,8 @@ async def battle(text: str, client: Client):
     embed.description = f"BATTLEタイマーはこちら {bot_channel.mention}"
     await chat.send(embed=embed)
     random_start = random.randint(1, 3)
-    audio = PCMVolumeTransformer(
-        FFmpegPCMAudio(f"BattleStart_{random_start}.mp3"), volume=0.4)
+    audio = PCMVolumeTransformer(FFmpegPCMAudio(
+        f"BattleStart_{random_start}.mp3"), volume=0.4)
     chat.guild.voice_client.play(audio)
     if random_start == 1:
         check_timer = await timer(9, sent_message, voice_client, count)
@@ -288,8 +286,8 @@ async def battle(text: str, client: Client):
             counter -= 10
             if i == 1:
                 color = 0xffff00
-                embed = Embed(
-                    title="音声バグが発生する場合があります", description=f"Beatboxerの音声が聞こえない場合、チャットにてお知らせください\n`タイマーを停止し、バトルを中断することがあります`\n\nBATTLEタイマーはこちら {bot_channel.mention}", color=0xffff00)
+                embed = Embed(title="音声バグが発生する場合があります",
+                              description=f"Beatboxerの音声が聞こえない場合、チャットにてお知らせください\n`タイマーを停止し、バトルを中断することがあります`\n\nBATTLEタイマーはこちら {bot_channel.mention}", color=0xffff00)
                 await chat.send(embed=embed)
             elif i == 3:
                 color = 0xff0000
@@ -313,8 +311,8 @@ async def battle(text: str, client: Client):
             if check_timer is False:
                 return
         count += 1
-    audio = PCMVolumeTransformer(
-        FFmpegPCMAudio(f"time_{random.randint(1, 2)}.mp3"), volume=0.5)
+    audio = PCMVolumeTransformer(FFmpegPCMAudio(
+        f"time_{random.randint(1, 2)}.mp3"), volume=0.5)
     await sent_message.delete()
     tari3210 = chat.guild.get_member(412082841829113877)
     if random.randint(1, 20) == 1:
@@ -336,8 +334,8 @@ async def battle(text: str, client: Client):
     chat.guild.voice_client.play(audio)
     embed = Embed(
         title="投票箱", description=f"1️⃣ {names[0]}\n2️⃣ {names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
-    embed.set_footer(
-        text=f"bot開発者: {str(tari3210)}", icon_url=tari3210.display_avatar.url)
+    embed.set_footer(text=f"bot開発者: {str(tari3210)}",
+                     icon_url=tari3210.display_avatar.url)
     embed.timestamp = datetime.datetime.now(JST)
     poll = await bot_channel.send(f"{vc_role.mention}\nmake some noise for the battle!\ncome on!!", embed=embed)
     await poll.add_reaction("1⃣")
