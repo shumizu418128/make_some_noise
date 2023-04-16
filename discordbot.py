@@ -4,19 +4,19 @@ import random
 from asyncio import sleep
 
 import discord
-from discord import *
-from discord.errors import *
-from discord.ui import *
+from discord import (ChannelType, Client, Embed, EventStatus, FFmpegPCMAudio,
+                     File, Intents, PCMVolumeTransformer, PrivacyLevel)
+from discord.errors import ClientException
 
 from battle_stadium import battle, start
 
 intents = Intents.all()  # デフォルトのIntentsオブジェクトを生成
 intents.typing = False  # typingを受け取らないように
-c = Client(intents=intents)
+client = Client(intents=intents)
 print(f"Make Some Noise! (server): {discord.__version__}")
 
 
-@c.event
+@client.event
 async def on_voice_state_update(member, before, after):
     if member.id == 412082841829113877 or member.bot:  # tari3210
         return
@@ -37,9 +37,9 @@ async def on_voice_state_update(member, before, after):
         return
 
 
-@c.event
+@client.event
 async def on_member_join(member):
-    channel = c.get_channel(864475338340171791)  # 全体チャット
+    channel = client.get_channel(864475338340171791)  # 全体チャット
     embed_discord = Embed(
         title="Discordの使い方", description="https://note.com/me1o_crew/n/nf2971acd1f1a")
     embed = Embed(title="GBBの最新情報はこちら", color=0xF0632F)
@@ -63,7 +63,7 @@ async def on_member_join(member):
     await channel.send(closest_event.url)
 
 
-@c.event
+@client.event
 async def on_message(message):
     if not message.content.startswith("s."):
         if message.author.bot or "https://gbbinfo-jpn.jimdofree.com/" in message.content:
@@ -107,7 +107,7 @@ async def on_message(message):
         return
 
     if message.content == "s.test":
-        await message.channel.send(f"{str(c.user)}\n{discord.__version__}")
+        await message.channel.send(f"{str(client.user)}\n{discord.__version__}")
         return
 
     if message.content == "s.join":
@@ -228,7 +228,7 @@ async def on_message(message):
     if message.content.startswith("s.c") and "s.c90" not in message.content and "s.cancel" not in message.content and "s.check" not in message.content:
         if message.guild.voice_client is None:
             await message.author.voice.channel.connect(reconnect=True)
-        VC = message.guild.voice_client
+        voice_client = message.guild.voice_client
         names = [(j) for j in message.content.replace('s.c', '').split()]
         if len(names) == 0:
             await message.delete(delay=1)
@@ -238,7 +238,7 @@ async def on_message(message):
             sent_message = await message.channel.send(embed=embed)
             message.guild.voice_client.play(audio)
             await sleep(7)
-            connect = VC.is_connected()
+            connect = voice_client.is_connected()
             if connect is False:
                 await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection", delete_after=5)
                 await sent_message.delete()
@@ -252,7 +252,7 @@ async def on_message(message):
                 embed = Embed(title=f"{counter}", color=color)
                 await sent_message.edit(embed=embed)
                 counter -= 10
-                connect = VC.is_connected()
+                connect = voice_client.is_connected()
                 if connect is False:
                     await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection", delete_after=5)
                     await sent_message.delete()
@@ -291,7 +291,7 @@ async def on_message(message):
                 return m.channel == message.channel and m.author == message.author
 
             try:
-                msg2 = await c.wait_for('message', timeout=60.0, check=check)
+                msg2 = await client.wait_for('message', timeout=60.0, check=check)
             except asyncio.TimeoutError:
                 await message.channel.send("Error: timeout", delete_after=5)
                 return
@@ -314,7 +314,7 @@ async def on_message(message):
             return user == message.author and reaction.emoji in stamps and reaction.message == before_start
 
         try:
-            reaction, _ = await c.wait_for('reaction_add', timeout=600, check=check)
+            reaction, _ = await client.wait_for('reaction_add', timeout=600, check=check)
         except asyncio.TimeoutError:
             await message.channel.send("Error: timeout", delete_after=5)
             await before_start.delete()
@@ -338,7 +338,7 @@ async def on_message(message):
             timeout = 9.9
             counter = 50
             color = 0x00ff00
-            connect = VC.is_connected()
+            connect = voice_client.is_connected()
             if connect is False:
                 await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection", delete_after=5)
                 return
@@ -347,9 +347,9 @@ async def on_message(message):
                     admin = user.get_role(904368977092964352)  # ビト森杯運営
                     return bool(admin) and reaction.emoji == '⏭️' and reaction.message == sent_message
                 try:
-                    await c.wait_for('reaction_add', timeout=timeout, check=check)
+                    await client.wait_for('reaction_add', timeout=timeout, check=check)
                 except asyncio.TimeoutError:
-                    connect = VC.is_connected()
+                    connect = voice_client.is_connected()
                     if connect is False:
                         await message.channel.send("Error: 接続が失われたため、タイマーを停止しました\nlost connection", delete_after=5)
                         await sent_message.delete()
@@ -423,7 +423,7 @@ async def on_message(message):
                 def check(reaction, user):
                     return user.bot is False and reaction.emoji == '⏭️'
                 try:
-                    await c.wait_for('reaction_add', timeout=timeout, check=check)
+                    await client.wait_for('reaction_add', timeout=timeout, check=check)
                 except asyncio.TimeoutError:
                     if counter == -10:
                         await message.channel.send("Error: timeout\nタイマーを停止しました")
@@ -492,16 +492,16 @@ async def on_message(message):
         return
 
     if message.content.startswith("s.battle"):
-        await battle(message.content, c)
+        await battle(message.content, client)
         return
 
     if message.content == "s.start":
-        await start(c)
+        await start(client)
         return
 
     if message.content == "s.stage":
         await message.delete(delay=1)
-        stage_channel = c.get_channel(931462636019802123)  # ステージ
+        stage_channel = client.get_channel(931462636019802123)  # ステージ
         try:
             await stage_channel.create_instance(topic="BATTLE STADIUM")
         except Exception:
@@ -516,9 +516,9 @@ async def on_message(message):
 
     if message.content == "s.end":
         await message.delete(delay=1)
-        pairing_channel = c.get_channel(930767329137143839)  # 対戦表
+        pairing_channel = client.get_channel(930767329137143839)  # 対戦表
         bs_role = message.guild.get_role(930368130906218526)  # BATTLE STADIUM
-        stage = c.get_channel(931462636019802123)  # ステージ
+        stage = client.get_channel(931462636019802123)  # ステージ
         scheduled_events = message.guild.scheduled_events
         for scheduled_event in scheduled_events:
             if scheduled_event.status == EventStatus.active and scheduled_event.name == "BATTLE STADIUM":
@@ -545,7 +545,7 @@ async def on_message(message):
             dt_now.year, dt_now.month, dt_now.day, 21, 30, 0, 0, JST) + sat
         end_time = datetime.datetime(
             dt_now.year, dt_now.month, dt_now.day, 22, 30, 0, 0, JST) + sat
-        stage = c.get_channel(931462636019802123)  # BATTLE STADIUM
+        stage = client.get_channel(931462636019802123)  # BATTLE STADIUM
         event = await message.guild.create_scheduled_event(name="BATTLE STADIUM", description="今週もやります！\nこのイベントの趣旨は「とにかくBeatboxバトルをすること」です。いつでも何回でも参加可能です。\nぜひご参加ください！\n観戦も可能です。観戦中、マイクがオンになることはありません。\n\n※エントリー受付・当日の進行はすべてbotが行います。\n※エントリー受付開始時間は、バトル開始1分前です。", start_time=start_time, end_time=end_time, channel=stage, privacy_level=PrivacyLevel.guild_only)
         await announce.send(file=File("battlestadium.gif"))
         await announce.send(event.url)
@@ -553,4 +553,4 @@ async def on_message(message):
         await general.send(event.url)
         return
 
-c.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
+client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
