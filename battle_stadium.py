@@ -129,6 +129,7 @@ s.battle コマンド
 
 
 async def battle(text: str, client: Client):
+    stamps = {1: "1️⃣", 2: "2️⃣", 3: "3️⃣", 4: "4️⃣"}
     stage_channel = client.get_channel(931462636019802123)  # ステージ
     chat = stage_channel
     pairing_channel = client.get_channel(930767329137143839)  # 対戦表
@@ -148,7 +149,7 @@ async def battle(text: str, client: Client):
             pass
         if 1 <= count <= 4:
             embed = Embed(
-                title="バトル再開コマンド", description=f"Round{count}から再開します。", color=0x00bfff)
+                title="バトル再開モード", description=f"Round {stamps[count]} **{names[1 - count % 2]}** から再開します。", color=0x00bfff)
             await bot_channel.send(embed=embed)
             await chat.send(embed=embed)
     embed = Embed(title="処理中...")
@@ -187,6 +188,7 @@ async def battle(text: str, client: Client):
                     title="Error", description="接続が失われたため、タイマーを停止しました\nlost connection\n\nまもなく、自動でバトル再開準備を行います", color=0xff0000)
                 await bot_channel.send(embed=embed)
                 await chat.send(embed=embed)
+                await sleep(3)
                 await bot_channel.send(f"----------\n\n再開コマンド自動入力：{names[0]} vs {names[1]} Round{count}\n\n----------")
                 await battle(f"{names[0]} {names[1]} {count}")
                 return False
@@ -218,6 +220,7 @@ async def battle(text: str, client: Client):
                 title="TIMER STOPPED", description="問題が発生したため、タイマーを停止しました\ntimer stopped due to a problem\n\nまもなく、自動でバトル再開準備を行います", color=0xff0000)
             await bot_channel.send(embed=embed)
             await chat.send(embed=embed)
+            await sleep(3)
             await bot_channel.send(f"----------\n\n再開コマンド自動入力：{names[0]} vs {names[1]} Round{count}\n\n----------")
             await battle(f"{names[0]} {names[1]} {count}", client)
             return False
@@ -268,7 +271,6 @@ async def battle(text: str, client: Client):
     check_timer = await timer(3, sent_message, voice_client, count)
     if check_timer is False:
         return
-    stamps = {1: "1️⃣", 2: "2️⃣", 3: "3️⃣", 4: "4️⃣"}
 
     while count <= 4:
         embed = Embed(
@@ -312,7 +314,7 @@ async def battle(text: str, client: Client):
                 return
         count += 1
     audio = PCMVolumeTransformer(
-        FFmpegPCMAudio(f"time_{random.randint(1, 2)}.mp3"), volume=0.3)
+        FFmpegPCMAudio(f"time_{random.randint(1, 2)}.mp3"), volume=0.5)
     await sent_message.delete()
     tari3210 = chat.guild.get_member(412082841829113877)
     if random.randint(1, 20) == 1:
@@ -342,7 +344,7 @@ async def battle(text: str, client: Client):
     await poll.add_reaction("2⃣")
     await poll.add_reaction("🔥")
     audio = PCMVolumeTransformer(FFmpegPCMAudio(
-        f"msn_{random.randint(1, 3)}.mp3"), volume=0.5)
+        f"msn_{random.randint(1, 3)}.mp3"), volume=0.7)
     await sleep(4.0)
     chat.guild.voice_client.play(audio)
     await chat.send(embed=embed_chat_info)
