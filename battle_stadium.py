@@ -16,7 +16,7 @@ async def start(client: Client):
     bbx_mic = client.get_channel(931781522808262756)  # bbxマイク設定
     pairing_channel = client.get_channel(930767329137143839)  # 対戦表
     entry_channel = client.get_channel(930446820839157820)  # 参加
-    general = chat.guild.get_channel(864475338340171791)  # 全体チャット
+    general = client.get_channel(864475338340171791)  # 全体チャット
     bs_role = chat.guild.get_role(930368130906218526)  # BATTLE STADIUM
     vc_role = chat.guild.get_role(935073171462307881)  # in a vc
     scheduled_events = chat.guild.scheduled_events
@@ -165,9 +165,9 @@ async def battle(text: str, client: Client):
                       description=f"入力内容：{names}\n\n`cancelと入力するとキャンセルできます`\n↓もう一度入力してください↓", color=0xff0000)
         await bot_channel.send(embed=embed)
 
-        def check(m):
-            role_check = m.author.get_role(1096821566114902047)  # バトスタ運営
-            return m.channel == bot_channel and bool(role_check)
+        def check(message):
+            role_check = message.author.get_role(1096821566114902047)  # バトスタ運営
+            return message.channel == bot_channel and bool(role_check)
         try:
             message = await client.wait_for('message', timeout=600, check=check)
         except asyncio.TimeoutError:
