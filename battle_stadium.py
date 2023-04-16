@@ -3,8 +3,7 @@ import datetime
 import random
 from asyncio import sleep
 
-import discord
-from discord import (ButtonStyle, Client, Embed, FFmpegPCMAudio, File,
+from discord import (ButtonStyle, Client, Embed, FFmpegPCMAudio, File, Message,
                      PCMVolumeTransformer, VoiceClient)
 from discord.ui import Button, View
 
@@ -194,7 +193,7 @@ async def battle(text: str, client: Client):
             else:
                 print("lost connection: auto reconnect done")
 
-    async def timer(time: float, message: discord.Message, voice_client: VoiceClient, count: int):
+    async def timer(time: float, message: Message, voice_client: VoiceClient, count: int):
         connect = await connection(voice_client)
         if connect is False:
             return False
