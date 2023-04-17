@@ -177,7 +177,7 @@ async def battle(text: str, client: Client):
         await battle(message.content, client)
         return
 
-    async def connection(voice_client):
+    async def connection(voice_client: VoiceClient):
         if voice_client.is_connected is False:
             try:
                 await stage_channel.connect(reconnect=True)
@@ -188,7 +188,7 @@ async def battle(text: str, client: Client):
                 await chat.send(embed=embed)
                 await sleep(3)
                 await bot_channel.send(f"----------\n\n再開コマンド自動入力：{names[0]} vs {names[1]} Round{count}\n\n----------")
-                await battle(f"{names[0]} {names[1]} {count}")
+                await battle(f"{names[0]} {names[1]} {count}", client)
                 return False
             else:
                 print("lost connection: auto reconnect done")
