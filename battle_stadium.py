@@ -31,7 +31,7 @@ async def start(client: Client):
         await stage_channel.create_instance(topic="BATTLE STADIUM", send_notification=True)
     except Exception:
         pass
-    await general.send(stage_channel.jump_url, file=File("battlestadium.gif"))
+    await general.send(stage_channel.jump_url, file=File("battle_stadium.gif"))
     if chat.guild.voice_client is None:
         await stage_channel.connect(reconnect=True)
     await chat.guild.me.edit(suppress=False)
@@ -87,7 +87,7 @@ async def start(client: Client):
     counter = 1
     counter2 = 0
     embed_pairing = Embed(
-        title="抽選結果", description="先攻・後攻は、バトル直前に抽選を行います", color=0xff9900)
+        title="抽選結果", description="先攻・後攻は、バトル直前に抽選を行い決定します", color=0xff9900)
     while counter2 + 2 <= len(playerlist):
         embed_pairing.add_field(
             name=f"Match{counter}", value=f"{playerlist[counter2]} vs {playerlist[counter2 + 1]}", inline=False)
