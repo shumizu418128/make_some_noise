@@ -274,6 +274,7 @@ async def battle(text: str, client: Client):
         embed = Embed(
             title="1:00", description=f"Round {stamps[count]}  **{names[1 - count % 2]}**\n\n{names[0]} vs {names[1]}", color=0x00ff00)
         await sent_message.edit(embed=embed)
+        await chat.send(embed=embed, delete_after=10)
         counter = 50
         color = 0x00ff00
         for i in range(5):
@@ -283,6 +284,7 @@ async def battle(text: str, client: Client):
             embed = Embed(
                 title=f"{counter}", description=f"Round {stamps[count]}  **{names[1 - count % 2]}**\n\n{names[0]} vs {names[1]}", color=color)
             await sent_message.edit(embed=embed)
+            await chat.send(embed=embed, delete_after=5)
             counter -= 10
             if i == 1:
                 color = 0xffff00
@@ -297,6 +299,7 @@ async def battle(text: str, client: Client):
         embed = Embed(
             title="5", description=f"Round {stamps[count]}  **{names[1 - count % 2]}**\n\n{names[0]} vs {names[1]}", color=color)
         await sent_message.edit(embed=embed)
+        await chat.send(embed=embed, delete_after=5)
         check_timer = await timer(4.9, sent_message, voice_client, count)
         if check_timer is False:
             return
@@ -307,6 +310,7 @@ async def battle(text: str, client: Client):
             embed = Embed(
                 title="TIME!", description=f"Round {stamps[count + 1]}  **{names[count % 2]}**\nSWITCH!\n\n{names[0]} vs {names[1]}")
             await sent_message.edit(embed=embed)
+            await chat.send(embed=embed, delete_after=3)
             check_timer = await timer(3, sent_message, voice_client, count)
             if check_timer is False:
                 return
@@ -343,7 +347,7 @@ async def battle(text: str, client: Client):
     await poll.add_reaction("🔥")
     audio = PCMVolumeTransformer(FFmpegPCMAudio(
         f"msn_{random.randint(1, 3)}.mp3"), volume=0.7)
-    await sleep(4.0)
+    await sleep(3.9)
     chat.guild.voice_client.play(audio)
-    await chat.send(embed=embed_chat_info)
+    await chat.send("make some noise for the battle!\ncome on!!", embed=embed_chat_info)
     return
