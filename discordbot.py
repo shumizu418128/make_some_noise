@@ -5,7 +5,7 @@ from asyncio import sleep
 
 import discord
 from discord import (ChannelType, Client, Embed, EventStatus, FFmpegPCMAudio,
-                     File, Intents, PCMVolumeTransformer, PrivacyLevel)
+                     File, Intents, PCMVolumeTransformer, PrivacyLevel, Member, VoiceState, Message)
 from discord.errors import ClientException
 
 from battle_stadium import battle, start
@@ -17,7 +17,7 @@ print(f"Make Some Noise! (server): {discord.__version__}")
 
 
 @client.event
-async def on_voice_state_update(member, before, after):
+async def on_voice_state_update(member: Member, before: VoiceState, after: VoiceState):
     if member.id == 412082841829113877 or member.bot:  # tari3210
         return
     try:
@@ -38,7 +38,7 @@ async def on_voice_state_update(member, before, after):
 
 
 @client.event
-async def on_member_join(member):
+async def on_member_join(member: Member):
     channel = client.get_channel(864475338340171791)  # 全体チャット
     embed_discord = Embed(
         title="Discordの使い方", description="https://note.com/me1o_crew/n/nf2971acd1f1a")
@@ -64,7 +64,7 @@ async def on_member_join(member):
 
 
 @client.event
-async def on_message(message):
+async def on_message(message: Message):
     if not message.content.startswith("s."):
         if message.author.bot or "https://gbbinfo-jpn.jimdofree.com/" in message.content:
             return
