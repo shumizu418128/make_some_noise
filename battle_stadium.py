@@ -4,7 +4,7 @@ import random
 from asyncio import sleep
 
 from discord import (ButtonStyle, Client, Embed, FFmpegPCMAudio, File, Message,
-                     PCMVolumeTransformer, VoiceClient)
+                     PCMVolumeTransformer, VoiceClient, Interaction)
 from discord.ui import Button, View
 
 
@@ -40,11 +40,11 @@ async def start(client: Client):
         await member.remove_roles(bs_role)
     button = Button(label="Entry", style=ButtonStyle.primary, emoji="✅")
 
-    async def button_callback(interaction):
+    async def button_callback(interaction: Interaction):
         await interaction.response.defer(ephemeral=True, thinking=False)
         await interaction.user.add_roles(bs_role)
         embed = Embed(title="受付完了 entry completed",
-                      description=f"**注意事項**・ノイズキャンセル設定に問題がある方が非常に増えています。\n必ず {bbx_mic.mention} を確認して、マイク設定を行ってからの参加をお願いします。\n\n・Discordの音声バグが多発しています。発生した場合、バトルを中断し、途中のラウンドからバトルを再開することがあります。\n※音声バグ発生時の対応は状況によって異なります。ご了承ください。", color=0xffff00)
+                      description=f"**注意事項**\n\n・ノイズキャンセル設定に問題がある方が非常に増えています。\n必ず {bbx_mic.mention} を確認して、マイク設定を行ってからの参加をお願いします。\n\n・Discordの音声バグが多発しています。発生した場合、バトルを中断し、途中のラウンドからバトルを再開することがあります。\n※音声バグ発生時の対応は状況によって異なります。ご了承ください。", color=0xffff00)
         await bot_channel.send(f"エントリー完了：{interaction.user.display_name}", delete_after=3)
         await interaction.followup.send(embed=embed, ephemeral=True)
 
