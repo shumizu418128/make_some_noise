@@ -2,7 +2,6 @@ import asyncio
 import datetime
 import random
 from asyncio import sleep
-from pathlib import Path
 
 import discord
 from discord import (ChannelType, Client, Embed, EventStatus, FFmpegPCMAudio,
@@ -554,8 +553,7 @@ async def on_message(message: Message):
             start_time=start_time,
             end_time=end_time,
             channel=stage,
-            privacy_level=PrivacyLevel.guild_only
-            )
+            privacy_level=PrivacyLevel.guild_only)
         await announce.send(file=File("battle_stadium.gif"))
         await announce.send(event.url)
         await general.send(file=File("battle_stadium.gif"))
