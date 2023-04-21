@@ -73,7 +73,7 @@ async def on_message(message: Message):
             if word in message.content.lower():
                 for stamp in ["💜", "❤", "💙", "💚"]:
                     await message.add_reaction(stamp)
-        embed = Embed(title="GBBの最新情報はこちら", color=0xF0632F)
+        embed = Embed(title="GBBの最新情報はこちら", description="※※※※\n\n以下のサイトにお探しの情報がない場合、**未発表もしくは未定（そもそも決定すらしていない）**可能性が高いです。\n\n※※※※", color=0xF0632F)
         embed.add_field(name="GBBINFO-JPN 日本非公式情報サイト",
                         value="https://gbbinfo-jpn.jimdofree.com/")
         embed.add_field(name="swissbeatbox 公式instagram",
