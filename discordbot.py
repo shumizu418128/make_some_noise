@@ -77,7 +77,7 @@ async def on_message(message: Message):
                 return
             await message.delete(delay=1)
             return
-        for word in ["💜❤💙💚", "brez", "ぶれず", "ブレズ", "愛", "sar", "oras", "かわいい"]:
+        for word in ["💜❤💙💚", "brez", "ぶれず", "ブレズ", "愛", "sar", "oras", "かわいい", "カワイイ"]:
             if word in message.content.lower():
                 for stamp in ["💜", "❤", "💙", "💚"]:
                     await message.add_reaction(stamp)
