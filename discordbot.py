@@ -70,15 +70,14 @@ async def on_member_join(member: Member):
 @client.event
 async def on_message(message: Message):
     if not message.content.startswith("s."):
-        if message.author.bot or "https://gbbinfo-jpn.jimdofree.com/" in message.content:
+        if any([message.author.bot, "https://gbbinfo-jpn.jimdofree.com/" in message.content, message.channel.id == 930767329137143839]):  # バトスタ対戦表
             return
-        # バトスタbot, バトスタ対戦表
-        if message.channel.id in [930447365536612353, 930767329137143839]:
+        if message.channel.id == 930447365536612353:  # バトスタbot
             if message.content.startswith("l."):
                 return
             await message.delete(delay=1)
             return
-        for word in ["💜❤💙💚", "brez", "ぶれず", "ブレズ", "愛", "sar", "oras"]:
+        for word in ["💜❤💙💚", "brez", "ぶれず", "ブレズ", "愛", "sar", "oras", "かわいい"]:
             if word in message.content.lower():
                 for stamp in ["💜", "❤", "💙", "💚"]:
                     await message.add_reaction(stamp)
@@ -526,7 +525,7 @@ async def on_message(message: Message):
         scheduled_events = message.guild.scheduled_events
         for scheduled_event in scheduled_events:
             if scheduled_event.status == EventStatus.active and scheduled_event.name == "BATTLE STADIUM":
-                await scheduled_event.complete()
+                await scheduled_event.end()
         try:
             instance = await stage.fetch_instance()
         except Exception:
