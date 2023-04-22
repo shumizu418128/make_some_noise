@@ -23,20 +23,20 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
         return
     try:
         vc_role = member.guild.get_role(935073171462307881)  # in a vc
-        if before.channel is None and bool(after.channel):
+        if bool(before.channel) and after.channel is None:
+            await member.remove_roles(vc_role)
+        elif before.channel != after.channel and bool(after.channel):
             embed = Embed(title="BEATBOXをもっと楽しむために",
                           description="", color=0x0081f0)
             embed.add_field(name=f"Let's show your 💜❤💙💚 with `{member.display_name}`!",
                             value="ビト森のすべての仲間たちと、\nもっとBEATBOXを好きになれる。\nそんなあたたかい雰囲気作りに、\nぜひ、ご協力をお願いします。")
             embed.set_footer(
                 text="We love beatbox, We are beatbox family\nあつまれ！ビートボックスの森", icon_url=member.guild.icon.url)
-            if after.channel.id == 886099822770290748:  #リアタイ部屋
+            if after.channel.id == 886099822770290748:  # リアタイ部屋
                 await after.channel.send(f"{member.mention} チャットはこちら chat is here", embed=embed, delete_after=60)
             else:
                 await after.channel.send(f"{member.mention} チャットはこちら chat is here", delete_after=60)
             await member.add_roles(vc_role)
-        if bool(before.channel) and after.channel is None:
-            await member.remove_roles(vc_role)
     except Exception:
         return
 
