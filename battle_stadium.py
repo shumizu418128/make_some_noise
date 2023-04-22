@@ -115,7 +115,7 @@ async def battle(text: str, client: Client):
                   description="1分・2ラウンドずつ\n1 minute, 2 rounds each")
     embed.timestamp = datetime.datetime.now(JST)
     if auto:
-        embed.description += "\n【自動入力】"
+        embed.description += "\nℹ️ コマンド自動入力機能により自動設定されました"
     await before_start.edit(embed=embed)
     embed.description += f"\n\nBATTLEタイマーはこちら {bot_channel.mention}"
     await chat.send(embed=embed)
@@ -362,5 +362,11 @@ async def start(client: Client):
     for i in range(0, len(playerlist), 2):
         battle_continue = await battle(f"{playerlist[i]} {playerlist[i + 1]} auto", client)
         if battle_continue is False:
+            embed = Embed(title="s.battleコマンド自動入力を中止します", color=0xff0000)
+            await bot_channel.send(embed=embed)
             break
+    else:
+        embed = Embed(title="全バトルが終了しました", description="ご参加ありがとうございました！", color=0x00bfff)
+        await bot_channel.send(embed=embed)
+        await chat.send(embed=embed)
     return
