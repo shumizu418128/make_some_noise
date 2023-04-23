@@ -81,21 +81,21 @@ async def on_message(message: Message):
             if word in message.content.lower():
                 for stamp in ["💜", "❤", "💙", "💚"]:
                     await message.add_reaction(stamp)
-        embed = Embed(title="GBBの最新情報はこちら", description="※※※※\n\n以下のサイトにお探しの情報がない場合、**未発表もしくは未定（そもそも決定すらしていない）**可能性が高いです。\n\n※※※※", color=0xF0632F)
+        embed = Embed(title="GBBの最新情報はこちら", description=">>> 以下のサイトにお探しの情報がない場合、\n__**未発表 もしくは 未定（そもそも決定すらしていない）**__\n可能性が非常に高いです。", color=0xF0632F)
         embed.add_field(name="GBBINFO-JPN 日本非公式情報サイト",
                         value="https://gbbinfo-jpn.jimdofree.com/")
         embed.add_field(name="swissbeatbox 公式instagram",
                         value="https://www.instagram.com/swissbeatbox/")
         if "m!wc" in message.content.lower():
             await message.channel.send(embed=embed)
-            await message.channel.send("**Wildcard結果・出場者一覧 はこちら**\nhttps://gbbinfo-jpn.jimdofree.com/20230222/")
+            await message.channel.send("[GBB 2023 Wildcard結果・出場者一覧 はこちら](https://gbbinfo-jpn.jimdofree.com/20230222/)")
         if message.channel.type == ChannelType.text:
             emoji = random.choice(message.guild.emojis)
             await message.add_reaction(emoji)
             for word in ["gbb", "wildcard", "ワイカ", "ワイルドカード", "結果", "出場", "通過", "チケット", "ルール", "審査員", "ジャッジ", "日本人", "colaps"]:
                 if word in message.content.lower():
                     if any(["?" in message.content, "？" in message.content]):
-                        await message.reply("https://gbbinfo-jpn.jimdofree.com/")
+                        await message.reply("[GBBINFO-JPN 日本非公式情報サイト](https://gbbinfo-jpn.jimdofree.com/)")
                         await message.reply(embed=embed)
                     else:
                         await message.channel.send(embed=embed)
