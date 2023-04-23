@@ -19,7 +19,6 @@ async def battle(text: str, client: Client):
     JST = datetime.timezone(datetime.timedelta(hours=9))
     embed_chat_info = Embed(title="チャット欄はこちら chat is here",
                             description=f"対戦表： {pairing_channel.mention}\nエントリー： {entry_channel.mention}\nBATTLEタイマー： {bot_channel.mention}", color=0x00bfff)
-    await chat.send(embed=embed_chat_info)
     count = 0
     names = text.replace(" vs", "").replace('s.battle', '').split()
     auto = False
@@ -176,12 +175,13 @@ async def battle(text: str, client: Client):
             await sent_message.edit(embed=embed)
             await chat.send(embed=embed, delete_after=5)
             counter -= 10
-            if i == 1:
-                color = 0xffff00
+            if i == 0:
                 embed = Embed(title="音声バグが発生する場合があります",
                               description=f"Beatboxerの音声が聞こえない場合、チャットにてお知らせください\n`タイマーを停止し、バトルを中断することがあります`\n\nBATTLEタイマーはこちら {bot_channel.mention}", color=0xffff00)
-                await chat.send(embed=embed, delete_after=60)
-            elif i == 3:
+                await chat.send(embed=embed, delete_after=50)
+            if i == 1:
+                color = 0xffff00
+            if i == 3:
                 color = 0xff0000
         check_timer = await timer(4.9, sent_message, voice_client, count)
         if check_timer is False:
@@ -227,11 +227,11 @@ async def battle(text: str, client: Client):
         return
     chat.guild.voice_client.play(audio)
     embed = Embed(
-        title="投票箱", description=f"1️⃣ {names[0]}\n2️⃣ {names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
+        title="投票箱（集計は行いません）", description=f"1️⃣ {names[0]}\n2️⃣ {names[1]}\n\n>>> BATTLE STADIUM\n毎週土曜21:30~ 開催中！", color=0x00bfff)
     embed.set_footer(text=f"bot開発者: {str(tari3210)}",
                      icon_url=tari3210.display_avatar.url)
     embed.timestamp = datetime.datetime.now(JST)
-    poll = await bot_channel.send(f"{vc_role.mention}\nmake some noise for the battle!\ncome on!!", embed=embed)
+    poll = await bot_channel.send(f"{vc_role.mention}\n### make some noise for the battle!\ncome on!!", embed=embed)
     await poll.add_reaction("1⃣")
     await poll.add_reaction("2⃣")
     await poll.add_reaction("🔥")
@@ -239,7 +239,7 @@ async def battle(text: str, client: Client):
         f"msn_{random.randint(1, 3)}.mp3"), volume=0.7)
     await sleep(3.9)
     chat.guild.voice_client.play(audio)
-    await chat.send("make some noise for the battle!\ncome on!!", embed=embed_chat_info)
+    await chat.send("### make some noise for the battle!\ncome on!!", embed=embed_chat_info)
     return
 
 
@@ -284,7 +284,7 @@ async def start(client: Client):
         await interaction.response.defer(ephemeral=True, thinking=False)
         await interaction.user.add_roles(bs_role)
         embed = Embed(title="受付完了 entry completed",
-                      description=f"**注意事項**\n\n・ノイズキャンセル設定に問題がある方が非常に増えています。\n必ず {bbx_mic.mention} を確認して、マイク設定を行ってからの参加をお願いします。\n\n・Discordの音声バグが多発しています。発生した場合、バトルを中断し、途中のラウンドからバトルを再開することがあります。\n※音声バグ発生時の対応は状況によって異なります。ご了承ください。", color=0xffff00)
+                      description=f"**【注意事項】**\n- ノイズキャンセル設定に問題がある方が非常に増えています。必ず {bbx_mic.mention} を確認して、マイク設定を行ってからの参加をお願いします。\n- Discordの音声バグが多発しています。発生した場合、バトルを中断し、途中のラウンドからバトルを再開することがあります。\n※音声バグ発生時の対応は状況によって異なります。ご了承ください。", color=0xffff00)
         await bot_channel.send(f"エントリー完了：{interaction.user.display_name}", delete_after=3)
         await interaction.followup.send(embed=embed, ephemeral=True)
 
@@ -300,7 +300,7 @@ async def start(client: Client):
     embed = Embed(
         title="受付開始", description=f"ただいまより参加受付を開始します。\n{entry_channel.mention}にてエントリーを行ってください。\nentry now accepting at {entry_channel.mention}", color=0x00bfff)
     await bot_channel.send(embed=embed)
-    await entry_channel.send(f"エントリー後に、 {bbx_mic.mention} を確認して、マイク設定を行ってください。", delete_after=60)
+    await entry_channel.send(f"エントリー後に {bbx_mic.mention} を確認して、マイク設定を行ってください。", delete_after=60)
     await sleep(30)
     embed = Embed(title="あと30秒で締め切ります", color=0xffff00)
     await bot_channel.send(embed=embed)
@@ -356,7 +356,7 @@ async def start(client: Client):
     await bot_channel.send(embed=embed_pairing)
     embed_pairing.title = "対戦カード"
     await pairing_channel.send(vc_role.mention, embed=embed_pairing)
-    await pairing_channel.send(f"{bs_role.mention}\n\n{bbx_mic.mention} を確認して、マイク設定を行ってからの参加をお願いします。\n\n※スマホユーザーの方へ\nspeakerになった後、ミュート以外画面操作を一切行わないでください\nDiscordバグにより音声が一切入らなくなります")
+    await pairing_channel.send(f"{bs_role.mention}\n\n{bbx_mic.mention} を確認して、マイク設定を行ってからの参加をお願いします。")
     await chat.send(embeds=[embed_pairing, embed_chat_info])
     await bot_channel.send(f"----------\n\ns.battleコマンド自動入力 {playerlist[0]} {playerlist[1]}\n※これ以降、❌ボタンで停止するまで、毎回バトルコマンドは自動入力されます\n\n----------")
     for i in range(0, len(playerlist), 2):
@@ -366,7 +366,7 @@ async def start(client: Client):
             await bot_channel.send(embed=embed)
             break
     else:
-        embed = Embed(title="全バトルが終了しました", description="ご参加ありがとうございました！", color=0x00bfff)
+        embed = Embed(title="ラストMatchが終了しました", description="ご参加ありがとうございました！", color=0x00bfff)
         await bot_channel.send(embed=embed)
         await chat.send(embed=embed)
     return
