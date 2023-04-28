@@ -44,6 +44,7 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
 @client.event
 async def on_member_join(member: Member):
     channel = client.get_channel(864475338340171791)  # 全体チャット
+    await sleep(1)
     embed_discord = Embed(
         title="Discordの使い方", description="https://note.com/me1o_crew/n/nf2971acd1f1a")
     embed = Embed(title="GBBの最新情報はこちら", color=0xF0632F)
