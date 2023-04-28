@@ -64,7 +64,7 @@ async def battle(text: str, client: Client):
         return
 
     async def connection(voice_client: VoiceClient):
-        if voice_client.is_connected is False:
+        if voice_client.is_connected() is False:
             try:
                 await stage_channel.connect(reconnect=True)
                 await voice_client.guild.me.edit(suppress=False)
