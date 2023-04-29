@@ -362,11 +362,11 @@ async def start(client: Client):
     for i in range(0, len(playerlist), 2):
         battle_continue = await battle(f"{playerlist[i]} {playerlist[i + 1]} auto", client)
         if battle_continue is False:
-            embed = Embed(title="s.battleコマンド自動入力を中止します", color=0xff0000)
+            embed = Embed(title="自動入力中止", description="s.battleコマンド自動入力を中止します\ns.battle [名前1] [名前2] と入力してください", color=0xff0000)
             await bot_channel.send(embed=embed)
             break
     else:
-        embed = Embed(title="ラストMatchが終了しました", description="ご参加ありがとうございました！", color=0x00bfff)
+        embed = Embed(title="ラストMatchが終了しました", description="ご参加ありがとうございました！\nmake some noise for all of amazing performance!!", color=0x00bfff)
         await bot_channel.send(embed=embed)
         await chat.send(embed=embed)
     return
