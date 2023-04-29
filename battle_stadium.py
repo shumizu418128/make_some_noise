@@ -361,7 +361,11 @@ async def start(client: Client):
     await chat.send(embeds=[embed_pairing, embed_chat_info])
     await bot_channel.send(f"----------\n\ns.battleコマンド自動入力 {playerlist[0]} {playerlist[1]}\n※これ以降、❌ボタンで停止するまで、毎回バトルコマンドは自動入力されます\n\n----------")
     for i in range(0, len(playerlist), 2):
-        battle_continue = await battle(f"{playerlist[i]} {playerlist[i + 1]} auto", client)
+        try:
+            battle_continue = await battle(f"{playerlist[i]} {playerlist[i + 1]} auto", client)
+        except IndexError:  # 参加者数が奇数のとき発生
+            await bot_channel.send("最終マッチを行います\n対戦カードが変更されている場合、❌を押してs.battleコマンドを入力しなおしてください")
+            battle_continue = await battle(f"{playerlist[-1]} {playerlist[0]} auto", client)
         if battle_continue is False:
             embed = Embed(title="自動入力中止", description="s.battleコマンド自動入力を中止します\ns.battle [名前1] [名前2] と入力してください", color=0xff0000)
             await bot_channel.send(embed=embed)
