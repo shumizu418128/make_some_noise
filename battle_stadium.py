@@ -294,14 +294,15 @@ async def start(client: Client):
     embed = Embed(
         title="Entry", description="下のボタンを押してエントリー！\npress button to entry")
     entry_button = await entry_channel.send(vc_role.mention, embed=embed, view=view)
-    entry_button2 = await chat.send("このボタンからもエントリーできます", embed=embed, view=view)
     audio = PCMVolumeTransformer(FFmpegPCMAudio("announce.mp3"))
     chat.guild.voice_client.play(audio)
     embed = Embed(
         title="受付開始", description=f"ただいまより参加受付を開始します。\n{entry_channel.mention}にてエントリーを行ってください。\nentry now accepting at {entry_channel.mention}", color=0x00bfff)
     await bot_channel.send(embed=embed)
     await entry_channel.send(f"エントリー後に {bbx_mic.mention} を確認して、マイク設定を行ってください。", delete_after=60)
-    await sleep(30)
+    await sleep(5)
+    entry_button2 = await chat.send("このボタンからもエントリーできます", embed=embed, view=view)
+    await sleep(20)
     embed = Embed(title="あと30秒で締め切ります", color=0xffff00)
     await bot_channel.send(embed=embed)
     await chat.send(embed=embed_chat_info)
