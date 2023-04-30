@@ -17,8 +17,8 @@ async def battle(text: str, client: Client):
     bot_channel = client.get_channel(930447365536612353)  # bot
     vc_role = chat.guild.get_role(935073171462307881)  # in a vc
     JST = datetime.timezone(datetime.timedelta(hours=9))
-    embed_chat_info = Embed(title="チャット欄はこちら chat is here",
-                            description=f"対戦表： {pairing_channel.mention}\nエントリー： {entry_channel.mention}\nBATTLEタイマー： {bot_channel.mention}", color=0x00bfff)
+    embed_chat_info = Embed(title="チャット欄はこちら `chat is here`",
+                            description=f"対戦表 `pairing`： {pairing_channel.mention}\nエントリー `entry`： {entry_channel.mention}\nBATTLEタイマー `timer`： {bot_channel.mention}", color=0x00bfff)
     count = 0
     names = text.replace(" vs", "").replace('s.battle', '').split()
     auto = False
@@ -29,7 +29,7 @@ async def battle(text: str, client: Client):
             pass
         if 1 <= count <= 4:
             embed = Embed(
-                title="バトル再開モード", description=f"Round {stamps[count]} **{names[1 - count % 2]}** から再開します。", color=0x00bfff)
+                title="バトル再開モード", description=f"Round {stamps[count]}: **{names[1 - count % 2]}**\nから、バトルを再開します。", color=0x00bfff)
             await bot_channel.send(embed=embed)
             await chat.send(embed=embed)
         if names[2] == "auto":
@@ -37,7 +37,7 @@ async def battle(text: str, client: Client):
             auto = True
     embed = Embed(title="処理中...")
     before_start = await bot_channel.send(embed=embed)
-    if len(names) == 2:
+    if len(names) == 2:  # 順番を抽選で決定（通常スタート）
         count = 1
         embed = Embed(title="先攻・後攻の抽選を行います", description="抽選中...")
         await before_start.edit(embed=embed)
@@ -67,7 +67,7 @@ async def battle(text: str, client: Client):
         if voice_client.is_connected() is False:
             try:
                 await stage_channel.connect(reconnect=True)
-                await voice_client.guild.me.edit(suppress=False)
+                await chat.guild.me.edit(suppress=False)
             except Exception:
                 embed = Embed(
                     title="Error", description="接続が失われたため、タイマーを停止しました\nlost connection\n\nまもなく、自動でバトル再開準備を行います", color=0xff0000)
@@ -111,12 +111,13 @@ async def battle(text: str, client: Client):
             return False
 
     embed = Embed(title=f"1️⃣ {names[0]} vs {names[1]} 2️⃣",
-                  description="1分・2ラウンドずつ\n1 minute, 2 rounds each")
+                  description=f"1分・2ラウンドずつ\n`1 minute, 2 rounds each`\n\n先攻：{names[0]}")
     embed.timestamp = datetime.datetime.now(JST)
+    if len(names) == 2:  # 通常スタート時
+        embed.description += "（抽選で決定されました）"
     if auto:
-        embed.description += "\nℹ️ コマンド自動入力機能により自動設定されました"
+        embed.description += "\n\nℹ️ コマンド自動入力機能により自動設定されました"
     await before_start.edit(embed=embed)
-    embed.description += f"\n\nBATTLEタイマーはこちら {bot_channel.mention}"
     await chat.send(embed=embed)
     await before_start.add_reaction("▶️")
     await before_start.add_reaction("❌")
@@ -205,19 +206,15 @@ async def battle(text: str, client: Client):
             if check_timer is False:
                 return
         count += 1
-    audio = PCMVolumeTransformer(FFmpegPCMAudio(
-        f"time_{random.randint(1, 2)}.mp3"), volume=0.5)
+    audio = PCMVolumeTransformer(FFmpegPCMAudio(f"time_{random.randint(1, 2)}.mp3"), volume=0.5)
     await sent_message.delete()
     tari3210 = chat.guild.get_member(412082841829113877)
+    embed = Embed(title="投票箱（集計は行いません）", description=f"1️⃣ {names[0]}\n2️⃣ {names[1]}\n\n>>> BATTLE STADIUM\n毎週土曜21:30~ 開催中！", color=0x00bfff)
+    embed.set_footer(text=f"bot開発者: {str(tari3210)}", icon_url=tari3210.display_avatar.url)
+    embed.timestamp = datetime.datetime.now(JST)
     if random.randint(1, 20) == 1:
-        audio = PCMVolumeTransformer(
-            FFmpegPCMAudio("time_fuga.mp3"), volume=0.4)
+        audio = PCMVolumeTransformer(FFmpegPCMAudio("time_fuga.mp3"), volume=0.4)
         chat.guild.voice_client.play(audio)
-        embed = Embed(
-            title="投票箱", description=f"1️⃣ {names[0]}\n2️⃣ {names[1]}\n\nぜひ気に入ったBeatboxerさんに1票をあげてみてください。\n※集計は行いません。botの動作はこれにて終了です。")
-        embed.set_footer(
-            text=f"bot開発者: {str(tari3210)}", icon_url=tari3210.display_avatar.url)
-        embed.timestamp = datetime.datetime.now(JST)
         await sleep(7)
         poll = await bot_channel.send(f"{vc_role.mention}\nなあああああああああああああああああああああああああああああああああああああああああああああああああああああああああ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！", embed=embed)
         await poll.add_reaction("1⃣")
@@ -226,17 +223,11 @@ async def battle(text: str, client: Client):
         await chat.send(embed=embed_chat_info)
         return
     chat.guild.voice_client.play(audio)
-    embed = Embed(
-        title="投票箱（集計は行いません）", description=f"1️⃣ {names[0]}\n2️⃣ {names[1]}\n\n>>> BATTLE STADIUM\n毎週土曜21:30~ 開催中！", color=0x00bfff)
-    embed.set_footer(text=f"bot開発者: {str(tari3210)}",
-                     icon_url=tari3210.display_avatar.url)
-    embed.timestamp = datetime.datetime.now(JST)
     poll = await bot_channel.send(f"{vc_role.mention}\n### make some noise for the battle!\ncome on!!", embed=embed)
     await poll.add_reaction("1⃣")
     await poll.add_reaction("2⃣")
     await poll.add_reaction("🔥")
-    audio = PCMVolumeTransformer(FFmpegPCMAudio(
-        f"msn_{random.randint(1, 3)}.mp3"), volume=0.7)
+    audio = PCMVolumeTransformer(FFmpegPCMAudio(f"msn_{random.randint(1, 3)}.mp3"), volume=0.7)
     await sleep(3.9)
     chat.guild.voice_client.play(audio)
     await chat.send("### make some noise for the battle!\ncome on!!", embed=embed_chat_info)
@@ -359,7 +350,7 @@ async def start(client: Client):
     await pairing_channel.send(vc_role.mention, embed=embed_pairing)
     await pairing_channel.send(f"{bs_role.mention}\n\n{bbx_mic.mention} を確認して、マイク設定を行ってからの参加をお願いします。")
     await chat.send(embeds=[embed_pairing, embed_chat_info])
-    await bot_channel.send(f"----------\n\ns.battleコマンド自動入力 {playerlist[0]} {playerlist[1]}\n※これ以降、❌ボタンで停止するまで、毎回バトルコマンドは自動入力されます\n\n----------")
+    await bot_channel.send(f"----------\n\ns.battleコマンド自動入力 {playerlist[0]} vs {playerlist[1]}\n※これ以降、❌ボタンで停止するまで、毎回バトルコマンドは自動入力されます\n\n----------")
     for i in range(0, len(playerlist), 2):
         try:
             battle_continue = await battle(f"{playerlist[i]} {playerlist[i + 1]} auto", client)
