@@ -90,7 +90,7 @@ async def on_message(message: Message):
         if "m!wc" in message.content.lower():
             await message.channel.send(embed=embed)
             await message.channel.send("[GBB 2023 Wildcard結果・出場者一覧 はこちら](https://gbbinfo-jpn.jimdofree.com/20230222/)")
-        if message.channel.type == ChannelType.text:
+        if message.channel.type in [ChannelType.text, ChannelType.forum, ChannelType.public_thread]:
             emoji = random.choice(message.guild.emojis)
             await message.add_reaction(emoji)
             for word in ["gbb", "wildcard", "ワイカ", "ワイルドカード", "結果", "出場", "通過", "チケット", "ルール", "審査員", "ジャッジ", "日本人", "colaps"]:
