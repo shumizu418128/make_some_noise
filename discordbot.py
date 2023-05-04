@@ -78,6 +78,9 @@ async def on_message(message: Message):
                 return
             await message.delete(delay=1)
             return
+        if "草" in message.content:
+            emoji = message.guild.get_emoji(990222099744432198)  # 草
+            await message.add_reaction(emoji)
         for word in ["💜❤💙💚", "brez", "ぶれず", "ブレズ", "愛", "sar", "oras", "かわいい", "カワイイ"]:
             if word in message.content.lower():
                 for stamp in ["💜", "❤", "💙", "💚"]:
