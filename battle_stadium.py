@@ -111,10 +111,10 @@ async def battle(text: str, client: Client):
             return False
 
     embed = Embed(title=f"1️⃣ {names[0]} vs {names[1]} 2️⃣",
-                  description=f"1分・2ラウンドずつ\n`1 minute, 2 rounds each`\n\n先攻：{names[0]}")
+                  description=f"1分・2ラウンドずつ\n`1 minute, 2 rounds each`\n\n>先攻：__**{names[0]}**__")
     embed.timestamp = datetime.datetime.now(JST)
     if len(names) == 2:  # 通常スタート時
-        embed.description += "（抽選で決定されました）"
+        embed.description += "\n`（抽選で決定されました）`"
     if auto:
         embed.description += "\n\nℹ️ コマンド自動入力機能により自動設定されました"
     await before_start.edit(embed=embed)
@@ -350,12 +350,14 @@ async def start(client: Client):
     await pairing_channel.send(vc_role.mention, embed=embed_pairing)
     await pairing_channel.send(f"{bs_role.mention}\n\n{bbx_mic.mention} を確認して、マイク設定を行ってからの参加をお願いします。")
     await chat.send(embeds=[embed_pairing, embed_chat_info])
-    await bot_channel.send(f"----------\n\ns.battleコマンド自動入力 {playerlist[0]} vs {playerlist[1]}\n※これ以降、❌ボタンで停止するまで、毎回バトルコマンドは自動入力されます\n\n----------")
     for i in range(0, len(playerlist), 2):
+        await bot_channel.send(f"----------\n\ns.battleコマンド自動入力\n{playerlist[0]} vs {playerlist[1]}\nMatch{i / 2 + 1}\n\n----------")
         try:
             battle_continue = await battle(f"{playerlist[i]} {playerlist[i + 1]} auto", client)
         except IndexError:  # 参加者数が奇数のとき発生
-            await bot_channel.send("最終マッチを行います\n対戦カードが変更されている場合、❌を押してs.battleコマンドを入力しなおしてください")
+            embed = Embed(title="最終マッチを行います", description="対戦カードが変更されている場合、❌を押してs.battleコマンドを入力しなおしてください", color=0x00bfff)
+            await bot_channel.send(embed=embed)
+            await bot_channel.send(f"----------\n\ns.battleコマンド自動入力\n{playerlist[0]} vs {playerlist[1]}\nMatch{i / 2 + 1}\n\n----------")
             battle_continue = await battle(f"{playerlist[-1]} {playerlist[0]} auto", client)
         if battle_continue is False:
             embed = Embed(title="自動入力中止", description="s.battleコマンド自動入力を中止します\ns.battle [名前1] [名前2] と入力してください", color=0xff0000)
