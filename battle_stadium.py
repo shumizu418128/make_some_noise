@@ -60,8 +60,9 @@ async def battle(text: str, client: Client):
         if message.content == "cancel":
             await bot_channel.send("キャンセルしました。")
             return False
-        await battle(message.content, client)
-        return
+        battle_continue = await battle(message.content, client)
+        if battle_continue is False:
+            return False
 
     async def connection(voice_client: VoiceClient):
         if voice_client.is_connected() is False:
@@ -75,8 +76,9 @@ async def battle(text: str, client: Client):
                 await chat.send(embed=embed)
                 await sleep(3)
                 await bot_channel.send(f"----------\n\n再開コマンド自動入力：{names[0]} vs {names[1]} Round{count}\n\n----------")
-                await battle(f"{names[0]} {names[1]} {count}", client)
-                return False
+                battle_continue = await battle(f"{names[0]} {names[1]} {count}", client)
+                if battle_continue is False:
+                    return False
             else:
                 print("lost connection: auto reconnect done")
 
@@ -107,8 +109,9 @@ async def battle(text: str, client: Client):
             await chat.send(embed=embed)
             await sleep(3)
             await bot_channel.send(f"----------\n\n再開コマンド自動入力：{names[0]} vs {names[1]} Round{count}\n\n----------")
-            await battle(f"{names[0]} {names[1]} {count}", client)
-            return False
+            battle_continue = await battle(f"{names[0]} {names[1]} {count}", client)
+            if battle_continue is False:
+                return False
 
     embed = Embed(title=f"1️⃣ {names[0]} vs {names[1]} 2️⃣",
                   description=f"1分・2ラウンドずつ\n`1 minute, 2 rounds each`\n\n>先攻：__**{names[0]}**__")
