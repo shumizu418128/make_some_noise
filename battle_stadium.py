@@ -56,7 +56,7 @@ async def battle(text: str, client: Client):
             message = await client.wait_for('message', timeout=600, check=check)
         except asyncio.TimeoutError:
             await bot_channel.send("Error: timeout")
-            return
+            return False
         if message.content == "cancel":
             await bot_channel.send("キャンセルしました。")
             return False
@@ -147,18 +147,18 @@ async def battle(text: str, client: Client):
     if random_start == 1:
         check_timer = await timer(9, sent_message, voice_client, count)
         if check_timer is False:
-            return
+            return False
     else:
         check_timer = await timer(11, sent_message, voice_client, count)
         if check_timer is False:
-            return
+            return False
     embed = Embed(title="🔥🔥 3, 2, 1, Beatbox! 🔥🔥", color=0xff0000)
     await sent_message.edit(embed=embed)
     embed.description = f"BATTLEタイマーはこちら {bot_channel.mention}"
     await chat.send(embed=embed)
     check_timer = await timer(3, sent_message, voice_client, count)
     if check_timer is False:
-        return
+        return False
 
     while count <= 4:
         embed = Embed(
@@ -170,7 +170,7 @@ async def battle(text: str, client: Client):
         for i in range(5):
             check_timer = await timer(9.9, sent_message, voice_client, count)
             if check_timer is False:
-                return
+                return False
             embed = Embed(
                 title=f"{counter}", description=f"Round {stamps[count]}  **{names[1 - count % 2]}**\n\n{names[0]} vs {names[1]}", color=color)
             await sent_message.edit(embed=embed)
@@ -186,14 +186,14 @@ async def battle(text: str, client: Client):
                 color = 0xff0000
         check_timer = await timer(4.9, sent_message, voice_client, count)
         if check_timer is False:
-            return
+            return False
         embed = Embed(
             title="5", description=f"Round {stamps[count]}  **{names[1 - count % 2]}**\n\n{names[0]} vs {names[1]}", color=color)
         await sent_message.edit(embed=embed)
         await chat.send(embed=embed, delete_after=5)
         check_timer = await timer(4.9, sent_message, voice_client, count)
         if check_timer is False:
-            return
+            return False
         if count <= 3:
             audio = PCMVolumeTransformer(FFmpegPCMAudio(
                 f"round{count + 1}switch_{random.randint(1, 3)}.mp3"), volume=2)
@@ -204,7 +204,7 @@ async def battle(text: str, client: Client):
             await chat.send(embed=embed, delete_after=3)
             check_timer = await timer(3, sent_message, voice_client, count)
             if check_timer is False:
-                return
+                return False
         count += 1
     audio = PCMVolumeTransformer(FFmpegPCMAudio(f"time_{random.randint(1, 2)}.mp3"), volume=0.5)
     await sent_message.delete()
@@ -223,14 +223,14 @@ async def battle(text: str, client: Client):
         await chat.send(embed=embed_chat_info)
         return
     chat.guild.voice_client.play(audio)
-    poll = await bot_channel.send(f"{vc_role.mention}\n### make some noise for the battle!\ncome on!!", embed=embed)
+    poll = await bot_channel.send(f"{vc_role.mention}\nmake some noise for the battle!\ncome on!!", embed=embed)
     await poll.add_reaction("1⃣")
     await poll.add_reaction("2⃣")
     await poll.add_reaction("🔥")
     audio = PCMVolumeTransformer(FFmpegPCMAudio(f"msn_{random.randint(1, 3)}.mp3"), volume=0.7)
     await sleep(3.9)
     chat.guild.voice_client.play(audio)
-    await chat.send("### make some noise for the battle!\ncome on!!", embed=embed_chat_info)
+    await chat.send("make some noise for the battle!\ncome on!!", embed=embed_chat_info)
     return
 
 
@@ -362,9 +362,8 @@ async def start(client: Client):
         if battle_continue is False:
             embed = Embed(title="自動入力中止", description="s.battleコマンド自動入力を中止します\ns.battle [名前1] [名前2] と入力してください", color=0xff0000)
             await bot_channel.send(embed=embed)
-            break
-    else:
-        embed = Embed(title="ラストMatchが終了しました", description="ご参加ありがとうございました！\nmake some noise for all of amazing performance!!", color=0x00bfff)
-        await bot_channel.send(embed=embed)
-        await chat.send(embed=embed)
-    return
+            return
+
+    embed = Embed(title="ラストMatchが終了しました", description="ご参加ありがとうございました！\nmake some noise for all of amazing performance!!", color=0x00bfff)
+    await bot_channel.send(embed=embed)
+    await chat.send(embed=embed)
