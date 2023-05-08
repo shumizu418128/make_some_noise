@@ -332,11 +332,11 @@ async def start(client: Client):
         else:
             double_pl = double_pl.mention
         embed = Embed(title="参加人数が奇数でした",
-                      description=f"{playerlist[0]}さんの対戦が2回行われます\n\n※あと1人参加者が追加された場合、{playerlist[0]}さんと交代になります。", color=0xff9900)
+                      description=f"{playerlist[0]}さんの対戦が2回行われます\n\n※あと1人参加者が追加された場合、{playerlist[0]}さんと交代になります。", color=0x00bfff)
         await bot_channel.send(embed=embed)
         await pairing_channel.send(f"参加人数が奇数でした。\n{double_pl}さんの対戦が2回行われます。\n\n※あと1人参加者が追加された場合、{double_pl}さんと交代になります。")
         embed = Embed(title="参加人数が奇数でした",
-                      description=f"あと1人参加できます。ご希望の方はこのチャットにご記入ください。\n\n※参加者が追加された場合、{playerlist[0]}さんと交代になります。", color=0xff9900)
+                      description=f"あと1人参加できます。ご希望の方はこのチャットにご記入ください。\n\n※参加者が追加された場合、{playerlist[0]}さんと交代になります。", color=0x00bfff)
         await chat.send(embed=embed)
         embed_pairing.add_field(
             name=f"Match{counter}", value=f"{playerlist[-1]} vs {playerlist[0]}", inline=False)
