@@ -23,8 +23,7 @@ async def battle(text: str, client: Client):
     bot_channel = client.get_channel(930447365536612353)  # bot
     vc_role = chat.guild.get_role(935073171462307881)  # in a vc
     JST = datetime.timezone(datetime.timedelta(hours=9))
-    embed_chat_info = Embed(title="チャット欄はこちら `chat is here`",
-                            description=f"対戦表 `pairing`： {pairing_channel.mention}\nエントリー `entry`： {entry_channel.mention}\nBATTLEタイマー `timer`： {bot_channel.mention}", color=0x00bfff)
+    embed_chat_info = Embed(title="チャット欄はこちら `chat is here`", description=f"対戦表 `pairing`： {pairing_channel.mention}\nエントリー `entry`： {entry_channel.mention}\nBATTLEタイマー `timer`： {bot_channel.mention}", color=0x00bfff)
     count = 0
     names = text.replace(" vs", "").replace('s.battle', '').split()
     auto = False
@@ -48,6 +47,8 @@ async def battle(text: str, client: Client):
         embed = Embed(title="先攻・後攻の抽選を行います", description="抽選中...")
         await before_start.edit(embed=embed)
         random.shuffle(names)
+        embed = Embed(title="音声バグが発生する場合があります", description=f"Beatboxerの音声が聞こえない場合、チャットにてお知らせください\n`タイマーを停止し、バトルを中断することがあります`\n\nBATTLEタイマーはこちら {bot_channel.mention}", color=0xffff00)
+        await chat.send(embed=embed, delete_after=50)
         await sleep(1)
 
     # countが0 == nameの取得失敗 このifにかかったら絶対ここで終わらせる
@@ -104,9 +105,7 @@ async def battle(text: str, client: Client):
         try:
             _, _ = await client.wait_for('reaction_add', timeout=time, check=check)
         except asyncio.TimeoutError:
-            battle_status = await connection(voice_client)
-            if bool(battle_status):
-                return battle_status
+            pass
         else:  # このelseにかかったら絶対ここで終わらせる
             audio = PCMVolumeTransformer(FFmpegPCMAudio("timer_stop.mp3"))
             try:
@@ -126,7 +125,7 @@ async def battle(text: str, client: Client):
             return "battle_skip"
 
     embed = Embed(title=f"1️⃣ {names[0]} vs {names[1]} 2️⃣",
-                  description=f"1分・2ラウンドずつ\n`1 minute, 2 rounds each`\n\n>先攻：__**{names[0]}**__")
+                  description=f"1分・2ラウンドずつ\n`1 minute, 2 rounds each`\n\n>1st：__**{names[0]}**__")
     embed.timestamp = datetime.datetime.now(JST)
     if len(names) == 2:  # 通常スタート時
         embed.description += "\n`（抽選で決定されました）`"
@@ -191,10 +190,6 @@ async def battle(text: str, client: Client):
             await sent_message.edit(embed=embed)
             await chat.send(embed=embed, delete_after=5)
             counter -= 10
-            if i == 0:
-                embed = Embed(title="音声バグが発生する場合があります",
-                              description=f"Beatboxerの音声が聞こえない場合、チャットにてお知らせください\n`タイマーを停止し、バトルを中断することがあります`\n\nBATTLEタイマーはこちら {bot_channel.mention}", color=0xffff00)
-                await chat.send(embed=embed, delete_after=50)
             if i == 1:
                 color = 0xffff00
             if i == 3:
@@ -381,7 +376,7 @@ async def start(client: Client):
             reaction, _ = await client.wait_for('reaction_add', check=check)
             await confirm_msg.clear_reactions()
             if reaction.emoji == "⭕":
-                embed = Embed(title="対戦相手を入力してください", description=f"`{playerlist[-1]} vs ???`\n\n↓このチャットに入力↓")
+                embed = Embed(title="対戦相手を入力してください", description=f"`{playerlist[-1]} vs ???`\n\n`cancelと入力するとキャンセルできます`\n↓このチャットに入力↓")
                 await bot_channel.send(embed=embed)
 
                 def check(message):
