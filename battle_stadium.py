@@ -366,14 +366,40 @@ async def start(client: Client):
     await pairing_channel.send(f"{bs_role.mention}\n\n{bbx_mic.mention} を確認して、マイク設定を行ってからの参加をお願いします。")
     await chat.send(embeds=[embed_pairing, embed_chat_info])
     for i in range(0, len(playerlist), 2):
-        await bot_channel.send(f"----------\n\ns.battleコマンド自動入力\n{playerlist[0]} vs {playerlist[1]}\nMatch{i / 2 + 1}\n\n----------")
         try:
             battle_status = await battle(f"{playerlist[i]} {playerlist[i + 1]} auto", client)
         except IndexError:  # 参加者数が奇数のとき発生
-            embed = Embed(title="最終マッチを行います", description="対戦カードが変更されている場合、❌を押してs.battleコマンドを入力しなおしてください", color=0x00bfff)
-            await bot_channel.send(embed=embed)
-            await bot_channel.send(f"----------\n\ns.battleコマンド自動入力\n{playerlist[0]} vs {playerlist[1]}\nMatch{i / 2 + 1}\n\n----------")
-            battle_status = await battle(f"{playerlist[-1]} {playerlist[0]} auto", client)
+            embed = Embed(title="最終マッチを行います", description=f"参加者数が奇数だったため、これより\n{playerlist[-1]} vs `{playerlist[0]}(2回目)`\nを行う予定です。\n{playerlist[-1]} さんの対戦相手を変更しますか？\n\n⭕ 変更する\n❌ `{playerlist[-1]} vs {playerlist[0]} を行う`", color=0xffff00)
+            confirm_msg = await bot_channel.send(embed=embed)
+            await confirm_msg.add_reaction("⭕")
+            await confirm_msg.add_reaction("❌")
+
+            def check(reaction, user):
+                stamps = ["⭕", "❌"]
+                role_check = user.get_role(1096821566114902047)  # バトスタ運営
+                return bool(role_check) and reaction.emoji in stamps and reaction.message == confirm_msg
+            reaction, _ = await client.wait_for('reaction_add', check=check)
+            await confirm_msg.clear_reactions()
+            if reaction.emoji == "⭕":
+                embed = Embed(title="対戦相手を入力してください", description=f"`{playerlist[-1]} vs ???`\n\n↓このチャットに入力↓")
+                await bot_channel.send(embed=embed)
+
+                def check(message):
+                    role_check = message.author.get_role(1096821566114902047)  # バトスタ運営
+                    return message.channel == bot_channel and bool(role_check)
+                try:
+                    message = await client.wait_for('message', timeout=600, check=check)
+                except asyncio.TimeoutError:
+                    await bot_channel.send("Error: timeout")
+                    return
+                if message.content == "cancel":
+                    await bot_channel.send("キャンセルしました。")
+                    return
+                last_player = message.content
+            if reaction.emoji == "❌":
+                last_player = playerlist[0]
+            battle_status = await battle(f"{playerlist[-1]} {last_player} auto", client)
+
         if battle_status == "battle_error":
             embed = Embed(title="自動入力中止", description="s.battleコマンド自動入力を中止します\ns.battle [名前1] [名前2] と入力してください", color=0xff0000)
             await bot_channel.send(embed=embed)
