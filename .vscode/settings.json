@@ -3,5 +3,9 @@
         "editor.defaultFormatter": "ms-python.autopep8"
     },
     "python.formatting.provider": "autopep8",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "python.linting.flake8CategorySeverity.E": "Information",
+    "python.linting.flake8CategorySeverity.F": "Information",
+    "python.linting.flake8CategorySeverity.W": "Information",
+    "python.linting.flake8Enabled": true
 }
