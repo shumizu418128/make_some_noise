@@ -14,6 +14,7 @@ battle_skip: battleを終了し、次のbattleをスタートする
 battle_error: battleを強制終了、自動入力中止
 """
 
+
 async def battle(text: str, client: Client):
     stamps = {1: "1️⃣", 2: "2️⃣", 3: "3️⃣", 4: "4️⃣"}
     stage_channel = client.get_channel(931462636019802123)  # ステージ
