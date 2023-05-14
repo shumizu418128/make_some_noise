@@ -125,8 +125,8 @@ async def battle(text: str, client: Client):
                 return "battle_error"
             return "battle_skip"
 
-    embed = Embed(title=f"1️⃣ {names[0]} vs {names[1]} 2️⃣",
-                  description=f"1分・2ラウンドずつ\n`1 minute, 2 rounds each`\n\n>1st：__**{names[0]}**__")
+    embed = Embed(title=f"1️⃣ {names[0]} 🆚 {names[1]} 2️⃣",
+                  description=f"1分・2ラウンドずつ\n`1 minute, 2 rounds each`\n\n> 1st: __**{names[0]}**__")
     embed.timestamp = datetime.datetime.now(JST)
     if len(names) == 2:  # 通常スタート時
         embed.description += "\n`（抽選で決定されました）`"
@@ -177,7 +177,7 @@ async def battle(text: str, client: Client):
 
     while count <= 4:
         embed = Embed(
-            title="1:00", description=f"Round {stamps[count]}  **{names[1 - count % 2]}**\n\n{names[0]} vs {names[1]}", color=0x00ff00)
+            title="1:00", description=f"Round{stamps[count]}  **{names[1 - count % 2]}**\n\n{names[0]} 🆚 {names[1]}", color=0x00ff00)
         await sent_message.edit(embed=embed)
         await chat.send(embed=embed, delete_after=10)
         counter = 50
@@ -187,7 +187,7 @@ async def battle(text: str, client: Client):
             if bool(battle_status):
                 return battle_status
             embed = Embed(
-                title=f"{counter}", description=f"Round {stamps[count]}  **{names[1 - count % 2]}**\n\n{names[0]} vs {names[1]}", color=color)
+                title=f"{counter}", description=f"Round{stamps[count]}  **{names[1 - count % 2]}**\n\n{names[0]} 🆚 {names[1]}", color=color)
             await sent_message.edit(embed=embed)
             await chat.send(embed=embed, delete_after=5)
             counter -= 10
@@ -199,7 +199,7 @@ async def battle(text: str, client: Client):
         if bool(battle_status):
             return battle_status
         embed = Embed(
-            title="5", description=f"Round {stamps[count]}  **{names[1 - count % 2]}**\n\n{names[0]} vs {names[1]}", color=color)
+            title="5", description=f"Round{stamps[count]}  **{names[1 - count % 2]}**\n\n{names[0]} 🆚 {names[1]}", color=color)
         await sent_message.edit(embed=embed)
         await chat.send(embed=embed, delete_after=5)
         battle_status = await timer(4.9, sent_message, voice_client, count)
@@ -210,7 +210,7 @@ async def battle(text: str, client: Client):
                 f"round{count + 1}switch_{random.randint(1, 3)}.mp3"), volume=2)
             chat.guild.voice_client.play(audio)
             embed = Embed(
-                title="TIME!", description=f"Round {stamps[count + 1]}  **{names[count % 2]}**\nSWITCH!\n\n{names[0]} vs {names[1]}")
+                title="TIME!", description=f"Round{stamps[count + 1]}  **{names[count % 2]}**\nSWITCH!\n\n{names[0]} 🆚 {names[1]}")
             await sent_message.edit(embed=embed)
             await chat.send(embed=embed, delete_after=3)
             battle_status = await timer(3, sent_message, voice_client, count)
