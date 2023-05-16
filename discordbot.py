@@ -1,6 +1,7 @@
 import asyncio
 import datetime
 import random
+import re
 from asyncio import sleep
 
 import discord
@@ -71,7 +72,8 @@ async def on_member_join(member: Member):
 @client.event
 async def on_message(message: Message):
     if not message.content.startswith("s."):
-        if any([message.author.bot, "https://gbbinfo-jpn.jimdofree.com/" in message.content, message.channel.id == 930767329137143839]):  # バトスタ対戦表
+        url_check = re.search("https?://[\w/:%#\$&\?\(\)~\.=\+\-]+", message.content)
+        if any([message.author.bot, bool(url_check), message.channel.id == 930767329137143839]):  # バトスタ対戦表
             return
         if message.channel.id == 930447365536612353:  # バトスタbot
             if message.content.startswith("l."):
