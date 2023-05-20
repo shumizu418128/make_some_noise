@@ -161,16 +161,17 @@ async def battle(text: str, client: Client):
     chat.guild.voice_client.play(audio)
     if random_start == 1:
         battle_status = await timer(9, sent_message, voice_client, count)
-        if bool(battle_status):
-            return battle_status
     else:
         battle_status = await timer(11, sent_message, voice_client, count)
-        if bool(battle_status):
-            return battle_status
+    if bool(battle_status):
+        return battle_status
     embed = Embed(title="🔥🔥 3, 2, 1, Beatbox! 🔥🔥", color=0xff0000)
     await sent_message.edit(embed=embed)
     embed.description = f"BATTLEタイマーはこちら {bot_channel.mention}"
     await chat.send(embed=embed)
+    tari3210 = chat.guild.get_member(412082841829113877)
+    if bool(tari3210.voice) and tari3210.voice.self_mute is False:
+        await chat.send(f"{tari3210.mention}\nミュートしろボケナス")
     battle_status = await timer(3, sent_message, voice_client, count)
     if bool(battle_status):
         return battle_status
@@ -219,7 +220,6 @@ async def battle(text: str, client: Client):
         count += 1
     audio = PCMVolumeTransformer(FFmpegPCMAudio(f"time_{random.randint(1, 2)}.mp3"), volume=0.5)
     await sent_message.delete()
-    tari3210 = chat.guild.get_member(412082841829113877)
     embed = Embed(title="投票箱（集計は行いません）", description=f"1️⃣ {names[0]}\n2️⃣ {names[1]}\n\n>>> BATTLE STADIUM\n毎週土曜21:30~ 開催中！", color=0x00bfff)
     embed.set_footer(text=f"bot開発者: {str(tari3210)}", icon_url=tari3210.display_avatar.url)
     embed.timestamp = datetime.datetime.now(JST)
@@ -333,7 +333,7 @@ async def start(client: Client):
         title="抽選結果", description="先攻・後攻は、バトル直前に抽選を行い決定します", color=0xff9900)
     while counter2 + 2 <= len(playerlist):
         embed_pairing.add_field(
-            name=f"Match{counter}", value=f"{playerlist[counter2]} vs {playerlist[counter2 + 1]}", inline=False)
+            name=f"Match{counter}", value=f"{playerlist[counter2]} 🆚 {playerlist[counter2 + 1]}", inline=False)
         counter += 1
         counter2 += 2
     if len(playerlist) % 2 == 1:
@@ -350,7 +350,7 @@ async def start(client: Client):
                       description=f"あと1人参加できます。ご希望の方はこのチャットにご記入ください。\n\n※参加者が追加された場合、{playerlist[0]}さんと交代になります。", color=0x00bfff)
         await chat.send(embed=embed)
         embed_pairing.add_field(
-            name=f"Match{counter}", value=f"{playerlist[-1]} vs {playerlist[0]}", inline=False)
+            name=f"Match{counter}", value=f"{playerlist[-1]} 🆚 {playerlist[0]}", inline=False)
     tari3210 = chat.guild.get_member(412082841829113877)
     embed_pairing.set_footer(
         text=f"bot開発者: {str(tari3210)}", icon_url=tari3210.display_avatar.url)
