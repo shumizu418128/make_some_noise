@@ -13,11 +13,11 @@ from discord.errors import ClientException
 
 from battle_stadium import battle, start
 
+TOKEN = os.environ['DISCORD_BOT_TOKEN']
 intents = Intents.all()  # デフォルトのIntentsオブジェクトを生成
 intents.typing = False  # typingを受け取らないように
 client = Client(intents=intents)
 print(f"Make Some Noise! (server): {discord.__version__}")
-print(os.environ['test_variable'])
 
 
 @client.event
@@ -570,4 +570,4 @@ async def on_message(message: Message):
         await general.send(event.url)
         return
 
-client.run("ODk2NjUyNzgzMzQ2OTE3Mzk2.YWKO-g.PbWqRCFnvgd0YGAOMAHNqDKNQAU")
+client.run(TOKEN)
