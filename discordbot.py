@@ -1,5 +1,6 @@
 import asyncio
 import datetime
+import os
 import random
 import re
 from asyncio import sleep
@@ -16,6 +17,7 @@ intents = Intents.all()  # デフォルトのIntentsオブジェクトを生成
 intents.typing = False  # typingを受け取らないように
 client = Client(intents=intents)
 print(f"Make Some Noise! (server): {discord.__version__}")
+print(os.environ['test_variable'])
 
 
 @client.event
