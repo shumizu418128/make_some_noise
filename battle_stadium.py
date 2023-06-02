@@ -109,6 +109,7 @@ async def battle(text: str, client: Client):
             pass
         else:  # このelseにかかったら絶対ここで終わらせる
             audio = PCMVolumeTransformer(FFmpegPCMAudio("timer_stop.mp3"))
+            audio.read()
             try:
                 voice_client.stop()
                 chat.guild.voice_client.play(audio)
@@ -156,8 +157,8 @@ async def battle(text: str, client: Client):
     embed.description = f"BATTLEタイマーはこちら {bot_channel.mention}"
     await chat.send(embed=embed)
     random_start = random.randint(1, 3)
-    audio = PCMVolumeTransformer(FFmpegPCMAudio(
-        f"BattleStart_{random_start}.mp3"), volume=0.4)
+    audio = PCMVolumeTransformer(FFmpegPCMAudio(f"BattleStart_{random_start}.mp3"), volume=0.4)
+    audio.read()
     chat.guild.voice_client.play(audio)
     if random_start == 1:
         battle_status = await timer(9, sent_message, voice_client, count)
@@ -207,8 +208,8 @@ async def battle(text: str, client: Client):
         if bool(battle_status):
             return battle_status
         if count <= 3:
-            audio = PCMVolumeTransformer(FFmpegPCMAudio(
-                f"round{count + 1}switch_{random.randint(1, 3)}.mp3"), volume=2)
+            audio = PCMVolumeTransformer(FFmpegPCMAudio(f"round{count + 1}switch_{random.randint(1, 3)}.mp3"), volume=2)
+            audio.read()
             chat.guild.voice_client.play(audio)
             embed = Embed(
                 title="TIME!", description=f"Round{stamps[count + 1]}  **{names[count % 2]}**\nSWITCH!\n\n{names[0]} 🆚 {names[1]}")
@@ -219,12 +220,14 @@ async def battle(text: str, client: Client):
                 return battle_status
         count += 1
     audio = PCMVolumeTransformer(FFmpegPCMAudio(f"time_{random.randint(1, 2)}.mp3"), volume=0.5)
+    audio.read()
     await sent_message.delete()
     embed = Embed(title="投票箱（集計は行いません）", description=f"1️⃣ {names[0]}\n2️⃣ {names[1]}\n\n>>> BATTLE STADIUM\n毎週土曜21:30~ 開催中！", color=0x00bfff)
     embed.set_footer(text=f"bot開発者: {str(tari3210)}", icon_url=tari3210.display_avatar.url)
     embed.timestamp = datetime.datetime.now(JST)
     if random.randint(1, 20) == 1:
         audio = PCMVolumeTransformer(FFmpegPCMAudio("time_fuga.mp3"), volume=0.4)
+        audio.read()
         chat.guild.voice_client.play(audio)
         await sleep(7)
         poll = await bot_channel.send(f"{vc_role.mention}\nなあああああああああああああああああああああああああああああああああああああああああああああああああああああああああ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！", embed=embed)
@@ -239,6 +242,7 @@ async def battle(text: str, client: Client):
     await poll.add_reaction("2⃣")
     await poll.add_reaction("🔥")
     audio = PCMVolumeTransformer(FFmpegPCMAudio(f"msn_{random.randint(1, 3)}.mp3"), volume=0.7)
+    audio.read()
     await sleep(3.9)
     chat.guild.voice_client.play(audio)
     await chat.send("make some noise for the battle!\ncome on!!", embed=embed_chat_info)
@@ -297,6 +301,7 @@ async def start(client: Client):
         title="Entry", description="下のボタンを押してエントリー！\npress button to entry")
     entry_button = await entry_channel.send(vc_role.mention, embed=embed, view=view)
     audio = PCMVolumeTransformer(FFmpegPCMAudio("announce.mp3"))
+    audio.read()
     chat.guild.voice_client.play(audio)
     embed = Embed(
         title="受付開始", description=f"ただいまより参加受付を開始します。\n{entry_channel.mention}にてエントリーを行ってください。\nentry now accepting at {entry_channel.mention}", color=0x00bfff)
