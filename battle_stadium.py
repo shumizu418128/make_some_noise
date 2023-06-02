@@ -277,7 +277,7 @@ async def start(client: Client):
         await stage_channel.create_instance(topic="BATTLE STADIUM", send_notification=True)
     except Exception:
         pass
-    await general.send(stage_channel.jump_url, file=File("battle_stadium.gif"))
+    await general.send(stage_channel.jump_url, file=File(f"battle_stadium_{random.randint(1, 3)}.gif"))
     if chat.guild.voice_client is None:
         await stage_channel.connect(reconnect=True)
     await chat.guild.me.edit(suppress=False)
