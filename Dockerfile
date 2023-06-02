@@ -45,7 +45,9 @@ COPY time_1.mp3 time_1.mp3
 COPY time_2.mp3 time_2.mp3
 COPY time_fuga.mp3 time_fuga.mp3
 COPY timer_stop.mp3 timer_stop.mp3
-COPY battle_stadium.gif battle_stadium.gif
+COPY battle_stadium_1.gif battle_stadium_1.gif
+COPY battle_stadium_2.gif battle_stadium_2.gif
+COPY battle_stadium_3.gif battle_stadium_3.gif
 COPY announce.mp3 announce.mp3
 COPY battle_stadium.py battle_stadium.py
 CMD ["python", "-u", "discordbot.py"]
