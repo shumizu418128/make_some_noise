@@ -44,7 +44,7 @@ async def advertise():
 
 @client.event
 async def on_ready():
-    await advertise.start()
+    advertise.start()
     return
 
 
