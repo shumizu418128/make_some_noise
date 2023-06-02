@@ -39,7 +39,7 @@ async def advertise():
         if event.start_time < closest_event.start_time:
             closest_event = event
     if closest_event.name == "BATTLE STADIUM":
-        await channel.send(file=File("battle_stadium.gif"))
+        await channel.send(file=File(f"battle_stadium_{random.randint(1, 3)}.gif"))
     await channel.send(closest_event.url)
     return
 
@@ -581,9 +581,9 @@ async def on_message(message: Message):
             end_time=end_time,
             channel=stage,
             privacy_level=PrivacyLevel.guild_only)
-        await announce.send(file=File("battle_stadium.gif"))
+        await announce.send(file=File(f"battle_stadium_{random.randint(1, 3)}.gif"))
         await announce.send(event.url)
-        await general.send(file=File("battle_stadium.gif"))
+        await general.send(file=File(f"battle_stadium_{random.randint(1, 3)}.gif"))
         await general.send(event.url)
         return
 
