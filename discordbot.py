@@ -1,15 +1,16 @@
 import asyncio
-import datetime
 import os
 import random
 import re
 from asyncio import sleep
+from datetime import datetime, time, timedelta, timezone
 
 import discord
 from discord import (ChannelType, Client, Embed, EventStatus, FFmpegPCMAudio,
                      File, Intents, Member, Message, PCMVolumeTransformer,
                      PrivacyLevel, VoiceState)
 from discord.errors import ClientException
+from discord.ext import tasks
 
 from battle_stadium import battle, start
 
@@ -18,6 +19,33 @@ intents = Intents.all()  # デフォルトのIntentsオブジェクトを生成
 intents.typing = False  # typingを受け取らないように
 client = Client(intents=intents)
 print(f"Make Some Noise! (server): {discord.__version__}")
+
+JST = timezone(timedelta(hours=9))
+PM9 = time(21, 0, tzinfo=JST)
+
+
+@tasks.loop(time=PM9)
+async def advertise():
+    channel = client.get_channel(864475338340171791)  # 全体チャット
+    events = channel.guild.scheduled_events
+    events_exist = []
+    for event in events:
+        if event.status in [EventStatus.scheduled, EventStatus.active]:
+            events_exist.append(event)
+    if bool(events_exist) is False:
+        return
+    closest_event = events_exist[0]
+    for event in events_exist:
+        if event.start_time < closest_event.start_time:
+            closest_event = event
+    await channel.send(closest_event.url)
+    return
+
+
+@client.event
+async def on_ready():
+    advertise.start()
+    return
 
 
 @client.event
@@ -74,7 +102,7 @@ async def on_member_join(member: Member):
 @client.event
 async def on_message(message: Message):
     if not message.content.startswith("s."):
-        url_check = re.search("https?://[\w/:%#\$&\?\(\)~\.=\+\-]+", message.content)
+        url_check = re.search(r"https?://[\w/:%#\$&\?\(\)~\.=\+\-]+", message.content)
         if any([message.author.bot, bool(url_check), message.channel.id == 930767329137143839]):  # バトスタ対戦表
             return
         if message.channel.id == 930447365536612353:  # バトスタbot
@@ -150,8 +178,7 @@ async def on_message(message: Message):
             await message.author.voice.channel.connect(reconnect=True)
         ran_int = random.randint(1, 3)
         ran_audio = {1: "time.mp3", 2: "time_2.mp3", 3: "time_3.mp3"}
-        audio = PCMVolumeTransformer(
-            FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
+        audio = PCMVolumeTransformer(FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
         message.guild.voice_client.play(audio)
         return
 
@@ -159,8 +186,7 @@ async def on_message(message: Message):
         await message.delete(delay=1)
         if message.guild.voice_client is None:
             await message.author.voice.channel.connect(reconnect=True)
-        audio = PCMVolumeTransformer(
-            FFmpegPCMAudio("kbbtime.mp3"), volume=0.2)
+        audio = PCMVolumeTransformer(FFmpegPCMAudio("kbbtime.mp3"), volume=0.2)
         message.guild.voice_client.play(audio)
         return
 
@@ -170,8 +196,7 @@ async def on_message(message: Message):
             await message.author.voice.channel.connect(reconnect=True)
         ran_int = random.randint(1, 2)
         ran_audio = {1: "kansei.mp3", 2: "kansei_2.mp3"}
-        audio = PCMVolumeTransformer(
-            FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
+        audio = PCMVolumeTransformer(FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
         message.guild.voice_client.play(audio)
         return
 
@@ -181,8 +206,7 @@ async def on_message(message: Message):
             await message.author.voice.channel.connect(reconnect=True)
         ran_int = random.randint(1, 2)
         ran_audio = {1: "countdown.mp3", 2: "countdown_2.mp3"}
-        audio = PCMVolumeTransformer(
-            FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
+        audio = PCMVolumeTransformer(FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
         message.guild.voice_client.play(audio)
         return
 
@@ -190,8 +214,7 @@ async def on_message(message: Message):
         await message.delete(delay=1)
         if message.guild.voice_client is None:
             await message.author.voice.channel.connect(reconnect=True)
-        audio = PCMVolumeTransformer(
-            FFmpegPCMAudio("bunka.mp3"), volume=0.2)
+        audio = PCMVolumeTransformer(FFmpegPCMAudio("bunka.mp3"), volume=0.2)
         message.guild.voice_client.play(audio)
         return
 
@@ -201,8 +224,7 @@ async def on_message(message: Message):
             await message.author.voice.channel.connect(reconnect=True)
         ran_int = random.randint(1, 2)
         ran_audio = {1: "esh.mp3", 2: "esh_2.mp3"}
-        audio = PCMVolumeTransformer(
-            FFmpegPCMAudio(ran_audio[ran_int]), volume=0.4)
+        audio = PCMVolumeTransformer(FFmpegPCMAudio(ran_audio[ran_int]), volume=0.4)
         message.guild.voice_client.play(audio)
         return
 
@@ -210,8 +232,7 @@ async def on_message(message: Message):
         await message.delete(delay=1)
         if message.guild.voice_client is None:
             await message.author.voice.channel.connect(reconnect=True)
-        audio = PCMVolumeTransformer(
-            FFmpegPCMAudio(f"msn_{random.randint(1, 3)}.mp3"), volume=0.4)
+        audio = PCMVolumeTransformer(FFmpegPCMAudio(f"msn_{random.randint(1, 3)}.mp3"), volume=0.4)
         message.guild.voice_client.play(audio)
         return
 
@@ -219,8 +240,7 @@ async def on_message(message: Message):
         await message.delete(delay=1)
         if message.guild.voice_client is None:
             await message.author.voice.channel.connect(reconnect=True)
-        audio = PCMVolumeTransformer(
-            FFmpegPCMAudio("olala.mp3"), volume=0.4)
+        audio = PCMVolumeTransformer(FFmpegPCMAudio("olala.mp3"), volume=0.4)
         message.guild.voice_client.play(audio)
         return
 
@@ -229,10 +249,8 @@ async def on_message(message: Message):
         if message.guild.voice_client is None:
             await message.author.voice.channel.connect(reconnect=True)
         ran_int = random.randint(1, 4)
-        ran_audio = {1: "dismuch.mp3", 2: "dismuch_2.mp3",
-                     3: "dismuch_3.mp3", 4: "dismuch_4.mp3"}
-        audio = PCMVolumeTransformer(
-            FFmpegPCMAudio(ran_audio[ran_int]), volume=1)
+        ran_audio = {1: "dismuch.mp3", 2: "dismuch_2.mp3", 3: "dismuch_3.mp3", 4: "dismuch_4.mp3"}
+        audio = PCMVolumeTransformer(FFmpegPCMAudio(ran_audio[ran_int]), volume=1)
         message.guild.voice_client.play(audio)
         return
 
@@ -549,13 +567,10 @@ async def on_message(message: Message):
         general = message.guild.get_channel(864475338340171791)  # 全体チャット
         announce = message.guild.get_channel(885462548055461898)  # お知らせ
         await message.delete(delay=1)
-        JST = datetime.timezone(datetime.timedelta(hours=9))
         dt_now = datetime.datetime.now(JST)
         sat = datetime.timedelta(days=6 - int(dt_now.strftime("%w")))
-        start_time = datetime.datetime(
-            dt_now.year, dt_now.month, dt_now.day, 21, 30, 0, 0, JST) + sat
-        end_time = datetime.datetime(
-            dt_now.year, dt_now.month, dt_now.day, 22, 30, 0, 0, JST) + sat
+        start_time = datetime.datetime(dt_now.year, dt_now.month, dt_now.day, 21, 30, 0, 0, JST) + sat
+        end_time = datetime.datetime(dt_now.year, dt_now.month, dt_now.day, 22, 30, 0, 0, JST) + sat
         stage = client.get_channel(931462636019802123)  # BATTLE STADIUM
         event = await message.guild.create_scheduled_event(
             name="BATTLE STADIUM",
