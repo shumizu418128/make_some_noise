@@ -38,6 +38,8 @@ async def advertise():
     for event in events_exist:
         if event.start_time < closest_event.start_time:
             closest_event = event
+    if closest_event.name == "BATTLE STADIUM":
+        await channel.send(file=File("battle_stadium.gif"))
     await channel.send(closest_event.url)
     return
 
