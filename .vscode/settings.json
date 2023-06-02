@@ -7,5 +7,8 @@
     "python.linting.flake8CategorySeverity.E": "Information",
     "python.linting.flake8CategorySeverity.F": "Information",
     "python.linting.flake8CategorySeverity.W": "Information",
-    "python.linting.flake8Enabled": true
+    "python.linting.flake8Enabled": true,
+    "python.linting.flake8Args": [
+        "--ignore=E501"
+    ]
 }
