@@ -288,11 +288,16 @@ async def start(client: Client):
 
     async def button_callback(interaction: Interaction):
         await interaction.response.defer(ephemeral=True, thinking=False)
+        role_check = interaction.user.get_role(930368130906218526)  # BATTLE STADIUM
+        if bool(role_check):
+            embed = Embed(title="受付済み entry already completed", color=0xff0000)
+            await interaction.followup.send(embed=embed, ephemeral=True)
+            return
         await interaction.user.add_roles(bs_role)
-        embed = Embed(title="受付完了 entry completed",
-                      description=f"**【注意事項】**\n- ノイズキャンセル設定に問題がある方が非常に増えています。必ず {bbx_mic.mention} を確認して、マイク設定を行ってからの参加をお願いします。\n- Discordの音声バグが多発しています。発生した場合、バトルを中断し、途中のラウンドからバトルを再開することがあります。\n※音声バグ発生時の対応は状況によって異なります。ご了承ください。", color=0xffff00)
+        embed1 = Embed(title="受付完了 entry completed", color=0x00ff00)
+        embed2 = Embed(title="【注意事項】", description=f"- ノイズキャンセル設定に問題がある方が非常に増えています。必ず {bbx_mic.mention} を確認して、マイク設定を行ってからの参加をお願いします。\n- Discordの音声バグが多発しています。発生した場合、バトルを中断し、途中のラウンドからバトルを再開することがあります。\n※音声バグ発生時の対応は状況によって異なります。ご了承ください。", color=0xffff00)
+        await interaction.followup.send(embeds=[embed1, embed2], ephemeral=True)
         await bot_channel.send(f"エントリー完了：{interaction.user.display_name}", delete_after=3)
-        await interaction.followup.send(embed=embed, ephemeral=True)
 
     button.callback = button_callback
     view = View()
