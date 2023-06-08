@@ -569,10 +569,10 @@ async def on_message(message: Message):
         general = message.guild.get_channel(864475338340171791)  # 全体チャット
         announce = message.guild.get_channel(885462548055461898)  # お知らせ
         await message.delete(delay=1)
-        dt_now = datetime.datetime.now(JST)
-        sat = datetime.timedelta(days=6 - int(dt_now.strftime("%w")))
-        start_time = datetime.datetime(dt_now.year, dt_now.month, dt_now.day, 21, 30, 0, 0, JST) + sat
-        end_time = datetime.datetime(dt_now.year, dt_now.month, dt_now.day, 22, 30, 0, 0, JST) + sat
+        dt_now = datetime.now(JST)
+        sat = timedelta(days=6 - int(dt_now.strftime("%w")))
+        start_time = datetime(dt_now.year, dt_now.month, dt_now.day, 21, 30, 0, 0, JST) + sat
+        end_time = datetime(dt_now.year, dt_now.month, dt_now.day, 22, 30, 0, 0, JST) + sat
         stage = client.get_channel(931462636019802123)  # BATTLE STADIUM
         event = await message.guild.create_scheduled_event(
             name="BATTLE STADIUM",
