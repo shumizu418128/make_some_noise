@@ -1,7 +1,7 @@
 import asyncio
-import datetime
 import random
 from asyncio import sleep
+from datetime import datetime, timedelta, timezone
 
 from discord import (ButtonStyle, Client, Embed, FFmpegPCMAudio, File,
                      Interaction, Message, PCMVolumeTransformer, VoiceClient)
@@ -13,9 +13,11 @@ None: battle続行可能
 battle_skip: battleを終了し、次のbattleをスタートする
 battle_error: battleを強制終了、自動入力中止
 """
+JST = timezone(timedelta(hours=9))
 
 
 async def battle(text: str, client: Client):
+    # 初期設定
     stamps = {1: "1️⃣", 2: "2️⃣", 3: "3️⃣", 4: "4️⃣"}
     stage_channel = client.get_channel(931462636019802123)  # ステージ
     chat = stage_channel
@@ -24,9 +26,11 @@ async def battle(text: str, client: Client):
     bot_channel = client.get_channel(930447365536612353)  # bot
     maiku_check = client.get_channel(1115986804026392627)  # maiku_check
     vc_role = chat.guild.get_role(935073171462307881)  # in a vc
-    JST = datetime.timezone(datetime.timedelta(hours=9))
+    tari3210 = chat.guild.get_member(412082841829113877)
     embed_chat_info = Embed(title="チャット欄はこちら `chat is here`", description=f"対戦表 `pairing`： {pairing_channel.mention}\nエントリー `entry`： {entry_channel.mention}\nBATTLEタイマー `timer`： {bot_channel.mention}\nマイクチェック： {maiku_check.mention}", color=0x00bfff)
     count = 0
+
+    # 名前整理
     names = text.replace(" vs", "").replace('s.battle', '').split()
     auto = False
     if len(names) == 3:
@@ -54,7 +58,6 @@ async def battle(text: str, client: Client):
         await sleep(1)
 
     # countが0 == nameの取得失敗 このifにかかったら絶対ここで終わらせる
-
     if count == 0 or count > 4:
         embed = Embed(title="Error: 対戦カード読み込み失敗",
                       description=f"入力内容：{names}\n\n`cancelと入力するとキャンセルできます`\n↓もう一度入力してください↓", color=0xff0000)
@@ -74,8 +77,7 @@ async def battle(text: str, client: Client):
         battle_status = await battle(message.content, client)
         return battle_status
 
-    # nameの取得失敗処理ここまで
-
+    # 接続確認
     async def connection(voice_client: VoiceClient):
         if voice_client.is_connected() is False:
             try:
@@ -96,6 +98,7 @@ async def battle(text: str, client: Client):
                 print("lost connection: auto reconnect done")
         return
 
+    # タイマー
     async def timer(time: float, message: Message, voice_client: VoiceClient, count: int):
         battle_status = await connection(voice_client)
         if bool(battle_status):
@@ -127,9 +130,10 @@ async def battle(text: str, client: Client):
                 return "battle_error"
             return "battle_skip"
 
+    # 開始前パネル
     embed = Embed(title=f"1️⃣ {names[0]} 🆚 {names[1]} 2️⃣",
                   description=f"1分・2ラウンドずつ\n`1 minute, 2 rounds each`\n\n> 1st: __**{names[0]}**__")
-    embed.timestamp = datetime.datetime.now(JST)
+    embed.timestamp = datetime.now(JST)
     if len(names) == 2:  # 通常スタート時
         embed.description += "\n`（抽選で決定されました）`"
     if auto:
@@ -148,10 +152,14 @@ async def battle(text: str, client: Client):
     if reaction.emoji == "❌":
         await before_start.delete()
         return "battle_error"
+
+    # vc接続
     voice_client = chat.guild.voice_client
     if voice_client is None:
         voice_client = await stage_channel.connect(reconnect=True)
     await chat.guild.me.edit(suppress=False)
+
+    # バトル開始
     embed = Embed(title="Are you ready??", color=0x00ff00)
     sent_message = await bot_channel.send(embed=embed)
     await sent_message.add_reaction("❌")
@@ -171,13 +179,13 @@ async def battle(text: str, client: Client):
     await sent_message.edit(embed=embed)
     embed.description = f"BATTLEタイマーはこちら {bot_channel.mention}"
     await chat.send(embed=embed)
-    tari3210 = chat.guild.get_member(412082841829113877)
     if bool(tari3210.voice) and tari3210.voice.self_mute is False:
         await chat.send(f"{tari3210.mention}\nミュートしろボケナス")
     battle_status = await timer(3, sent_message, voice_client, count)
     if bool(battle_status):
         return battle_status
 
+    # タイマー
     while count <= 4:
         embed = Embed(
             title="1:00", description=f"Round{stamps[count]}  **{names[1 - count % 2]}**\n\n{names[0]} 🆚 {names[1]}", color=0x00ff00)
@@ -189,8 +197,7 @@ async def battle(text: str, client: Client):
             battle_status = await timer(9.9, sent_message, voice_client, count)
             if bool(battle_status):
                 return battle_status
-            embed = Embed(
-                title=f"{counter}", description=f"Round{stamps[count]}  **{names[1 - count % 2]}**\n\n{names[0]} 🆚 {names[1]}", color=color)
+            embed = Embed(title=f"{counter}", description=f"Round{stamps[count]}  **{names[1 - count % 2]}**\n\n{names[0]} 🆚 {names[1]}", color=color)
             await sent_message.edit(embed=embed)
             await chat.send(embed=embed, delete_after=5)
             counter -= 10
@@ -208,7 +215,7 @@ async def battle(text: str, client: Client):
         battle_status = await timer(4.9, sent_message, voice_client, count)
         if bool(battle_status):
             return battle_status
-        if count <= 3:
+        if count <= 3:  # ここでスイッチ
             audio = PCMVolumeTransformer(FFmpegPCMAudio(f"round{count + 1}switch_{random.randint(1, 3)}.mp3"), volume=2)
             audio.read()
             chat.guild.voice_client.play(audio)
@@ -220,12 +227,16 @@ async def battle(text: str, client: Client):
             if bool(battle_status):
                 return battle_status
         count += 1
+
+    # バトル終了
     audio = PCMVolumeTransformer(FFmpegPCMAudio(f"time_{random.randint(1, 2)}.mp3"), volume=0.5)
     audio.read()
     await sent_message.delete()
     embed = Embed(title="投票箱（集計は行いません）", description=f"1️⃣ {names[0]}\n2️⃣ {names[1]}\n\n>>> BATTLE STADIUM\n毎週土曜21:30~ 開催中！", color=0x00bfff)
     embed.set_footer(text=f"bot開発者: {str(tari3210)}", icon_url=tari3210.display_avatar.url)
-    embed.timestamp = datetime.datetime.now(JST)
+    embed.timestamp = datetime.now(JST)
+
+    # fuga
     if random.randint(1, 20) == 1:
         audio = PCMVolumeTransformer(FFmpegPCMAudio("time_fuga.mp3"), volume=0.4)
         audio.read()
@@ -237,6 +248,8 @@ async def battle(text: str, client: Client):
         await poll.add_reaction("🦁")
         await chat.send(embed=embed_chat_info)
         return
+
+    # not fuga
     chat.guild.voice_client.play(audio)
     poll = await bot_channel.send(f"{vc_role.mention}\nmake some noise for the battle!\ncome on!!", embed=embed)
     await poll.add_reaction("1⃣")
@@ -267,7 +280,6 @@ async def start(client: Client):
     bs_role = chat.guild.get_role(930368130906218526)  # BATTLE STADIUM
     vc_role = chat.guild.get_role(935073171462307881)  # in a vc
     tari3210 = chat.guild.get_member(412082841829113877)
-    JST = datetime.timezone(datetime.timedelta(hours=9))
     scheduled_events = chat.guild.scheduled_events
     embed_chat_info = Embed(title="チャット欄はこちら chat is here",
                             description=f"対戦表： {pairing_channel.mention}\nエントリー： {entry_channel.mention}\nBATTLEタイマー： {bot_channel.mention}\nマイクチェック： {maiku_check.mention}", color=0x00bfff)
@@ -309,7 +321,7 @@ async def start(client: Client):
         await interaction.user.add_roles(bs_role)
         embed = Embed(title="受付完了 entry completed", color=0x00ff00)
         await interaction.followup.send(embeds=[embed, embed_caution], ephemeral=True)
-        await bot_channel.send(f"エントリー完了：{interaction.user.display_name}", delete_after=3)
+        await maiku_check.send(interaction.user.mention, delete_after=2)
 
     button.callback = button_callback
     view = View()
@@ -324,22 +336,22 @@ async def start(client: Client):
     chat.guild.voice_client.play(audio)
     embed = Embed(title="受付開始", description=f"ただいまより参加受付を開始します。\n{entry_channel.mention}にてエントリーを行ってください。\nentry now accepting at {entry_channel.mention}", color=0x00bfff)
     await bot_channel.send(embed=embed)
+    await chat.send(embed=embed)
     await entry_channel.send(f"エントリー後に、botによるマイクチェックを受けてください。\n{maiku_check.mention}", delete_after=60)
 
     # 1分時間をつぶす
     await sleep(10)
-    entry_button2 = await chat.send("このボタンからもエントリーできます", embed=embed, view=view)
-    await sleep(10)
     await chat.send(embed=embed_maiku_check)
+    await sleep(10)
+    entry_button2 = await chat.send("このボタンからもエントリーできます", embed=embed, view=view)
     await sleep(10)
     embed = Embed(title="あと30秒で締め切ります", color=0xffff00)
     await bot_channel.send(embed=embed)
     await chat.send(embed=embed_chat_info)
     await sleep(10)
-    await entry_channel.send(f"{vc_role.mention}\nボタンを押してエントリー！\npress button to entry", delete_after=30)
+    await entry_channel.send(f"{vc_role.mention}\nボタンを押してエントリー！\npress button to entry", delete_after=20)
     await chat.send(embed=embed_maiku_check)
     await sleep(10)
-    await chat.send(embed=embed_chat_info)
     embed = Embed(title="締め切り10秒前", color=0xff0000)
     await bot_channel.send(embed=embed)
     await sleep(10)
@@ -348,41 +360,38 @@ async def start(client: Client):
     await entry_button.delete()
     await entry_button2.delete()
     await bot_channel.send("参加受付を締め切りました。\nentry closed\n\n処理中... しばらくお待ちください")
+    await chat.send("参加受付を締め切りました。\nentry closed\n\n処理中... しばらくお待ちください")
 
     # 抽選処理
     playerlist_m = bs_role.members
     if len(playerlist_m) < 2:
         embed = Embed(title="Error", description="参加者が不足しています。", color=0xff0000)
         await bot_channel.send(embed=embed)
+        await chat.send(embed=embed)
         return
     random.shuffle(playerlist_m)
     playerlist = [member.display_name.replace("`", "").replace(" ", "-") for member in playerlist_m]
 
-    counter = 1
-    counter2 = 0
-
-    # 抽選結果書き出し
-    embed_pairing = Embed(title="対戦カード 抽選結果", description="先攻・後攻は、バトル直前に抽選を行い決定します", color=0xff9900)
-    embed_pairing.timestamp = datetime.datetime.now(JST)
-    embed_pairing.set_footer(text=f"bot開発者: {str(tari3210)}", icon_url=tari3210.display_avatar.url)
-
+    # 奇数処理
     if len(playerlist) % 2 == 1:
         double_player = playerlist_m[0].mention
         embed = Embed(title="参加人数が奇数でした",
                       description=f"{playerlist[0]}さんの対戦が2回行われます\n\n※あと1人参加者が追加された場合、{playerlist[0]}さんと交代になります。", color=0x00bfff)
         await bot_channel.send(embed=embed)
         await pairing_channel.send(f"参加人数が奇数でした。\n\nあと1人参加者が追加された場合、{double_player}さん（最終マッチ）と交代になります。")
-        embed = Embed(title="参加人数が奇数でした",
-                      description=f"あと1人参加できます。ご希望の方はこのチャットにご記入ください。\n\n※参加者が追加された場合、{playerlist[0]}さんと交代になります。", color=0x00bfff)
-        await chat.send(embed=embed)
 
+    # 抽選結果書き出し
+    embed_pairing = Embed(title="対戦カード 抽選結果", description="先攻・後攻は、バトル直前に抽選を行い決定します", color=0xff9900)
+    embed_pairing.set_footer(text=f"bot開発者: {str(tari3210)}", icon_url=tari3210.display_avatar.url)
+    embed_pairing.timestamp = datetime.now(JST)
+    counter = 1
+    counter2 = 0
     while counter2 + 2 <= len(playerlist):
         embed_pairing.add_field(name=f"Match{counter}", value=f"{playerlist[counter2]} 🆚 {playerlist[counter2 + 1]}", inline=False)
         counter += 1
         counter2 += 2
     if len(playerlist) % 2 == 1:
-        embed_pairing.add_field(
-            name=f"Match{counter}", value=f"{playerlist[-1]} 🆚 {playerlist[0]}", inline=False)
+        embed_pairing.add_field(name=f"Match{counter}", value=f"{playerlist[-1]} 🆚 ※{playerlist[0]}\n※{playerlist[0]}さんは交代の可能性有", inline=False)
 
     # 抽選結果送信
     await bot_channel.send(embed=embed_pairing)
@@ -394,9 +403,6 @@ async def start(client: Client):
 
     # バトルループ
     for i in range(0, len(playerlist), 2):
-        # マ イ ク チ ェ ッ ク を し ろ
-        await chat.send(embed=embed_maiku_check)
-
         try:
             battle_status = await battle(f"{playerlist[i]} {playerlist[i + 1]} auto", client)
         except IndexError:  # 参加者数が奇数のとき発生
@@ -427,8 +433,7 @@ async def start(client: Client):
                 if message.content == "cancel":
                     await bot_channel.send("キャンセルしました。")
                     return
-                last_player = message.content
-
+                last_player = message.content.replace("`", "").replace(" ", "-")
             if reaction.emoji == "❌":  # 変更しない
                 last_player = playerlist[0]
 
