@@ -30,6 +30,7 @@ async def battle(text: str, client: Client):
     embed_chat_info = Embed(title="チャット欄はこちら `chat is here`", description=f"対戦表 `pairing`： {pairing_channel.mention}\nエントリー `entry`： {entry_channel.mention}\nBATTLEタイマー `timer`： {bot_channel.mention}\nマイクチェック： {maiku_check.mention}", color=0x00bfff)
     embed_maiku_check = Embed(title="事前マイクチェックをご利用ください", description=f"事前にマイク設定画面のスクショを提出して、botによるマイクチェックを受けてください\n\nマイクチェックチャンネルはこちら {maiku_check.mention}", color=0xffff00)
     count = 0
+    await bot_channel.send("処理中...", delete_after=10)
 
     # マ イ ク チ ェ ッ ク を し ろ
     await chat.send(embed=embed_maiku_check)
@@ -287,13 +288,18 @@ async def start(client: Client):
     embed_chat_info = Embed(title="チャット欄はこちら chat is here",
                             description=f"対戦表： {pairing_channel.mention}\nエントリー： {entry_channel.mention}\nBATTLEタイマー： {bot_channel.mention}\nマイクチェック： {maiku_check.mention}", color=0x00bfff)
     embed_maiku_check = Embed(title="事前マイクチェックをご利用ください", description=f"事前にマイク設定画面のスクショを提出して、botによるマイクチェックを受けてください\n\nマイクチェックチャンネルはこちら {maiku_check.mention}", color=0xffff00)
+    await bot_channel.send("処理中...", delete_after=10)
     await chat.send("ただいま準備中...", embed=embed_chat_info)
-    await bot_channel.send("処理中...")
+    counter = 1
+    counter2 = 0
+
+    # ロールメンバー削除
+    if len(bs_role.members) >= 10:
+        await bot_channel.send("処理に時間がかかっています。しばらくお待ちください。", delete_after=10)
+        await chat.send("処理に時間がかかっています。しばらくお待ちください。", delete_after=10)
     await pairing_channel.purge()
     for member in bs_role.members:
         await member.remove_roles(bs_role)
-    counter = 1
-    counter2 = 0
 
     # イベントスタート
     try:
@@ -311,7 +317,7 @@ async def start(client: Client):
         await stage_channel.connect(reconnect=True)
     await chat.guild.me.edit(suppress=False)
 
-    # エントリーボタン
+    # エントリーボタン準備
     button = Button(label="Entry", style=ButtonStyle.primary, emoji="✅")
     embed_caution = Embed(title="【注意事項】",
                           description=f"- ノイズキャンセル設定に問題がある方が非常に増えています。\n必ず事前に {maiku_check.mention} にマイク設定画面のスクショを提出して、botによるマイクチェックを受けてください。\n\n- Discordの音声バグが発生した場合、バトルを中断し、途中のラウンドからバトルを再開することがあります。\n※音声バグ発生時の対応は状況によって異なります。ご了承ください。", color=0xffff00)
@@ -331,14 +337,16 @@ async def start(client: Client):
     button.callback = button_callback
     view = View()
     view.add_item(button)
-    embed = Embed(
-        title="Entry", description="下のボタンを押してエントリー！\npress button to entry")
-    entry_button = await entry_channel.send(vc_role.mention, embed=embed, view=view)
+    embed = Embed(title="Entry", description="下のボタンを押してエントリー！\npress button to entry")
 
-    # アナウンス
+    # アナウンス準備
     audio = PCMVolumeTransformer(FFmpegPCMAudio("announce.mp3"))
     audio.read()
+
+    # アナウンス開始・受付開始
+    entry_button = await entry_channel.send(vc_role.mention, embed=embed, view=view)
     chat.guild.voice_client.play(audio)
+
     embed = Embed(title="受付開始", description=f"ただいまより参加受付を開始します。\n{entry_channel.mention}にてエントリーを行ってください。\nentry now accepting at {entry_channel.mention}", color=0x00bfff)
     await bot_channel.send(embed=embed)
     await chat.send(embed=embed)
