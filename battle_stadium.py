@@ -87,7 +87,7 @@ async def battle(text: str, client: Client):
                 await chat.guild.me.edit(suppress=False)
             except Exception:  # このExceptionにかかったら絶対ここで終わらせる
                 embed = Embed(
-                    title="Error", description="接続が失われたため、タイマーを停止しました\nlost connection\n\nまもなく、自動でバトル再開準備を行います", color=0xff0000)
+                    title="Error", description="接続が失われたため、タイマーを停止しました\n`battle timer failure due to lost connection`\n\n自動でバトル再開準備を行います\n`battle timer is rebooting automatically`", color=0xff0000)
                 await bot_channel.send(embed=embed)
                 await chat.send(embed=embed)
                 await sleep(3)
@@ -121,8 +121,8 @@ async def battle(text: str, client: Client):
                 chat.guild.voice_client.play(audio)
             except Exception:
                 pass
-            embed = Embed(title="TIMER STOPPED",
-                          description="問題が発生したため、タイマーを停止しました\ntimer stopped due to a problem\n\nまもなく、自動でバトル再開準備を行います", color=0xff0000)
+            embed = Embed(title="Error",
+                          description="問題が発生したため、タイマーを停止しました\n`battle timer failure due to an error`\n\n自動でバトル再開準備を行います\n`battle timer is rebooting automatically`", color=0xff0000)
             await bot_channel.send(embed=embed)
             await chat.send(embed=embed)
             await sleep(3)
