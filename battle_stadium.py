@@ -28,7 +28,12 @@ async def battle(text: str, client: Client):
     vc_role = chat.guild.get_role(935073171462307881)  # in a vc
     tari3210 = chat.guild.get_member(412082841829113877)
     embed_chat_info = Embed(title="チャット欄はこちら `chat is here`", description=f"対戦表 `pairing`： {pairing_channel.mention}\nエントリー `entry`： {entry_channel.mention}\nBATTLEタイマー `timer`： {bot_channel.mention}\nマイクチェック： {maiku_check.mention}", color=0x00bfff)
+    embed_maiku_check = Embed(title="事前マイクチェックをご利用ください", description=f"事前にマイク設定画面のスクショを提出して、botによるマイクチェックを受けてください\n\nマイクチェックチャンネルはこちら {maiku_check.mention}", color=0xffff00)
     count = 0
+
+    # マ イ ク チ ェ ッ ク を し ろ
+    await chat.send(embed=embed_maiku_check)
+    await sleep(3)
 
     # 名前整理
     names = text.replace(" vs", "").replace('s.battle', '').split()
@@ -53,8 +58,6 @@ async def battle(text: str, client: Client):
         embed = Embed(title="先攻・後攻の抽選を行います", description="抽選中...")
         await before_start.edit(embed=embed)
         random.shuffle(names)
-        embed = Embed(title="音声バグが発生する場合があります", description=f"Beatboxerの音声が聞こえない場合、チャットにてお知らせください\n`タイマーを停止し、バトルを中断することがあります`\n\nBATTLEタイマーはこちら {bot_channel.mention}", color=0xffff00)
-        await chat.send(embed=embed, delete_after=50)
         await sleep(1)
 
     # countが0 == nameの取得失敗 このifにかかったら絶対ここで終わらせる
@@ -289,6 +292,8 @@ async def start(client: Client):
     await pairing_channel.purge()
     for member in bs_role.members:
         await member.remove_roles(bs_role)
+    counter = 1
+    counter2 = 0
 
     # イベントスタート
     try:
@@ -384,8 +389,6 @@ async def start(client: Client):
     embed_pairing = Embed(title="対戦カード 抽選結果", description="先攻・後攻は、バトル直前に抽選を行い決定します", color=0xff9900)
     embed_pairing.set_footer(text=f"bot開発者: {str(tari3210)}", icon_url=tari3210.display_avatar.url)
     embed_pairing.timestamp = datetime.now(JST)
-    counter = 1
-    counter2 = 0
     while counter2 + 2 <= len(playerlist):
         embed_pairing.add_field(name=f"Match{counter}", value=f"{playerlist[counter2]} 🆚 {playerlist[counter2 + 1]}", inline=False)
         counter += 1
