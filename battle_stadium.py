@@ -30,11 +30,9 @@ async def battle(text: str, client: Client):
     embed_chat_info = Embed(title="チャット欄はこちら `chat is here`", description=f"対戦表 `pairing`： {pairing_channel.mention}\nエントリー `entry`： {entry_channel.mention}\nBATTLEタイマー `timer`： {bot_channel.mention}\nマイクチェック： {maiku_check.mention}", color=0x00bfff)
     embed_maiku_check = Embed(title="事前マイクチェックをご利用ください", description=f"事前にマイク設定画面のスクショを提出して、botによるマイクチェックを受けてください\n\nマイクチェックチャンネルはこちら {maiku_check.mention}", color=0xffff00)
     count = 0
-    await bot_channel.send("処理中...", delete_after=10)
 
     # マ イ ク チ ェ ッ ク を し ろ
     await chat.send(embed=embed_maiku_check)
-    await sleep(3)
 
     # 名前整理
     names = text.replace(" vs", "").replace('s.battle', '').split()
@@ -293,14 +291,6 @@ async def start(client: Client):
     counter = 1
     counter2 = 0
 
-    # ロールメンバー削除
-    if len(bs_role.members) >= 10:
-        await bot_channel.send("処理に時間がかかっています。しばらくお待ちください。", delete_after=10)
-        await chat.send("処理に時間がかかっています。しばらくお待ちください。", delete_after=10)
-    await pairing_channel.purge()
-    for member in bs_role.members:
-        await member.remove_roles(bs_role)
-
     # イベントスタート
     try:
         for scheduled_event in scheduled_events:
@@ -316,6 +306,14 @@ async def start(client: Client):
     if chat.guild.voice_client is None:
         await stage_channel.connect(reconnect=True)
     await chat.guild.me.edit(suppress=False)
+
+    # ロールメンバー削除
+    if len(bs_role.members) >= 10:
+        await bot_channel.send("処理に時間がかかっています。しばらくお待ちください。", delete_after=10)
+        await chat.send("処理に時間がかかっています。しばらくお待ちください。", delete_after=10)
+    await pairing_channel.purge()
+    for member in bs_role.members:
+        await member.remove_roles(bs_role)
 
     # エントリーボタン準備
     button = Button(label="Entry", style=ButtonStyle.primary, emoji="✅")
@@ -414,6 +412,7 @@ async def start(client: Client):
 
     # バトルループ
     for i in range(0, len(playerlist), 2):
+        await sleep(3)
         try:
             battle_status = await battle(f"{playerlist[i]} {playerlist[i + 1]} auto", client)
         except IndexError:  # 参加者数が奇数のとき発生
