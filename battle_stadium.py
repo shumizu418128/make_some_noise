@@ -405,7 +405,7 @@ async def start(client: Client):
     # 抽選結果送信
     await bot_channel.send(embed=embed_pairing)
     await pairing_channel.send(embed=embed_pairing)
-    await chat.send(embeds=embed_pairing)
+    await chat.send(embed=embed_pairing)
 
     # マ イ ク チ ェ ッ ク を し ろ
     await maiku_check.send(f"{bs_role.mention}", embed=embed_maiku_check, delete_after=20)
