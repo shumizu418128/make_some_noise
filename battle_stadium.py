@@ -381,7 +381,7 @@ async def start(client: Client):
         await chat.send(embed=embed)
         return
     random.shuffle(playerlist_m)
-    playerlist = [member.display_name.replace("`", "").replace(" ", "-") for member in playerlist_m]
+    playerlist = [member.display_name.replace("`", "").replace(" ", "-").replace("　", "-") for member in playerlist_m]
 
     # 奇数処理
     if len(playerlist) % 2 == 1:
