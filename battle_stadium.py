@@ -298,7 +298,8 @@ async def start(client: Client):
                 await scheduled_event.start()
                 break
         await stage_channel.create_instance(topic="BATTLE STADIUM", send_notification=True)
-    except Exception:
+    except Exception as e:
+        print("event exception raised\n" + str(e))
         pass
     await general.send(stage_channel.jump_url, file=File(f"battle_stadium_{random.randint(1, 3)}.gif"))
 
@@ -330,7 +331,7 @@ async def start(client: Client):
         await interaction.user.add_roles(bs_role)
         embed = Embed(title="受付完了 entry completed", color=0x00ff00)
         await interaction.followup.send(embeds=[embed, embed_caution], ephemeral=True)
-        await maiku_check.send(interaction.user.mention, delete_after=2)
+        await maiku_check.send(f"{interaction.user.mention}\nこちらにて事前マイクチェックのご利用をお願いします", delete_after=5)
 
     button.callback = button_callback
     view = View()
