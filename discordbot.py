@@ -134,9 +134,9 @@ async def on_message(message: Message):
             emoji = random.choice(message.guild.emojis)
             if message.author.id in [891228765022195723, 886518627023613962]:  # Yuiにはbrezを
                 emoji = message.guild.get_emoji(889877286055198731)  # brez
-            if message.author.id == 870434043810971659:  # 湯にはsaroを
+            if message.author.id in [887328590407032852, 870434043810971659]:  # 湯にはsaroを
                 emoji = message.guild.get_emoji(889920546408661032)  # oras
-            if message.author.id == [389427133099016193, 735099594010132480]:  # maycoにはheliumを
+            if message.author.id in [389427133099016193, 735099594010132480, 990630026275860540]:  # maycoにはheliumを
                 emoji = message.guild.get_emoji(890506350868721664)  # helium
             await message.add_reaction(emoji)
 
