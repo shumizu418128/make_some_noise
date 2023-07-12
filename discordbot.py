@@ -105,31 +105,44 @@ async def on_member_join(member: Member):
 async def on_message(message: Message):
     if not message.content.startswith("s."):
         url_check = re.search(r"https?://[\w/:%#\$&\?\(\)~\.=\+\-]+", message.content)
-        if any([message.author.bot, bool(url_check), message.channel.id == 930767329137143839]):  # バトスタ対戦表
-            return
         if message.channel.id == 930447365536612353:  # バトスタbot
             if message.content.startswith("l."):
                 return
             await message.delete(delay=1)
             return
+
         if "草" in message.content:
             emoji = message.guild.get_emoji(990222099744432198)  # 草
             await message.add_reaction(emoji)
+
         for word in ["💜❤💙💚", "brez", "ぶれず", "ブレズ", "愛", "sar", "oras", "かわいい", "カワイイ", "好", "impe", "いんぴ", "インピ", "ベッドタイムキャンディ"]:
             if word in message.content.lower():
                 for stamp in ["💜", "❤", "💙", "💚"]:
                     await message.add_reaction(stamp)
+
         embed = Embed(title="GBBの最新情報はこちら", description=">>> 以下のサイトにお探しの情報がない場合、\n__**未発表 もしくは 未定（そもそも決定すらしていない）**__\n可能性が非常に高いです。", color=0xF0632F)
         embed.add_field(name="GBBINFO-JPN 日本非公式情報サイト",
                         value="https://gbbinfo-jpn.jimdofree.com/")
         embed.add_field(name="swissbeatbox 公式instagram",
                         value="https://www.instagram.com/swissbeatbox/")
+
         if "m!wc" in message.content.lower():
             await message.channel.send(embed=embed)
             await message.channel.send("[GBB 2023 Wildcard結果・出場者一覧 はこちら](https://gbbinfo-jpn.jimdofree.com/20230222/)")
+
         if message.channel.type in [ChannelType.text, ChannelType.forum, ChannelType.public_thread]:
             emoji = random.choice(message.guild.emojis)
+            if message.author.id in [891228765022195723, 886518627023613962]:  # Yuiにはbrezを
+                emoji = message.guild.get_emoji(889877286055198731)  # brez
+            if message.author.id == 870434043810971659:  # 湯にはsaroを
+                emoji = message.guild.get_emoji(889920546408661032)  # oras
+            if message.author.id == [389427133099016193, 735099594010132480]:  # maycoにはheliumを
+                emoji = message.guild.get_emoji(890506350868721664)  # helium
             await message.add_reaction(emoji)
+
+            if any([message.author.bot, bool(url_check), message.channel.id == 930767329137143839]):  # バトスタ対戦表
+                return
+
             for word in ["gbb", "wildcard", "ワイカ", "ワイルドカード", "結果", "出場", "通過", "チケット", "ルール", "審査員", "ジャッジ", "日本人", "colaps"]:
                 if word in message.content.lower():
                     if any(["?" in message.content, "？" in message.content]):
@@ -138,11 +151,7 @@ async def on_message(message: Message):
                     else:
                         await message.channel.send(embed=embed)
                     break
-            await sleep(3600)
-            try:
-                await message.remove_reaction(emoji, message.guild.me)
-            except Exception:
-                pass
+        return
 
     if message.channel.id == 930839018671837184:  # バトスタチャット
         return
