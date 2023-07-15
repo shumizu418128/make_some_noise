@@ -103,9 +103,10 @@ async def on_member_join(member: Member):
 
 @client.event
 async def on_message(message: Message):
+    if message.author.bot:
+        return
+
     if not message.content.startswith("s."):
-        if message.author.bot:
-            return
         url_check = re.search(r"https?://[\w/:%#\$&\?\(\)~\.=\+\-]+", message.content)
         if message.channel.id == 930447365536612353:  # バトスタbot
             if message.content.startswith("l."):
@@ -142,7 +143,7 @@ async def on_message(message: Message):
                 emoji = message.guild.get_emoji(890506350868721664)  # helium
             await message.add_reaction(emoji)
 
-            if any([message.author.bot, bool(url_check), message.channel.id == 930767329137143839]):  # バトスタ対戦表
+            if any([bool(url_check), message.channel.id == 930767329137143839]):  # バトスタ対戦表
                 return
 
             for word in ["gbb", "wildcard", "ワイカ", "ワイルドカード", "結果", "出場", "通過", "チケット", "ルール", "審査員", "ジャッジ", "日本人", "colaps"]:
