@@ -104,6 +104,8 @@ async def on_member_join(member: Member):
 @client.event
 async def on_message(message: Message):
     if not message.content.startswith("s."):
+        if message.author.bot:
+            return
         url_check = re.search(r"https?://[\w/:%#\$&\?\(\)~\.=\+\-]+", message.content)
         if message.channel.id == 930447365536612353:  # バトスタbot
             if message.content.startswith("l."):
