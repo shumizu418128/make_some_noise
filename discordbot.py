@@ -77,7 +77,7 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
 @client.event
 async def on_member_join(member: Member):
     channel = client.get_channel(864475338340171791)  # 全体チャット
-    await sleep(1)
+    await sleep(2)
     embed_discord = Embed(
         title="Discordの使い方", description="https://note.com/me1o_crew/n/nf2971acd1f1a")
     embed = Embed(title="GBBの最新情報はこちら", color=0xF0632F)
@@ -103,17 +103,14 @@ async def on_member_join(member: Member):
 
 @client.event
 async def on_message(message: Message):
-    if message.author.bot:
+    if message.author.bot or message.content.startswith("l.") or message.channel.id in [930767329137143839, 930839018671837184]:  # バトスタ対戦表、バトスタチャット
+        return
+
+    if message.channel.id == 930447365536612353:  # バトスタbot
+        await message.delete(delay=1)
         return
 
     if not message.content.startswith("s."):
-        url_check = re.search(r"https?://[\w/:%#\$&\?\(\)~\.=\+\-]+", message.content)
-        if message.channel.id == 930447365536612353:  # バトスタbot
-            if message.content.startswith("l."):
-                return
-            await message.delete(delay=1)
-            return
-
         if "草" in message.content:
             emoji = message.guild.get_emoji(990222099744432198)  # 草
             await message.add_reaction(emoji)
@@ -143,7 +140,8 @@ async def on_message(message: Message):
                 emoji = message.guild.get_emoji(890506350868721664)  # helium
             await message.add_reaction(emoji)
 
-            if any([bool(url_check), message.channel.id == 930767329137143839]):  # バトスタ対戦表
+            url_check = re.search(r"https?://[\w/:%#\$&\?\(\)~\.=\+\-]+", message.content)
+            if bool(url_check):
                 return
 
             for word in ["gbb", "wildcard", "ワイカ", "ワイルドカード", "結果", "出場", "通過", "チケット", "ルール", "審査員", "ジャッジ", "日本人", "colaps"]:
@@ -154,9 +152,6 @@ async def on_message(message: Message):
                     else:
                         await message.channel.send(embed=embed)
                     break
-        return
-
-    if message.channel.id == 930839018671837184:  # バトスタチャット
         return
 
     if message.content == "s.test":
