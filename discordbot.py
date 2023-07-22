@@ -106,10 +106,6 @@ async def on_message(message: Message):
     if message.author.bot or message.content.startswith("l.") or message.channel.id in [930767329137143839, 930839018671837184]:  # バトスタ対戦表、バトスタチャット
         return
 
-    if message.channel.id == 930447365536612353:  # バトスタbot
-        await message.delete(delay=1)
-        return
-
     if not message.content.startswith("s."):
         if "草" in message.content:
             emoji = message.guild.get_emoji(990222099744432198)  # 草
