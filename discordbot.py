@@ -579,7 +579,7 @@ async def on_message(message: Message):
         stage = client.get_channel(931462636019802123)  # BATTLE STADIUM
         event = await message.guild.create_scheduled_event(
             name="BATTLE STADIUM",
-            description="今週もやります！\nこのイベントの趣旨は「とにかくBeatboxバトルをすること」です。いつでも何回でも参加可能です。\nぜひご参加ください！\n観戦も可能です。観戦中、マイクがオンになることはありません。\n\n※エントリー受付・当日の進行はすべてbotが行います。\n※エントリー受付開始時間は、バトル開始1分前です。",
+            description="【エキシビションBeatboxバトルイベント】\n今週もやります！いつでも何回でも参加可能です。\nぜひご参加ください！\n観戦も可能です。観戦中、マイクがオンになることはありません。\n\n※エントリー受付・当日の進行はすべてbotが行います。\n※エントリー受付開始時間は、バトル開始1分前です。",
             start_time=start_time,
             end_time=end_time,
             channel=stage,
