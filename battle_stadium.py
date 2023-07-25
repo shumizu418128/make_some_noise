@@ -301,7 +301,7 @@ async def start(client: Client):
     except Exception as e:
         print("event exception raised\n" + str(e))
         pass
-    await general.send(stage_channel.jump_url, file=File(f"battle_stadium_{random.randint(1, 3)}.gif"))
+    await general.send(f"【エキシビションBeatboxバトルイベント】\nバトルスタジアムを開始します！\nぜひご参加ください！観戦も大歓迎！\n{stage_channel.jump_url}", file=File(f"battle_stadium_{random.randint(1, 3)}.gif"))
 
     # vc接続
     if chat.guild.voice_client is None:
