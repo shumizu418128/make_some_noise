@@ -13,6 +13,7 @@ from discord.errors import ClientException
 from discord.ext import tasks
 
 from battle_stadium import battle, start
+from keep_alive import keep_alive
 
 TOKEN = os.environ['DISCORD_BOT_TOKEN']
 intents = Intents.all()  # デフォルトのIntentsオブジェクトを生成
@@ -590,4 +591,5 @@ async def on_message(message: Message):
         await general.send(event.url)
         return
 
+keep_alive()
 client.run(TOKEN)
