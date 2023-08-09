@@ -50,5 +50,6 @@ COPY battle_stadium_2.gif battle_stadium_2.gif
 COPY battle_stadium_3.gif battle_stadium_3.gif
 COPY announce.mp3 announce.mp3
 COPY battle_stadium.py battle_stadium.py
+COPY keep_alive.py keep_alive.py
 CMD ["python", "-u", "discordbot.py"]
 ARG EnvironmentVariable
