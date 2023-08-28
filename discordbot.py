@@ -110,7 +110,7 @@ async def on_member_join(member: Member):
     embed.add_field(name="swissbeatbox 公式instagram",
                     value="https://www.instagram.com/swissbeatbox/")
     text = await gbb_countdown()
-    embed.set_footer(text)
+    embed.set_footer(text=text)
     await channel.send(f"{member.mention}\nあつまれ！ビートボックスの森 へようこそ！", embeds=[embed_discord, embed])
     events = channel.guild.scheduled_events
     events_exist = []
@@ -148,7 +148,7 @@ async def on_message(message: Message):
         embed.add_field(name="swissbeatbox 公式instagram",
                         value="https://www.instagram.com/swissbeatbox/")
         text = await gbb_countdown()
-        embed.set_footer(text)
+        embed.set_footer(text=text)
 
         if "m!wc" in message.content.lower():
             await message.channel.send(embed=embed)
