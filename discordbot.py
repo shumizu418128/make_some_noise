@@ -25,6 +25,17 @@ JST = timezone(timedelta(hours=9))
 PM9 = time(21, 0, tzinfo=JST)
 
 
+async def gbb_countdown():
+    dt_now = datetime.now(JST)
+    dt_gbb = datetime(2023, 10, 18)
+    td_gbb = abs(dt_gbb - dt_now)
+    if dt_gbb < dt_now:  # 終了後は、開催終了からの時間を計測
+        dt_gbb = datetime(2023, 10, 22)
+        td_gbb = abs(dt_gbb - dt_now)
+        return f"GBB2023は{td_gbb.days}日{td_gbb.hours}時間{td_gbb.minutes}分{td_gbb.seconds}.{td_gbb.microseconds}秒前に開催されました。"
+    return f"GBB2023まであと{td_gbb.days}日{td_gbb.hours}時間{td_gbb.minutes}分{td_gbb.seconds}.{td_gbb.microseconds}秒です。"
+
+
 @tasks.loop(time=PM9)
 async def advertise():
     channel = client.get_channel(864475338340171791)  # 全体チャット
@@ -86,6 +97,8 @@ async def on_member_join(member: Member):
                     value="https://gbbinfo-jpn.jimdofree.com/")
     embed.add_field(name="swissbeatbox 公式instagram",
                     value="https://www.instagram.com/swissbeatbox/")
+    text = await gbb_countdown()
+    embed.set_footer(text)
     await channel.send(f"{member.mention}\nあつまれ！ビートボックスの森 へようこそ！", embeds=[embed_discord, embed])
     events = channel.guild.scheduled_events
     events_exist = []
@@ -122,6 +135,8 @@ async def on_message(message: Message):
                         value="https://gbbinfo-jpn.jimdofree.com/")
         embed.add_field(name="swissbeatbox 公式instagram",
                         value="https://www.instagram.com/swissbeatbox/")
+        text = await gbb_countdown()
+        embed.set_footer(text)
 
         if "m!wc" in message.content.lower():
             await message.channel.send(embed=embed)
