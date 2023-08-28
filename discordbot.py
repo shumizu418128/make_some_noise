@@ -26,14 +26,26 @@ PM9 = time(21, 0, tzinfo=JST)
 
 
 async def gbb_countdown():
+    dt_gbb_start = datetime(2023, 10, 18)
+    dt_gbb_end = datetime(2023, 10, 22)
+    dt_gbb_start = dt_gbb_start.replace(tzinfo=JST)
+    dt_gbb_end = dt_gbb_end.replace(tzinfo=JST)
     dt_now = datetime.now(JST)
-    dt_gbb = datetime(2023, 10, 18)
-    td_gbb = abs(dt_gbb - dt_now)
-    if dt_gbb < dt_now:  # 終了後は、開催終了からの時間を計測
-        dt_gbb = datetime(2023, 10, 22)
-        td_gbb = abs(dt_gbb - dt_now)
-        return f"GBB2023は{td_gbb.days}日{td_gbb.hours}時間{td_gbb.minutes}分{td_gbb.seconds}.{td_gbb.microseconds}秒前に開催されました。"
-    return f"GBB2023まであと{td_gbb.days}日{td_gbb.hours}時間{td_gbb.minutes}分{td_gbb.seconds}.{td_gbb.microseconds}秒です。"
+
+    td_gbb = abs(dt_gbb_end - dt_now)
+    if dt_gbb_end > dt_now:
+        td_gbb = abs(dt_gbb_start - dt_now)
+
+    m, s = divmod(td_gbb.seconds, 60)
+    h, m = divmod(m, 60)
+
+    if dt_gbb_start > dt_now:
+        return f"GBB2023まであと{td_gbb.days}日{h}時間{m}分{s}.{td_gbb.microseconds}秒です。"
+
+    elif dt_gbb_end > dt_now:
+        return f"今日はGBB2023 {td_gbb.days + 1}日目です。"
+
+    return f"GBB2023は{td_gbb.days}日{h}時間{m}分{s}.{td_gbb.microseconds}秒前に開催されました。"
 
 
 @tasks.loop(time=PM9)
