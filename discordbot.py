@@ -26,7 +26,7 @@ PM9 = time(21, 0, tzinfo=JST)
 
 
 async def gbb_countdown():
-    dt_gbb_start = datetime(2023, 10, 18)
+    dt_gbb_start = datetime(2023, 10, 18, 13, 00)
     dt_gbb_end = datetime(2023, 10, 22)
     dt_gbb_start = dt_gbb_start.replace(tzinfo=JST)
     dt_gbb_end = dt_gbb_end.replace(tzinfo=JST)
