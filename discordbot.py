@@ -171,7 +171,7 @@ async def on_message(message: Message):
             for word in ["gbb", "wildcard", "ワイカ", "ワイルドカード", "結果", "出場", "通過", "チケット", "ルール", "審査員", "ジャッジ", "日本人", "colaps"]:
                 if word in message.content.lower():
                     if any(["?" in message.content, "？" in message.content]):
-                        await message.reply("[GBBINFO-JPN 日本非公式情報サイト](https://gbbinfo-jpn.jimdofree.com/)")
+                        await message.reply("**GBB最新情報をお探しですか？**\n## ぜひこちらのサイトをご覧ください！\n\n[GBBINFO-JPN 日本非公式情報サイト](https://gbbinfo-jpn.jimdofree.com/)")
                         await message.reply(embed=embed)
                     else:
                         await message.channel.send(embed=embed)
