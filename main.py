@@ -621,5 +621,5 @@ async def on_message(message: Message):
 keep_alive()
 try:
     client.run(TOKEN)
-except:
+except Exception:
     os.system("kill 1")
