@@ -619,4 +619,7 @@ async def on_message(message: Message):
         return
 
 keep_alive()
-client.run(TOKEN)
+try:
+    client.run(TOKEN)
+except:
+    os.system("kill 1")
