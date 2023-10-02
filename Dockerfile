@@ -15,7 +15,7 @@ RUN  apt-get update \
     && apt-get install -y ffmpeg \
     && apt clean \
     && rm -rf /var/lib/apt/lists/*
-COPY discordbot.py discordbot.py
+COPY main.py main.py
 COPY BattleStart_1.mp3 BattleStart_1.mp3
 COPY BattleStart_2.mp3 BattleStart_2.mp3
 COPY BattleStart_3.mp3 BattleStart_3.mp3
@@ -53,5 +53,5 @@ COPY battle_stadium_3.gif battle_stadium_3.gif
 COPY announce.mp3 announce.mp3
 COPY battle_stadium.py battle_stadium.py
 COPY keep_alive.py keep_alive.py
-CMD ["python", "-u", "discordbot.py"]
+CMD ["python", "-u", "main.py"]
 ARG EnvironmentVariable
