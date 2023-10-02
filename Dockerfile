@@ -1,57 +1,35 @@
+# ベースイメージとしてPython 3.10を使用
 FROM python:3.10
-USER root
 
-ENV LANG ja_JP.UTF-8
-ENV LANGUAGE ja_JP:ja
-ENV LC_ALL ja_JP.UTF-8
-ENV TZ JST-9
-ENV TERM xterm
-RUN pip install git+https://github.com/Rapptz/discord.py \
-    pip install pynacl \
-    pip install flask \
-    pip install waitress
+# 環境変数を一度に設定
+ENV LANG=ja_JP.UTF-8 \
+    LANGUAGE=ja_JP:ja \
+    LC_ALL=ja_JP.UTF-8 \
+    TZ=JST-9 \
+    TERM=xterm
+
+# pipでPythonパッケージをインストール
+RUN pip install git+https://github.com/Rapptz/discord.py pynacl flask waitress
+
+# Pythonのpipをアップグレード
 RUN /usr/local/bin/python -m pip install --upgrade pip
-RUN  apt-get update \
+
+# apt-getコマンドで必要なパッケージをインストールし、クリーンアップ
+RUN apt-get update \
     && apt-get install -y ffmpeg \
-    && apt clean \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
-COPY main.py main.py
-COPY BattleStart_1.mp3 BattleStart_1.mp3
-COPY BattleStart_2.mp3 BattleStart_2.mp3
-COPY BattleStart_3.mp3 BattleStart_3.mp3
-COPY bunka.mp3 bunka.mp3
-COPY countdown.mp3 countdown.mp3
-COPY dismuch.mp3 dismuch.mp3
-COPY dismuch_2.mp3 dismuch_2.mp3
-COPY dismuch_3.mp3 dismuch_3.mp3
-COPY dismuch_4.mp3 dismuch_4.mp3
-COPY esh.mp3 esh.mp3
-COPY esh_2.mp3 esh_2.mp3
-COPY kansei.mp3 kansei.mp3
-COPY kansei_2.mp3 kansei_2.mp3
-COPY kbbtime.mp3 kbbtime.mp3
-COPY msn_1.mp3 msn_1.mp3
-COPY msn_2.mp3 msn_2.mp3
-COPY msn_3.mp3 msn_3.mp3
-COPY olala.mp3 olala.mp3
-COPY round2switch_1.mp3 round2switch_1.mp3
-COPY round2switch_2.mp3 round2switch_2.mp3
-COPY round2switch_3.mp3 round2switch_3.mp3
-COPY round3switch_1.mp3 round3switch_1.mp3
-COPY round3switch_2.mp3 round3switch_2.mp3
-COPY round3switch_3.mp3 round3switch_3.mp3
-COPY round4switch_1.mp3 round4switch_1.mp3
-COPY round4switch_2.mp3 round4switch_2.mp3
-COPY round4switch_3.mp3 round4switch_3.mp3
-COPY time_1.mp3 time_1.mp3
-COPY time_2.mp3 time_2.mp3
-COPY time_fuga.mp3 time_fuga.mp3
-COPY timer_stop.mp3 timer_stop.mp3
-COPY battle_stadium_1.gif battle_stadium_1.gif
-COPY battle_stadium_2.gif battle_stadium_2.gif
-COPY battle_stadium_3.gif battle_stadium_3.gif
-COPY announce.mp3 announce.mp3
-COPY battle_stadium.py battle_stadium.py
-COPY keep_alive.py keep_alive.py
+
+# ファイルをコピー
+COPY main.py /app/
+COPY *.mp3 /app/
+COPY *.gif /app/
+COPY *.py /app/
+COPY *.json /app/
+COPY *.traineddata /app/
+
+# 作業ディレクトリを/appに設定
+WORKDIR /app
+
+# コマンドを指定
 CMD ["python", "-u", "main.py"]
-ARG EnvironmentVariable
