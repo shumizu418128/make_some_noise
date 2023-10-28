@@ -459,3 +459,19 @@ async def start(client: Client):
     embed = Embed(title="ラストMatchが終了しました", description="ご参加ありがとうございました！\nmake some noise for all of amazing performance!!", color=0x00bfff)
     await bot_channel.send(embed=embed)
     await chat.send(embed=embed)
+    dt_now = datetime.now(JST)
+    if dt_now.time() < datetime.time(hour=22, minute=30):
+        embed = Embed(title="BATTLE STADIUM エントリー再受付 開始ボタン", description="▶️を押すとバトスタエントリー再受付を開始します")
+        battle_stadium_restart = await bot_channel.send(embed=embed)
+        await battle_stadium_restart.add_reaction("▶️")
+        await battle_stadium_restart.add_reaction("❌")
+
+        def check(reaction, user):
+            stamps = ["▶️", "❌"]
+            role_check = user.get_role(1096821566114902047)  # バトスタ運営
+            return bool(role_check) and reaction.emoji in stamps and reaction.message == battle_stadium_restart
+        reaction, _ = await client.wait_for('reaction_add', check=check)
+        await battle_stadium_restart.clear_reactions()
+        if reaction.emoji == "❌":
+            await battle_stadium_restart.delete()
+        await start(client)
