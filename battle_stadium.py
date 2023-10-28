@@ -181,7 +181,7 @@ async def battle(text: str, client: Client):
     await sent_message.edit(embed=embed)
     embed.description = f"BATTLEタイマーはこちら {bot_channel.mention}"
     await chat.send(embed=embed)
-    if bool(tari3210.voice) and tari3210.voice.self_mute is False:
+    if all([bool(tari3210.voice), tari3210.voice.self_mute is False, tari3210.voice.suppress is False]):
         await chat.send(f"{tari3210.mention}\nミュートしろボケナス")
     battle_status = await timer(3, sent_message, voice_client, count)
     if bool(battle_status):
