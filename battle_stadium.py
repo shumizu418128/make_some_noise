@@ -27,8 +27,10 @@ async def battle(text: str, client: Client):
     maiku_check = client.get_channel(1115986804026392627)  # maiku_check
     vc_role = chat.guild.get_role(935073171462307881)  # in a vc
     tari3210 = chat.guild.get_member(412082841829113877)
-    embed_chat_info = Embed(title="チャット欄はこちら `chat is here`", description=f"対戦表 `pairing`： {pairing_channel.mention}\nエントリー `entry`： {entry_channel.mention}\nBATTLEタイマー `timer`： {bot_channel.mention}\nマイクチェック： {maiku_check.mention}", color=0x00bfff)
-    embed_maiku_check = Embed(title="事前マイクチェックをご利用ください", description=f"事前にマイク設定画面のスクショを提出して、botによるマイクチェックを受けてください\n\nマイクチェックチャンネルはこちら {maiku_check.mention}", color=0xffff00)
+    embed_chat_info = Embed(title="チャット欄はこちら `chat is here`",
+                            description=f"対戦表 `pairing`： {pairing_channel.mention}\nエントリー `entry`： {entry_channel.mention}\nBATTLEタイマー `timer`： {bot_channel.mention}\nマイクチェック： {maiku_check.mention}", color=0x00bfff)
+    embed_maiku_check = Embed(
+        title="事前マイクチェックをご利用ください", description=f"事前にマイク設定画面のスクショを提出して、botによるマイクチェックを受けてください\n\nマイクチェックチャンネルはこちら {maiku_check.mention}", color=0xffff00)
     count = 0
 
     # マ イ ク チ ェ ッ ク を し ろ
@@ -168,7 +170,8 @@ async def battle(text: str, client: Client):
     embed.description = f"BATTLEタイマーはこちら {bot_channel.mention}"
     await chat.send(embed=embed)
     random_start = random.randint(1, 3)
-    audio = PCMVolumeTransformer(FFmpegPCMAudio(f"BattleStart_{random_start}.mp3"), volume=0.4)
+    audio = PCMVolumeTransformer(FFmpegPCMAudio(
+        f"BattleStart_{random_start}.mp3"), volume=0.4)
     audio.read()
     chat.guild.voice_client.play(audio)
     if random_start == 1:
@@ -199,7 +202,8 @@ async def battle(text: str, client: Client):
             battle_status = await timer(9.9, sent_message, voice_client, count)
             if bool(battle_status):
                 return battle_status
-            embed = Embed(title=f"{counter}", description=f"Round{stamps[count]}  **{names[1 - count % 2]}**\n\n{names[0]} 🆚 {names[1]}", color=color)
+            embed = Embed(
+                title=f"{counter}", description=f"Round{stamps[count]}  **{names[1 - count % 2]}**\n\n{names[0]} 🆚 {names[1]}", color=color)
             await sent_message.edit(embed=embed)
             await chat.send(embed=embed, delete_after=5)
             counter -= 10
@@ -218,7 +222,8 @@ async def battle(text: str, client: Client):
         if bool(battle_status):
             return battle_status
         if count <= 3:  # ここでスイッチ
-            audio = PCMVolumeTransformer(FFmpegPCMAudio(f"round{count + 1}switch_{random.randint(1, 3)}.mp3"), volume=2)
+            audio = PCMVolumeTransformer(FFmpegPCMAudio(
+                f"round{count + 1}switch_{random.randint(1, 3)}.mp3"), volume=2)
             audio.read()
             chat.guild.voice_client.play(audio)
             embed = Embed(
@@ -231,16 +236,20 @@ async def battle(text: str, client: Client):
         count += 1
 
     # バトル終了
-    audio = PCMVolumeTransformer(FFmpegPCMAudio(f"time_{random.randint(1, 2)}.mp3"), volume=0.5)
+    audio = PCMVolumeTransformer(FFmpegPCMAudio(
+        f"time_{random.randint(1, 2)}.mp3"), volume=0.5)
     audio.read()
     await sent_message.delete()
-    embed = Embed(title="投票箱（集計は行いません）", description=f"1️⃣ {names[0]}\n2️⃣ {names[1]}\n\n>>> BATTLE STADIUM\n毎週土曜21:30~ 開催中！", color=0x00bfff)
-    embed.set_footer(text=f"bot開発者: {str(tari3210)}", icon_url=tari3210.display_avatar.url)
+    embed = Embed(title="投票箱（集計は行いません）",
+                  description=f"1️⃣ {names[0]}\n2️⃣ {names[1]}\n\n>>> BATTLE STADIUM\n毎週土曜21:30~ 開催中！", color=0x00bfff)
+    embed.set_footer(text=f"bot開発者: {str(tari3210)}",
+                     icon_url=tari3210.display_avatar.url)
     embed.timestamp = datetime.now(JST)
 
     # fuga
     if random.randint(1, 20) == 1:
-        audio = PCMVolumeTransformer(FFmpegPCMAudio("time_fuga.mp3"), volume=0.4)
+        audio = PCMVolumeTransformer(
+            FFmpegPCMAudio("time_fuga.mp3"), volume=0.4)
         audio.read()
         chat.guild.voice_client.play(audio)
         await sleep(7)
@@ -257,7 +266,8 @@ async def battle(text: str, client: Client):
     await poll.add_reaction("1⃣")
     await poll.add_reaction("2⃣")
     await poll.add_reaction("🔥")
-    audio = PCMVolumeTransformer(FFmpegPCMAudio(f"msn_{random.randint(1, 3)}.mp3"), volume=0.7)
+    audio = PCMVolumeTransformer(FFmpegPCMAudio(
+        f"msn_{random.randint(1, 3)}.mp3"), volume=0.7)
     audio.read()
     await sleep(3.9)
     chat.guild.voice_client.play(audio)
@@ -285,7 +295,8 @@ async def start(client: Client):
     scheduled_events = chat.guild.scheduled_events
     embed_chat_info = Embed(title="チャット欄はこちら chat is here",
                             description=f"対戦表： {pairing_channel.mention}\nエントリー： {entry_channel.mention}\nBATTLEタイマー： {bot_channel.mention}\nマイクチェック： {maiku_check.mention}", color=0x00bfff)
-    embed_maiku_check = Embed(title="事前マイクチェックをご利用ください", description=f"事前にマイク設定画面のスクショを提出して、botによるマイクチェックを受けてください\n\nマイクチェックチャンネルはこちら {maiku_check.mention}", color=0xffff00)
+    embed_maiku_check = Embed(
+        title="事前マイクチェックをご利用ください", description=f"事前にマイク設定画面のスクショを提出して、botによるマイクチェックを受けてください\n\nマイクチェックチャンネルはこちら {maiku_check.mention}", color=0xffff00)
     await bot_channel.send("処理中...", delete_after=10)
     await chat.send("ただいま準備中...", embed=embed_chat_info)
     counter = 1
@@ -323,7 +334,8 @@ async def start(client: Client):
 
     async def button_callback(interaction: Interaction):
         await interaction.response.defer(ephemeral=True, thinking=False)
-        role_check = interaction.user.get_role(930368130906218526)  # BATTLE STADIUM
+        role_check = interaction.user.get_role(
+            930368130906218526)  # BATTLE STADIUM
         if bool(role_check):
             embed = Embed(title="受付済み entry already completed", color=0xff0000)
             await interaction.followup.send(embeds=[embed, embed_caution], ephemeral=True)
@@ -336,7 +348,8 @@ async def start(client: Client):
     button.callback = button_callback
     view = View()
     view.add_item(button)
-    embed = Embed(title="Entry", description="下のボタンを押してエントリー！\npress button to entry")
+    embed = Embed(
+        title="Entry", description="下のボタンを押してエントリー！\npress button to entry")
 
     # アナウンス準備
     audio = PCMVolumeTransformer(FFmpegPCMAudio("announce.mp3"))
@@ -346,7 +359,8 @@ async def start(client: Client):
     entry_button = await entry_channel.send(vc_role.mention, embed=embed, view=view)
     chat.guild.voice_client.play(audio)
 
-    embed = Embed(title="受付開始", description=f"ただいまより参加受付を開始します。\n{entry_channel.mention}にてエントリーを行ってください。\nentry now accepting at {entry_channel.mention}", color=0x00bfff)
+    embed = Embed(
+        title="受付開始", description=f"ただいまより参加受付を開始します。\n{entry_channel.mention}にてエントリーを行ってください。\nentry now accepting at {entry_channel.mention}", color=0x00bfff)
     await bot_channel.send(embed=embed)
     await chat.send(embed=embed)
     await entry_channel.send(f"エントリー後に、botによるマイクチェックを受けてください。\n{maiku_check.mention}", delete_after=60)
@@ -377,12 +391,14 @@ async def start(client: Client):
     # 抽選処理
     playerlist_m = bs_role.members
     if len(playerlist_m) < 2:
-        embed = Embed(title="Error", description="参加者が不足しています。", color=0xff0000)
+        embed = Embed(title="Error", description="参加者が不足しています。",
+                      color=0xff0000)
         await bot_channel.send(embed=embed)
         await chat.send(embed=embed)
         return
     random.shuffle(playerlist_m)
-    playerlist = [member.display_name.replace("`", "").replace(" ", "-").replace("　", "-") for member in playerlist_m]
+    playerlist = [member.display_name.replace("`", "").replace(
+        " ", "-").replace("　", "-") for member in playerlist_m]
 
     # 奇数処理
     if len(playerlist) % 2 == 1:
@@ -393,15 +409,19 @@ async def start(client: Client):
         await pairing_channel.send(f"参加人数が奇数でした。\n\nあと1人参加者が追加された場合、{double_player}さん（最終マッチ）と交代になります。")
 
     # 抽選結果書き出し
-    embed_pairing = Embed(title="対戦カード 抽選結果", description="先攻・後攻は、バトル直前に抽選を行い決定します", color=0xff9900)
-    embed_pairing.set_footer(text=f"bot開発者: {str(tari3210)}", icon_url=tari3210.display_avatar.url)
+    embed_pairing = Embed(
+        title="対戦カード 抽選結果", description="先攻・後攻は、バトル直前に抽選を行い決定します", color=0xff9900)
+    embed_pairing.set_footer(
+        text=f"bot開発者: {str(tari3210)}", icon_url=tari3210.display_avatar.url)
     embed_pairing.timestamp = datetime.now(JST)
     while counter2 + 2 <= len(playerlist):
-        embed_pairing.add_field(name=f"Match{counter}", value=f"{playerlist[counter2]} 🆚 {playerlist[counter2 + 1]}", inline=False)
+        embed_pairing.add_field(
+            name=f"Match{counter}", value=f"{playerlist[counter2]} 🆚 {playerlist[counter2 + 1]}", inline=False)
         counter += 1
         counter2 += 2
     if len(playerlist) % 2 == 1:
-        embed_pairing.add_field(name=f"Match{counter}", value=f"{playerlist[-1]} 🆚 ※{playerlist[0]}\n※{playerlist[0]}さんは交代の可能性有", inline=False)
+        embed_pairing.add_field(
+            name=f"Match{counter}", value=f"{playerlist[-1]} 🆚 ※{playerlist[0]}\n※{playerlist[0]}さんは交代の可能性有", inline=False)
 
     # 抽選結果送信
     await bot_channel.send(embed=embed_pairing)
@@ -417,7 +437,8 @@ async def start(client: Client):
         try:
             battle_status = await battle(f"{playerlist[i]} {playerlist[i + 1]} auto", client)
         except IndexError:  # 参加者数が奇数のとき発生
-            embed = Embed(title="最終マッチを行います", description=f"参加者数が奇数だったため、これより\n{playerlist[-1]} vs `{playerlist[0]}(2回目)`\nを行う予定です。\n{playerlist[-1]} さんの対戦相手を変更しますか？\n\n⭕ 変更する\n❌ `{playerlist[-1]} vs {playerlist[0]} を行う`", color=0xffff00)
+            embed = Embed(
+                title="最終マッチを行います", description=f"参加者数が奇数だったため、これより\n{playerlist[-1]} vs `{playerlist[0]}(2回目)`\nを行う予定です。\n{playerlist[-1]} さんの対戦相手を変更しますか？\n\n⭕ 変更する\n❌ `{playerlist[-1]} vs {playerlist[0]} を行う`", color=0xffff00)
             confirm_msg = await bot_channel.send(embed=embed)
             await confirm_msg.add_reaction("⭕")
             await confirm_msg.add_reaction("❌")
@@ -430,11 +451,13 @@ async def start(client: Client):
             await confirm_msg.clear_reactions()
 
             if reaction.emoji == "⭕":  # 対戦相手変更
-                embed = Embed(title="対戦相手を入力してください", description=f"`{playerlist[-1]} vs ???`\n\n`cancelと入力するとキャンセルできます`\n↓このチャットに入力↓")
+                embed = Embed(
+                    title="対戦相手を入力してください", description=f"`{playerlist[-1]} vs ???`\n\n`cancelと入力するとキャンセルできます`\n↓このチャットに入力↓")
                 await bot_channel.send(embed=embed)
 
                 def check(message):
-                    role_check = message.author.get_role(1096821566114902047)  # バトスタ運営
+                    role_check = message.author.get_role(
+                        1096821566114902047)  # バトスタ運営
                     return message.channel == bot_channel and bool(role_check)
                 try:
                     message = await client.wait_for('message', timeout=600, check=check)
@@ -444,7 +467,8 @@ async def start(client: Client):
                 if message.content == "cancel":
                     await bot_channel.send("キャンセルしました。")
                     return
-                last_player = message.content.replace("`", "").replace(" ", "-")
+                last_player = message.content.replace(
+                    "`", "").replace(" ", "-")
             if reaction.emoji == "❌":  # 変更しない
                 last_player = playerlist[0]
 
@@ -452,10 +476,12 @@ async def start(client: Client):
             battle_status = await battle(f"{playerlist[-1]} {last_player} auto", client)
 
         if battle_status == "battle_error":  # 異常終了
-            embed = Embed(title="自動入力中止", description="s.battleコマンド自動入力を中止します\ns.battle [名前1] [名前2] と入力してください", color=0xff0000)
+            embed = Embed(
+                title="自動入力中止", description="s.battleコマンド自動入力を中止します\ns.battle [名前1] [名前2] と入力してください", color=0xff0000)
             await bot_channel.send(embed=embed)
             return
 
-    embed = Embed(title="ラストMatchが終了しました", description="ご参加ありがとうございました！\nmake some noise for all of amazing performance!!", color=0x00bfff)
+    embed = Embed(title="ラストMatchが終了しました",
+                  description="ご参加ありがとうございました！\nmake some noise for all of amazing performance!!", color=0x00bfff)
     await bot_channel.send(embed=embed)
     await chat.send(embed=embed)
