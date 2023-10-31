@@ -67,9 +67,11 @@ async def advertise():
     await channel.send(closest_event.url)
     dt_now = datetime.now(JST)
 
-    if closest_event.name == "BATTLE STADIUM" and closest_event.start_time - dt_now < timedelta(minutes=35):  # バトスタ開始まで35分以内の場合
+    # バトスタ開始まで35分以内の場合
+    if closest_event.name == "BATTLE STADIUM" and closest_event.start_time - dt_now < timedelta(minutes=35):
         await sleep(29 * 60)  # 29分待機
-        embed = Embed(title="BATTLE STADIUM 開始ボタン", description="▶️を押すとバトスタを開始します\n※s.startコマンドは不要です")
+        embed = Embed(title="BATTLE STADIUM 開始ボタン",
+                      description="▶️を押すとバトスタを開始します\n※s.startコマンドは不要です")
         bot_channel = client.get_channel(930447365536612353)  # バトスタbot
         battle_stadium_start = await bot_channel.send(embed=embed)
         await battle_stadium_start.add_reaction("▶️")
@@ -148,7 +150,8 @@ async def on_member_join(member: Member):
 
 @client.event
 async def on_message(message: Message):
-    if message.author.bot or message.content.startswith("l.") or message.channel.id in [930767329137143839, 930839018671837184]:  # バトスタ対戦表、バトスタチャット
+    # バトスタ対戦表、バトスタチャット
+    if message.author.bot or message.content.startswith("l.") or message.channel.id in [930767329137143839, 930839018671837184]:
         return
 
     if not message.content.startswith("s."):
@@ -161,7 +164,8 @@ async def on_message(message: Message):
                 for stamp in ["💜", "❤", "💙", "💚"]:
                     await message.add_reaction(stamp)
 
-        embed = Embed(title="GBBの最新情報はこちら", description=">>> 以下のサイトにお探しの情報がない場合、\n__**未発表 もしくは 未定（そもそも決定すらしていない）**__\n可能性が非常に高いです。", color=0xF0632F)
+        embed = Embed(title="GBBの最新情報はこちら",
+                      description=">>> 以下のサイトにお探しの情報がない場合、\n__**未発表 もしくは 未定（そもそも決定すらしていない）**__\n可能性が非常に高いです。", color=0xF0632F)
         embed.add_field(name="GBBINFO-JPN 日本非公式情報サイト",
                         value="https://gbbinfo-jpn.jimdofree.com/")
         embed.add_field(name="swissbeatbox 公式instagram",
@@ -179,11 +183,13 @@ async def on_message(message: Message):
                 emoji = message.guild.get_emoji(889877286055198731)  # brez
             if message.author.id in [887328590407032852, 870434043810971659]:  # 湯にはsaroを
                 emoji = message.guild.get_emoji(889920546408661032)  # oras
-            if message.author.id in [389427133099016193, 735099594010132480, 990630026275860540]:  # maycoにはheliumを
+            # maycoにはheliumを
+            if message.author.id in [389427133099016193, 735099594010132480, 990630026275860540]:
                 emoji = message.guild.get_emoji(890506350868721664)  # helium
             await message.add_reaction(emoji)
 
-            url_check = re.search(r"https?://[\w/:%#\$&\?\(\)~\.=\+\-]+", message.content)
+            url_check = re.search(
+                r"https?://[\w/:%#\$&\?\(\)~\.=\+\-]+", message.content)
             if bool(url_check):
                 return
 
@@ -230,7 +236,8 @@ async def on_message(message: Message):
             await message.author.voice.channel.connect(reconnect=True)
         ran_int = random.randint(1, 3)
         ran_audio = {1: "time.mp3", 2: "time_2.mp3", 3: "time_3.mp3"}
-        audio = PCMVolumeTransformer(FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
+        audio = PCMVolumeTransformer(
+            FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
         message.guild.voice_client.play(audio)
         return
 
@@ -248,7 +255,8 @@ async def on_message(message: Message):
             await message.author.voice.channel.connect(reconnect=True)
         ran_int = random.randint(1, 2)
         ran_audio = {1: "kansei.mp3", 2: "kansei_2.mp3"}
-        audio = PCMVolumeTransformer(FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
+        audio = PCMVolumeTransformer(
+            FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
         message.guild.voice_client.play(audio)
         return
 
@@ -258,7 +266,8 @@ async def on_message(message: Message):
             await message.author.voice.channel.connect(reconnect=True)
         ran_int = random.randint(1, 2)
         ran_audio = {1: "countdown.mp3", 2: "countdown_2.mp3"}
-        audio = PCMVolumeTransformer(FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
+        audio = PCMVolumeTransformer(
+            FFmpegPCMAudio(ran_audio[ran_int]), volume=0.2)
         message.guild.voice_client.play(audio)
         return
 
@@ -276,7 +285,8 @@ async def on_message(message: Message):
             await message.author.voice.channel.connect(reconnect=True)
         ran_int = random.randint(1, 2)
         ran_audio = {1: "esh.mp3", 2: "esh_2.mp3"}
-        audio = PCMVolumeTransformer(FFmpegPCMAudio(ran_audio[ran_int]), volume=0.4)
+        audio = PCMVolumeTransformer(
+            FFmpegPCMAudio(ran_audio[ran_int]), volume=0.4)
         message.guild.voice_client.play(audio)
         return
 
@@ -284,7 +294,8 @@ async def on_message(message: Message):
         await message.delete(delay=1)
         if message.guild.voice_client is None:
             await message.author.voice.channel.connect(reconnect=True)
-        audio = PCMVolumeTransformer(FFmpegPCMAudio(f"msn_{random.randint(1, 3)}.mp3"), volume=0.4)
+        audio = PCMVolumeTransformer(FFmpegPCMAudio(
+            f"msn_{random.randint(1, 3)}.mp3"), volume=0.4)
         message.guild.voice_client.play(audio)
         return
 
@@ -301,8 +312,10 @@ async def on_message(message: Message):
         if message.guild.voice_client is None:
             await message.author.voice.channel.connect(reconnect=True)
         ran_int = random.randint(1, 4)
-        ran_audio = {1: "dismuch.mp3", 2: "dismuch_2.mp3", 3: "dismuch_3.mp3", 4: "dismuch_4.mp3"}
-        audio = PCMVolumeTransformer(FFmpegPCMAudio(ran_audio[ran_int]), volume=1)
+        ran_audio = {1: "dismuch.mp3", 2: "dismuch_2.mp3",
+                     3: "dismuch_3.mp3", 4: "dismuch_4.mp3"}
+        audio = PCMVolumeTransformer(
+            FFmpegPCMAudio(ran_audio[ran_int]), volume=1)
         message.guild.voice_client.play(audio)
         return
 
@@ -621,8 +634,10 @@ async def on_message(message: Message):
         await message.delete(delay=1)
         dt_now = datetime.now(JST)
         sat = timedelta(days=6 - int(dt_now.strftime("%w")))
-        start_time = datetime(dt_now.year, dt_now.month, dt_now.day, 21, 30, 0, 0, JST) + sat
-        end_time = datetime(dt_now.year, dt_now.month, dt_now.day, 22, 30, 0, 0, JST) + sat
+        start_time = datetime(dt_now.year, dt_now.month,
+                              dt_now.day, 21, 30, 0, 0, JST) + sat
+        end_time = datetime(dt_now.year, dt_now.month,
+                            dt_now.day, 22, 30, 0, 0, JST) + sat
         stage = client.get_channel(931462636019802123)  # BATTLE STADIUM
         event = await message.guild.create_scheduled_event(
             name="BATTLE STADIUM",
