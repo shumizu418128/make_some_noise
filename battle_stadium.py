@@ -487,7 +487,8 @@ async def start(client: Client):
     await chat.send(embed=embed)
     dt_now = datetime.now(JST)
     if dt_now.time() < datetime.time(hour=22, minute=30):
-        embed = Embed(title="BATTLE STADIUM エントリー再受付 開始ボタン", description="▶️を押すとバトスタエントリー再受付を開始します")
+        embed = Embed(title="BATTLE STADIUM エントリー再受付 開始ボタン",
+                      description="▶️を押すとバトスタエントリー再受付を開始します")
         battle_stadium_restart = await bot_channel.send(embed=embed)
         await battle_stadium_restart.add_reaction("▶️")
         await battle_stadium_restart.add_reaction("❌")
