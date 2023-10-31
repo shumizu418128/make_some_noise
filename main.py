@@ -65,6 +65,25 @@ async def advertise():
     if closest_event.name == "BATTLE STADIUM":
         await channel.send(file=File(f"battle_stadium_{random.randint(1, 3)}.gif"))
     await channel.send(closest_event.url)
+    dt_now = datetime.now(JST)
+
+    if closest_event.name == "BATTLE STADIUM" and closest_event.start_time - dt_now < timedelta(minutes=35):  # バトスタ開始まで35分以内の場合
+        await sleep(29 * 60)  # 29分待機
+        embed = Embed(title="BATTLE STADIUM 開始ボタン", description="▶️を押すとバトスタを開始します\n※s.startコマンドは不要です")
+        bot_channel = client.get_channel(930447365536612353)  # バトスタbot
+        battle_stadium_start = await bot_channel.send(embed=embed)
+        await battle_stadium_start.add_reaction("▶️")
+        await battle_stadium_start.add_reaction("❌")
+
+        def check(reaction, user):
+            stamps = ["▶️", "❌"]
+            role_check = user.get_role(1096821566114902047)  # バトスタ運営
+            return bool(role_check) and reaction.emoji in stamps and reaction.message == battle_stadium_start
+        reaction, _ = await client.wait_for('reaction_add', check=check)
+        await battle_stadium_start.clear_reactions()
+        if reaction.emoji == "❌":
+            await battle_stadium_start.delete()
+        await start(client)
     return
 
 
