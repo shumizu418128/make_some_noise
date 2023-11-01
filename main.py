@@ -81,7 +81,10 @@ async def advertise():
             stamps = ["▶️", "❌"]
             role_check = user.get_role(1096821566114902047)  # バトスタ運営
             return bool(role_check) and reaction.emoji in stamps and reaction.message == battle_stadium_start
-        reaction, _ = await client.wait_for('reaction_add', check=check)
+        try:
+            reaction, _ = await client.wait_for('reaction_add', check=check, timeout=600)
+        except TimeoutError:
+            return
         await battle_stadium_start.clear_reactions()
         if reaction.emoji == "❌":
             await battle_stadium_start.delete()
