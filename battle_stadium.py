@@ -37,28 +37,28 @@ async def battle(text: str, client: Client):
     await chat.send(embed=embed_maiku_check)
 
     # 名前整理
-    names = text.replace(" vs", "").replace('s.battle', '').split()
+    names = text.replace(" vs", "").replace('s.battle', '').split()  # 名前を分割
     auto = False
-    if len(names) == 3:
+    if len(names) == 3:  # ラウンド指定あり
         try:
             count = int(names[2])
-        except ValueError:
+        except ValueError:  # ラウンド指定が数字になっていない
             pass
-        if 1 <= count <= 4:
+        if 1 <= count <= 4:  # ラウンド指定が適切
             embed = Embed(
                 title="バトル再開モード", description=f"Round {stamps[count]}: **{names[1 - count % 2]}**\nから、バトルを再開します。", color=0x00bfff)
             await bot_channel.send(embed=embed)
             await chat.send(embed=embed)
-        if names[2] == "auto":
+        if names[2] == "auto":  # 自動入力モード
             del names[2]
             auto = True
     embed = Embed(title="処理中...")
-    before_start = await bot_channel.send(embed=embed)
+    before_start = await bot_channel.send(embed=embed)  # 処理中パネル
     if len(names) == 2:  # 順番を抽選で決定（通常スタート）
         count = 1
         embed = Embed(title="先攻・後攻の抽選を行います", description="抽選中...")
         await before_start.edit(embed=embed)
-        random.shuffle(names)
+        random.shuffle(names)  # 抽選
         await sleep(1)
 
     # countが0 == nameの取得失敗 このifにかかったら絶対ここで終わらせる
@@ -184,7 +184,7 @@ async def battle(text: str, client: Client):
     await sent_message.edit(embed=embed)
     embed.description = f"BATTLEタイマーはこちら {bot_channel.mention}"
     await chat.send(embed=embed)
-    if all([bool(tari3210.voice), tari3210.voice.self_mute is False, tari3210.voice.suppress is False]):
+    if all([bool(tari3210.voice), tari3210.voice.self_mute is False, tari3210.voice.suppress is False]):  # ミュートしてない
         await chat.send(f"{tari3210.mention}\nミュートしろボケナス")
     battle_status = await timer(3, sent_message, voice_client, count)
     if bool(battle_status):
@@ -199,7 +199,7 @@ async def battle(text: str, client: Client):
         counter = 50
         color = 0x00ff00
         for i in range(5):
-            battle_status = await timer(9.9, sent_message, voice_client, count)
+            battle_status = await timer(9.9, sent_message, voice_client, count)  # ラグ考慮のため9.9秒
             if bool(battle_status):
                 return battle_status
             embed = Embed(
@@ -211,6 +211,8 @@ async def battle(text: str, client: Client):
                 color = 0xffff00
             if i == 3:
                 color = 0xff0000
+
+        # 50秒経過
         battle_status = await timer(4.9, sent_message, voice_client, count)
         if bool(battle_status):
             return battle_status
@@ -219,6 +221,8 @@ async def battle(text: str, client: Client):
         await sent_message.edit(embed=embed)
         await chat.send(embed=embed, delete_after=5)
         battle_status = await timer(4.9, sent_message, voice_client, count)
+
+        # 60秒経過
         if bool(battle_status):
             return battle_status
         if count <= 3:  # ここでスイッチ
@@ -332,7 +336,7 @@ async def start(client: Client):
     embed_caution = Embed(title="【注意事項】",
                           description=f"- ノイズキャンセル設定に問題がある方が非常に増えています。\n必ず事前に {maiku_check.mention} にマイク設定画面のスクショを提出して、botによるマイクチェックを受けてください。\n\n- Discordの音声バグが発生した場合、バトルを中断し、途中のラウンドからバトルを再開することがあります。\n※音声バグ発生時の対応は状況によって異なります。ご了承ください。", color=0xffff00)
 
-    async def button_callback(interaction: Interaction):
+    async def button_callback(interaction: Interaction):  # エントリーボタン押されたときの処理
         await interaction.response.defer(ephemeral=True, thinking=False)
         role_check = interaction.user.get_role(
             930368130906218526)  # BATTLE STADIUM
@@ -343,7 +347,7 @@ async def start(client: Client):
         await interaction.user.add_roles(bs_role)
         embed = Embed(title="受付完了 entry completed", color=0x00ff00)
         await interaction.followup.send(embeds=[embed, embed_caution], ephemeral=True)
-        await maiku_check.send(f"{interaction.user.mention}\nこちらにて事前マイクチェックのご利用をお願いします", delete_after=5)
+        await maiku_check.send(f"{interaction.user.mention}\nこちらにて事前マイクチェックのご利用をお願いします", delete_after=5)  # マイクチェックをしろ
 
     button.callback = button_callback
     view = View()
@@ -486,7 +490,7 @@ async def start(client: Client):
     await bot_channel.send(embed=embed)
     await chat.send(embed=embed)
     dt_now = datetime.now(JST)
-    if dt_now.time() < datetime.time(hour=22, minute=30):
+    if dt_now.time() < datetime.time(hour=22, minute=30):  # 22:30以前
         embed = Embed(title="BATTLE STADIUM エントリー再受付 開始ボタン",
                       description="▶️を押すとバトスタエントリー再受付を開始します")
         battle_stadium_restart = await bot_channel.send(embed=embed)
@@ -500,8 +504,8 @@ async def start(client: Client):
         reaction, _ = await client.wait_for('reaction_add', check=check, timeout=600)
         try:
             await battle_stadium_restart.clear_reactions()
-        except TimeoutError:
+        except TimeoutError:  # 10分経過ならさよなら
             return
         if reaction.emoji == "❌":
             await battle_stadium_restart.delete()
-        await start(client)
+        await start(client)  # バトスタ再受付開始
