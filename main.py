@@ -8,7 +8,7 @@ from datetime import datetime, time, timedelta, timezone
 import discord
 from discord import (ChannelType, Client, Embed, EventStatus, FFmpegPCMAudio,
                      File, Intents, Member, Message, PCMVolumeTransformer,
-                     PrivacyLevel, VoiceState)
+                     PrivacyLevel, ScheduledEvent, VoiceState)
 from discord.errors import ClientException
 from discord.ext import tasks
 
@@ -32,43 +32,49 @@ async def gbb_countdown():
     dt_gbb_end = dt_gbb_end.replace(tzinfo=JST)
     dt_now = datetime.now(JST)
 
-    td_gbb = abs(dt_gbb_end - dt_now)
-    if dt_gbb_end > dt_now:
-        td_gbb = abs(dt_gbb_start - dt_now)
+    td_gbb = abs(dt_gbb_end - dt_now)  # GBB終了から現在の時間
+    if dt_gbb_end > dt_now:  # GBB終了前なら
+        td_gbb = abs(dt_gbb_start - dt_now)  # GBB開始から現在の時間
 
-    m, s = divmod(td_gbb.seconds, 60)
-    h, m = divmod(m, 60)
+    m, s = divmod(td_gbb.seconds, 60)  # 秒を60で割った商と余りをm, sに代入
+    h, m = divmod(m, 60)  # mを60で割った商と余りをh, mに代入
 
-    if dt_gbb_start > dt_now:
+    if dt_gbb_start > dt_now:  # GBB開始前なら
         return f"GBB2023まであと{td_gbb.days}日{h}時間{m}分{s}.{td_gbb.microseconds}秒です。"
 
-    elif dt_gbb_end > dt_now:
+    elif dt_gbb_end > dt_now:  # GBB開催中なら
         return f"今日はGBB2023 {td_gbb.days + 1}日目です。"
 
+    # GBB終了後なら
     return f"GBB2023は{td_gbb.days}日{h}時間{m}分{s}.{td_gbb.microseconds}秒前に開催されました。"
+
+
+async def search_next_event(events: list[ScheduledEvent]):
+    events_exist = []  # 予定されているイベント
+    for event in events:  # 予定されているイベントをリストに追加
+        if event.status in [EventStatus.scheduled, EventStatus.active]:
+            events_exist.append(event)
+    if bool(events_exist) is False:  # 予定されているイベントがない場合さよなら
+        return
+    closest_event = events_exist[0]
+    for event in events_exist:  # 一番近いイベントを探す
+        if event.start_time < closest_event.start_time:
+            closest_event = event
+    return closest_event
 
 
 @tasks.loop(time=PM9)
 async def advertise():
     channel = client.get_channel(864475338340171791)  # 全体チャット
-    events = channel.guild.scheduled_events
-    events_exist = []
-    for event in events:
-        if event.status in [EventStatus.scheduled, EventStatus.active]:
-            events_exist.append(event)
-    if bool(events_exist) is False:
-        return
-    closest_event = events_exist[0]
-    for event in events_exist:
-        if event.start_time < closest_event.start_time:
-            closest_event = event
-    if closest_event.name == "BATTLE STADIUM":
+    next_event = await search_next_event(channel.guild.scheduled_events)  # 次のイベント
+    if next_event.name == "BATTLE STADIUM":  # バトスタの場合
+        # gif
         await channel.send(file=File(f"battle_stadium_{random.randint(1, 3)}.gif"))
-    await channel.send(closest_event.url)
-    dt_now = datetime.now(JST)
+    await channel.send(next_event.url)  # 次のイベントのURL送信
+    dt_now = datetime.now(JST)  # 現在時刻
 
     # バトスタ開始まで35分以内の場合
-    if closest_event.name == "BATTLE STADIUM" and closest_event.start_time - dt_now < timedelta(minutes=35):
+    if next_event.name == "BATTLE STADIUM" and next_event.start_time - dt_now < timedelta(minutes=35):
         await sleep(29 * 60)  # 29分待機
         embed = Embed(title="BATTLE STADIUM 開始ボタン",
                       description="▶️を押すとバトスタを開始します\n※s.startコマンドは不要です")
@@ -82,19 +88,20 @@ async def advertise():
             role_check = user.get_role(1096821566114902047)  # バトスタ運営
             return bool(role_check) and reaction.emoji in stamps and reaction.message == battle_stadium_start
         try:
+            # 10分待機
             reaction, _ = await client.wait_for('reaction_add', check=check, timeout=600)
-        except TimeoutError:
+        except TimeoutError:  # 10分経過ならさよなら
             return
         await battle_stadium_start.clear_reactions()
-        if reaction.emoji == "❌":
+        if reaction.emoji == "❌":  # ❌ならさよなら
             await battle_stadium_start.delete()
         await start(client)
     return
 
 
 @client.event
-async def on_ready():
-    advertise.start()
+async def on_ready():  # 起動時に動作する処理
+    advertise.start()  # バトスタ宣伝
     return
 
 
@@ -104,9 +111,9 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
         return
     try:
         vc_role = member.guild.get_role(935073171462307881)  # in a vc
-        if bool(before.channel) and after.channel is None:
+        if bool(before.channel) and after.channel is None:  # チャンネルから退出
             await member.remove_roles(vc_role)
-        elif before.channel != after.channel and bool(after.channel):
+        elif before.channel != after.channel and bool(after.channel):  # チャンネルに参加
             embed = Embed(title="BEATBOXをもっと楽しむために",
                           description="", color=0x0081f0)
             embed.add_field(name=f"Let's show your 💜❤💙💚 with `{member.display_name}`!",
@@ -133,22 +140,12 @@ async def on_member_join(member: Member):
                     value="https://gbbinfo-jpn.jimdofree.com/")
     embed.add_field(name="swissbeatbox 公式instagram",
                     value="https://www.instagram.com/swissbeatbox/")
-    text = await gbb_countdown()
+    text = await gbb_countdown()  # GBBまでのカウントダウン
     embed.set_footer(text=text)
     await channel.send(f"{member.mention}\nあつまれ！ビートボックスの森 へようこそ！", embeds=[embed_discord, embed])
-    events = channel.guild.scheduled_events
-    events_exist = []
-    for event in events:
-        if event.status in [EventStatus.scheduled, EventStatus.active]:
-            events_exist.append(event)
-    if bool(events_exist) is False:
-        return
-    closest_event = events_exist[0]
-    for event in events_exist:
-        if event.start_time < closest_event.start_time:
-            closest_event = event
+    next_event = await search_next_event(channel.guild.scheduled_events)
     await sleep(1)
-    await channel.send(closest_event.url)
+    await channel.send(next_event.url)
 
 
 @client.event
@@ -156,7 +153,7 @@ async def on_message(message: Message):
     # バトスタ対戦表、バトスタチャット
     if message.author.bot or message.content.startswith("l.") or message.channel.id in [930767329137143839, 930839018671837184]:
         return
-
+    # s.から始まらない場合(コマンドではない場合)
     if not message.content.startswith("s."):
         if "草" in message.content:
             emoji = message.guild.get_emoji(990222099744432198)  # 草
@@ -180,7 +177,7 @@ async def on_message(message: Message):
             await message.channel.send(embed=embed)
             await message.channel.send("[GBB 2023 Wildcard結果・出場者一覧 はこちら](https://gbbinfo-jpn.jimdofree.com/20230222/)")
 
-        if message.channel.type in [ChannelType.text, ChannelType.forum, ChannelType.public_thread]:
+        if message.channel.type in [ChannelType.text, ChannelType.forum, ChannelType.public_thread]:  # テキストチャンネルの場合
             emoji = random.choice(message.guild.emojis)
             if message.author.id in [891228765022195723, 886518627023613962]:  # Yuiにはbrezを
                 emoji = message.guild.get_emoji(889877286055198731)  # brez
@@ -321,6 +318,10 @@ async def on_message(message: Message):
             FFmpegPCMAudio(ran_audio[ran_int]), volume=1)
         message.guild.voice_client.play(audio)
         return
+
+    ##############################
+    # 60秒カウンター x4
+    ##############################
 
     if message.content.startswith("s.c") and "s.c90" not in message.content and "s.cancel" not in message.content and "s.check" not in message.content:
         if message.guild.voice_client is None:
@@ -495,75 +496,9 @@ async def on_message(message: Message):
         await sent_message.edit(embed=embed, delete_after=20)
         return
 
-    if message.content.startswith("s.bj"):
-        if message.guild.voice_client is None:
-            await message.author.voice.channel.connect(reconnect=True)
-        names = [j for j in message.content.split()]
-        names.remove("s.bj")
-        round_count = 1
-        if len(names) != 2:
-            await message.channel.send("Error: 入力方法が間違っています。")
-            return
-        audio = PCMVolumeTransformer(
-            FFmpegPCMAudio("countdown.mp3"), volume=0.5)
-        await message.channel.send("3, 2, 1, Beatbox!", delete_after=10)
-        message.guild.voice_client.play(audio)
-        await sleep(7)
-        embed = Embed(
-            title="90", description=f"Round{round_count} {names[0]}", color=0x00ff00)
-        sent_message = await message.channel.send(embed=embed)
-        while round_count < 5:
-            timeout = 10
-            counter = 80
-            color = 0x00ff00
-            while True:
-                def check(reaction, user):
-                    return user.bot is False and reaction.emoji == '⏭️'
-                try:
-                    await client.wait_for('reaction_add', timeout=timeout, check=check)
-                except asyncio.TimeoutError:
-                    if counter == -10:
-                        await message.channel.send("Error: timeout\nタイマーを停止しました")
-                        return
-                    embed = Embed(
-                        title=f"{counter}", description=f"Round{round_count} {names[0]}", color=color)
-                    await sent_message.edit(embed=embed)
-                    counter -= 10
-                    if counter == 30:
-                        color = 0xffff00
-                    elif counter == 10:
-                        color = 0xff0000
-                    elif counter == 0:
-                        color = 0x000000
-                        await sent_message.add_reaction("⏭️")
-                    elif counter == -10:
-                        timeout = 30
-                        if round_count == 4:
-                            embed = Embed(
-                                title="0", description=f"Round4 {names[0]}", color=color)
-                            await sent_message.edit(embed=embed)
-                            break
-                else:
-                    break
-            embed = Embed(title="TIME!")
-            await sent_message.edit(embed=embed)
-            await sent_message.delete(delay=5)
-            names.reverse()
-            round_count += 1
-            if round_count < 5:
-                await message.channel.send("SWITCH!", delete_after=5)
-                embed = Embed(
-                    title="90", description=f"Round{round_count} {names[0]}", color=0x00ff00)
-                sent_message = await message.channel.send(embed=embed)
-        audio = PCMVolumeTransformer(
-            FFmpegPCMAudio("time.mp3"), volume=0.2)
-        message.guild.voice_client.play(audio)
-        await sleep(3)
-        audio = PCMVolumeTransformer(
-            FFmpegPCMAudio("msn.mp3"), volume=0.5)
-        message.guild.voice_client.play(audio)
-        await message.delete(delay=1)
-        return
+    ##############################
+    # 90秒カウンター x4
+    ##############################
 
     if message.content == "s.c90":
         await message.delete(delay=1)
@@ -587,6 +522,10 @@ async def on_message(message: Message):
         await sent_message.edit(embed=embed)
         await sent_message.delete(delay=5)
         return
+
+    ##############################
+    # バトスタコマンド
+    ##############################
 
     if message.content.startswith("s.battle"):
         await battle(message.content, client)
@@ -630,6 +569,10 @@ async def on_message(message: Message):
         for member in bs_role.members:
             await member.remove_roles(bs_role)
         return
+
+    ##############################
+    # バトスタ宣伝
+    ##############################
 
     if message.content.startswith("s.bs"):
         general = message.guild.get_channel(864475338340171791)  # 全体チャット
