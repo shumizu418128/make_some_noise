@@ -78,7 +78,7 @@ async def advertise():
     if next_event.name == "BATTLE STADIUM" and next_event.start_time - dt_now < timedelta(minutes=35):
         await sleep(29 * 60)  # 29分待機
         embed = Embed(title="BATTLE STADIUM 開始ボタン",
-                      description="▶️を押すとバトスタを開始します\n※s.startコマンドは不要です")
+                      description="▶️を押すとバトスタを開始します")
         bot_channel = client.get_channel(930447365536612353)  # バトスタbot
         battle_stadium_start = await bot_channel.send(embed=embed)
         await battle_stadium_start.add_reaction("▶️")
