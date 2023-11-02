@@ -2,7 +2,6 @@ import asyncio
 import random
 from asyncio import sleep
 from datetime import datetime, timedelta, timezone
-from time import mktime
 
 from discord import (ButtonStyle, Client, Embed, EventStatus, FFmpegPCMAudio,
                      File, Interaction, Message, PCMVolumeTransformer,
@@ -185,7 +184,8 @@ async def battle(text: str, client: Client):
     chat.guild.voice_client.play(audio)
 
     # are you ready?
-    embed = Embed(title="Are you ready??", description=f"1️⃣ {names[0]} 🆚 {names[1]} 2️⃣", color=0x00ff00)
+    embed = Embed(title="Are you ready??",
+                  description=f"1️⃣ {names[0]} 🆚 {names[1]} 2️⃣", color=0x00ff00)
     sent_message = await bot_channel.send(embed=embed)
     await chat.send(embed=embed)
     await sent_message.add_reaction("❌")  # タイマー停止ボタン
@@ -319,7 +319,8 @@ async def start(client: Client):
     embed_chat_info = Embed(title="チャット欄はこちら chat is here",
                             description=f"対戦表： {pairing_channel.mention}\nエントリー： {entry_channel.mention}\nBATTLEタイマー： {bot_channel.mention}\nマイクチェック： {maiku_check.mention}", color=0x00bfff)
     embed_maiku_check = Embed(
-        title="事前マイクチェックをご利用ください", description=f"事前にマイク設定画面のスクショを提出して、botによるマイクチェックを受けてください\n\nマイクチェックチャンネルはこちら {maiku_check.mention}", color=0xffff00)
+        title="事前マイクチェックをご利用ください",
+        description=f"事前にマイク設定画面のスクショを提出して、botによるマイクチェックを受けてください\n\nマイクチェックチャンネルはこちら {maiku_check.mention}", color=0xffff00)
     await bot_channel.send("処理中...", delete_after=10)
     await chat.send("ただいま準備中...", embed=embed_chat_info)
     counter = 1
@@ -443,7 +444,7 @@ async def start(client: Client):
             name=f"Match{counter}", value=f"{playerlist[counter2]} 🆚 {playerlist[counter2 + 1]}", inline=False)
         counter += 1
         counter2 += 2
-    if len(playerlist) % 2 == 1:
+    if len(playerlist) % 2 == 1:  # 奇数の場合Match1参加者にもう一度やってもらう
         embed_pairing.add_field(
             name=f"Match{counter}", value=f"{playerlist[-1]} 🆚 ※{playerlist[0]}\n※{playerlist[0]}さんは交代の可能性有", inline=False)
 
@@ -507,13 +508,15 @@ async def start(client: Client):
             await bot_channel.send(embed=embed)
             return
 
+    # すべてのバトル終了
     embed = Embed(title="ラストMatchが終了しました",
                   description="ご参加ありがとうございました！\nmake some noise for all of amazing performance!!",
                   color=0x00bfff)
     await bot_channel.send(embed=embed)
     await chat.send(embed=embed)
     dt_now = datetime.now(JST)
-    # 22:30以前
+
+    # 終了時刻が22:30以前
     if dt_now.time() < datetime.time(hour=22, minute=30):
         embed = Embed(title="BATTLE STADIUM エントリー再受付 開始ボタン",
                       description="▶️を押すとバトスタエントリー再受付を開始します")
@@ -536,7 +539,7 @@ async def start(client: Client):
         await start(client)  # バトスタ再受付開始
         return
 
-    # 22:30以降
+    # 終了時刻が22:30以降
     # バトスタ終了ボタン
     embed = Embed(title="BATTLE STADIUMを終了しますか？",
                   description="- 👋 バトスタ終了\n- ❌ このメッセージを削除")
@@ -582,6 +585,7 @@ async def start(client: Client):
     dt_next_start = dt_next.replace(hour=21, minute=30, second=0)  # 21:30に設定
     dt_next_end = dt_next.replace(hour=22, minute=30, second=0)  # 22:30に設定
 
+    # 次のバトスタ設定ボタン
     embed = Embed(title="次のバトスタ設定",
                   description=f"次のバトスタは\n**{dt_next_start.strftime('%m/%d 21:30~')}**\nの予定です\n\nイベントを設定しますか？",
                   color=0x00bfff)
