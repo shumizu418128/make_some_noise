@@ -28,8 +28,8 @@ PM9 = time(21, 0, tzinfo=JST)
 async def gbb_countdown():
     dt_gbb_start = datetime(2023, 10, 18, 13, 0)  # 2023/10/18 13:00
     dt_gbb_end = datetime(2023, 10, 22)  # 2023/10/22
-    dt_gbb_start = dt_gbb_start.replace(tzinfo=JST)
-    dt_gbb_end = dt_gbb_end.replace(tzinfo=JST)
+    dt_gbb_start = dt_gbb_start.replace(tzinfo=JST)  # JSTに変換
+    dt_gbb_end = dt_gbb_end.replace(tzinfo=JST)  # JSTに変換
     dt_now = datetime.now(JST)
 
     td_gbb = abs(dt_gbb_end - dt_now)  # GBB終了から現在の時間
@@ -55,7 +55,7 @@ async def search_next_event(events: list[ScheduledEvent]):
         if event.status in [EventStatus.scheduled, EventStatus.active]:
             events_exist.append(event)
     if bool(events_exist) is False:  # 予定されているイベントがない場合さよなら
-        return
+        return None
     closest_event = events_exist[0]
     for event in events_exist:  # 一番近いイベントを探す
         if event.start_time < closest_event.start_time:
@@ -66,8 +66,9 @@ async def search_next_event(events: list[ScheduledEvent]):
 @tasks.loop(time=PM9)
 async def advertise():
     channel = client.get_channel(864475338340171791)  # 全体チャット
-    next_event = await search_next_event(channel.guild.scheduled_events)  # 次のイベント
-    if next_event.name == "BATTLE STADIUM":  # バトスタの場合
+    # 次のイベント
+    next_event = await search_next_event(channel.guild.scheduled_events)
+    if bool(next_event) and next_event.name == "BATTLE STADIUM":  # バトスタの場合
         # gif
         await channel.send(file=File(f"battle_stadium_{random.randint(1, 3)}.gif"))
     await channel.send(next_event.url)  # 次のイベントのURL送信
@@ -113,7 +114,8 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
         vc_role = member.guild.get_role(935073171462307881)  # in a vc
         if bool(before.channel) and after.channel is None:  # チャンネルから退出
             await member.remove_roles(vc_role)
-        elif before.channel != after.channel and bool(after.channel):  # チャンネルに参加
+        # チャンネルに参加
+        elif before.channel != after.channel and bool(after.channel):
             embed = Embed(title="BEATBOXをもっと楽しむために",
                           description="", color=0x0081f0)
             embed.add_field(name=f"Let's show your 💜❤💙💚 with `{member.display_name}`!",
@@ -144,8 +146,9 @@ async def on_member_join(member: Member):
     embed.set_footer(text=text)
     await channel.send(f"{member.mention}\nあつまれ！ビートボックスの森 へようこそ！", embeds=[embed_discord, embed])
     next_event = await search_next_event(channel.guild.scheduled_events)
-    await sleep(1)
-    await channel.send(next_event.url)
+    if bool(next_event):
+        await sleep(1)
+        await channel.send(next_event.url)
 
 
 @client.event
@@ -177,7 +180,8 @@ async def on_message(message: Message):
             await message.channel.send(embed=embed)
             await message.channel.send("[GBB 2023 Wildcard結果・出場者一覧 はこちら](https://gbbinfo-jpn.jimdofree.com/20230222/)")
 
-        if message.channel.type in [ChannelType.text, ChannelType.forum, ChannelType.public_thread]:  # テキストチャンネルの場合
+        # テキストチャンネルの場合
+        if message.channel.type in [ChannelType.text, ChannelType.forum, ChannelType.public_thread]:
             emoji = random.choice(message.guild.emojis)
             if message.author.id in [891228765022195723, 886518627023613962]:  # Yuiにはbrezを
                 emoji = message.guild.get_emoji(889877286055198731)  # brez
