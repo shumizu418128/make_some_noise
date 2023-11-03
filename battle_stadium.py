@@ -519,27 +519,30 @@ async def start(client: Client):
     # 終了時刻が22:30以前
     if dt_now.time() < datetime.time(hour=22, minute=30):
         embed = Embed(title="BATTLE STADIUM エントリー再受付 開始ボタン",
-                      description="▶️を押すとバトスタエントリー再受付を開始します")
+                      description="- ▶️ エントリー再受付開始\n- ❌ このメッセージを削除\n- 👋 バトスタ終了")
         battle_stadium_restart = await bot_channel.send(embed=embed)
         await battle_stadium_restart.add_reaction("▶️")
         await battle_stadium_restart.add_reaction("❌")
+        await battle_stadium_restart.add_reaction("👋")
 
         def check(reaction, user):
-            stamps = ["▶️", "❌"]
+            stamps = ["▶️", "❌", "👋"]
             role_check = user.get_role(1096821566114902047)  # バトスタ運営
             return bool(role_check) and reaction.emoji in stamps and reaction.message == battle_stadium_restart
 
-        reaction, _ = await client.wait_for('reaction_add', check=check, timeout=600)
         try:
-            await battle_stadium_restart.clear_reactions()
-        except TimeoutError:  # 10分経過ならさよなら
-            return
-        if reaction.emoji == "❌":
+            reaction, _ = await client.wait_for('reaction_add', check=check, timeout=600)
             await battle_stadium_restart.delete()
-        await start(client)  # バトスタ再受付開始
-        return
+        except TimeoutError:  # 10分経過ならさよなら
+            await battle_stadium_restart.delete()
+            return
+        if reaction.emoji == "❌":  # ❌ならさよなら
+            return
+        if reaction.emoji == "▶️":
+            await start(client)  # バトスタ再受付開始
+            return
 
-    # 終了時刻が22:30以降
+    # 終了時刻が22:30以降 or エントリー再受付しない
     # バトスタ終了ボタン
     embed = Embed(title="BATTLE STADIUMを終了しますか？",
                   description="- 👋 バトスタ終了\n- ❌ このメッセージを削除")
@@ -554,15 +557,14 @@ async def start(client: Client):
 
     try:
         reaction, _ = await client.wait_for('reaction_add', check=check, timeout=600)
+        await battle_stadium_end.delete()
     except TimeoutError:  # 10分経過なら処理終了
-        pass
-    else:
-        if reaction.emoji == "❌":  # ❌ならさよなら
-            await battle_stadium_end.delete()
-            return
-    await battle_stadium_end.clear_reactions()
+        await battle_stadium_end.delete()
+        return
+    if reaction.emoji == "❌":  # ❌ならさよなら
+        return
 
-    # 以下s.endと同じ処理
+    # ステージインスタンス終了
     scheduled_events = message.guild.scheduled_events
     for scheduled_event in scheduled_events:
         if scheduled_event.status == EventStatus.active and scheduled_event.name == "BATTLE STADIUM":
@@ -573,12 +575,8 @@ async def start(client: Client):
         pass
     else:
         await instance.delete()
-    await pairing_channel.purge()
-    for member in bs_role.members:
-        await member.remove_roles(bs_role)
 
-    # 2週間後のバトスタイベントを設定
-    # 以下s.bsと同じ処理
+    # 次のバトスタ設定 datetimeだけ用意
     weekday = dt_now.weekday()  # 今日の曜日を取得
     days_to_saturday = (5 - weekday) % 7  # 土曜日までの日数を計算
     dt_next = dt_now + timedelta(days=days_to_saturday + 14)  # 2週間後の土曜日を計算
@@ -598,21 +596,27 @@ async def start(client: Client):
         role_check = user.get_role(1096821566114902047)  # バトスタ運営
         return bool(role_check) and reaction.emoji in stamps and reaction.message == next_battle_stadium
 
-    reaction, _ = await client.wait_for('reaction_add', check=check)
-    if reaction.emoji == "❌":  # ❌ならさよなら
+    try:
+        reaction, _ = await client.wait_for('reaction_add', check=check)
         await next_battle_stadium.delete()
-        return
-    await next_battle_stadium.clear_reactions()
+    except TimeoutError:
+        await next_battle_stadium.delete()
+    else:
+        if reaction.emoji == "⭕":  # 2週間後のバトスタイベントを設定
+            # 以下s.bsと同じ処理
+            event = await message.guild.create_scheduled_event(name="BATTLE STADIUM",
+                                                               description="【エキシビションBeatboxバトルイベント】\n今週もやります！いつでも何回でも参加可能です。\nぜひご参加ください！\n観戦も可能です。観戦中、マイクがオンになることはありません。\n\n※エントリー受付・当日の進行はすべてbotが行います。\n※エントリー受付開始時間は、バトル開始1分前です。", start_time=dt_next_start,
+                                                               end_time=dt_next_end,
+                                                               channel=stage_channel,
+                                                               privacy_level=PrivacyLevel.guild_only)
+            await bot_channel.send(f"イベント設定完了しました\n{event.url}")
+            await announce.send(file=File(f"battle_stadium_{random.randint(1, 3)}.gif"))
+            await announce.send(event.url)
+            await chat.send(file=File(f"battle_stadium_{random.randint(1, 3)}.gif"))
+            await chat.send(event.url)
 
-    # イベント設定
-    event = await message.guild.create_scheduled_event(name="BATTLE STADIUM",
-                                                       description="【エキシビションBeatboxバトルイベント】\n今週もやります！いつでも何回でも参加可能です。\nぜひご参加ください！\n観戦も可能です。観戦中、マイクがオンになることはありません。\n\n※エントリー受付・当日の進行はすべてbotが行います。\n※エントリー受付開始時間は、バトル開始1分前です。", start_time=dt_next_start,
-                                                       end_time=dt_next_end,
-                                                       channel=stage_channel,
-                                                       privacy_level=PrivacyLevel.guild_only)
-    await bot_channel.send(f"イベント設定完了しました\n{event.url}")
-    await announce.send(file=File(f"battle_stadium_{random.randint(1, 3)}.gif"))
-    await announce.send(event.url)
-    await chat.send(file=File(f"battle_stadium_{random.randint(1, 3)}.gif"))
-    await chat.send(event.url)
+    # ここの後片付けは時間がかかるので最後にやる
+    await pairing_channel.purge()
+    for member in bs_role.members:
+        await member.remove_roles(bs_role)
     return
