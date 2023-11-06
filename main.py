@@ -91,9 +91,10 @@ async def advertise():
         try:
             # 10分待機
             reaction, _ = await client.wait_for('reaction_add', check=check, timeout=600)
+            await battle_stadium_start.clear_reactions()
         except TimeoutError:  # 10分経過ならさよなら
+            await battle_stadium_start.clear_reactions()
             return
-        await battle_stadium_start.clear_reactions()
         if reaction.emoji == "❌":  # ❌ならさよなら
             await battle_stadium_start.delete()
         await start(client)
