@@ -12,6 +12,7 @@ from discord.ui import Button, View
 battle status について
 None: battle続行可能
 battle_skip: battleを終了し、次のbattleをスタートする
+battle_reschedule: battleを一旦スキップし、最終マッチ後に追加）
 battle_error: battleを強制終了、自動入力中止
 """
 JST = timezone(timedelta(hours=9))
@@ -49,8 +50,15 @@ async def battle(text: str, client: Client):
                 title="バトル再開モード", description=f"Round {stamps[count]}: **{names[1 - count % 2]}**\nから、バトルを再開します。", color=0x00bfff)
             await bot_channel.send(embed=embed)
             await chat.send(embed=embed)
-        if names[2] == "auto":  # 自動入力モード
+
+        if names[2] == "auto":  # 自動入力モード（自動入力のメッセージを廃止したのでぶっちゃけ不要）
             del names[2]
+
+        last_match = False
+        if names[2] == "last":  # 最終マッチ
+            del names[2]
+            last_match = True
+
     embed = Embed(title="処理中...")
     before_start = await bot_channel.send(embed=embed)  # 処理中パネル
     if len(names) == 2:  # 順番を抽選で決定（通常スタート）
@@ -159,22 +167,35 @@ async def battle(text: str, client: Client):
     if len(names) == 2:  # 通常スタート時
         embed.description += "\n`（抽選で決定されました）`"
         await chat.send(f"{names[0]}さん\n{names[1]}さん\n\nステージのスピーカーになってください。\nやり方がわからない場合はチャット欄にてお知らせください。こちらから招待を送信します。")
-    await before_start.edit(embed=embed)
     await chat.send(embed=embed)
+
+    embed.description += "\n- ▶️ スタート\n- ❌ キャンセル"
+    if last_match is False:  # 最終マッチでない場合スキップ可
+        embed.description += "\n- ⏭️ このバトルをスキップ（最終マッチ後に自動追加されます）"
+    elif last_match is True:  # 最終マッチの場合スキップ不可
+        embed.description += "\n\n※最終マッチ（スキップしたバトルがある場合、この後開催されます）"
+    await before_start.edit(embed=embed)
 
     # バトル開始ボタン
     await before_start.add_reaction("▶️")
     await before_start.add_reaction("❌")
+    if last_match is False:  # 最終マッチでない場合スキップ可
+        await before_start.add_reaction("⏭️")
 
     def check(reaction, user):
-        stamps = ["▶️", "❌"]
+        stamps = ["▶️", "❌", "⏭️"]
         role_check = user.get_role(1096821566114902047)  # バトスタ運営
         return bool(role_check) and reaction.emoji in stamps and reaction.message == before_start
+
     reaction, _ = await client.wait_for('reaction_add', check=check)
     await before_start.clear_reactions()
-    if reaction.emoji == "❌":
+
+    if reaction.emoji == "❌":  # s.startの自動スタート中止
         await before_start.delete()
         return "battle_error"
+    if reaction.emoji == "⏭️":  # このバトルをスキップ（最終マッチ後に追加）
+        await before_start.delete()
+        return f"battle_reschedule {names[0]} vs {names[1]}"
 
     ##############################
     # いざ参らん
@@ -190,16 +211,22 @@ async def battle(text: str, client: Client):
     await chat.send(embed=embed)
     await sent_message.add_reaction("❌")  # タイマー停止ボタン
 
-    # ミュートしてない
+    # 最初は4.8秒
+    battle_status = await timer(4.8, sent_message, voice_client, count)
+    if bool(battle_status):
+        return battle_status
+
+    # 4.8秒後ミュートしてるか確認
     if all([bool(tari3210.voice), tari3210.voice.self_mute is False, tari3210.voice.suppress is False]):
         await chat.send(mute_right_now)
 
     if random_start == 1:
-        battle_status = await timer(9, sent_message, voice_client, count)
+        battle_status = await timer(4, sent_message, voice_client, count)
     else:
-        battle_status = await timer(11, sent_message, voice_client, count)
+        battle_status = await timer(6, sent_message, voice_client, count)
     if bool(battle_status):
         return battle_status
+
     embed = Embed(title="🔥🔥 3, 2, 1, Beatbox! 🔥🔥", color=0xff0000)
     await sent_message.edit(embed=embed)
     await chat.send(embed=embed)
@@ -456,6 +483,8 @@ async def start(client: Client):
     # マ イ ク チ ェ ッ ク を し ろ
     await maiku_check.send(f"{bs_role.mention}", embed=embed_maiku_check, delete_after=20)
 
+    rescheduled_match = []  # スキップしたマッチ
+
     # バトルループ
     for i in range(0, len(playerlist), 2):
         await sleep(3)
@@ -498,7 +527,7 @@ async def start(client: Client):
                 last_player = playerlist[0]
 
             # 最終マッチ開始
-            battle_status = await battle(f"{playerlist[-1]} {last_player} auto", client)
+            battle_status = await battle(f"{playerlist[-1]} {last_player} last", client)
 
         if battle_status == "battle_error":  # 異常終了
             embed = Embed(
@@ -508,8 +537,55 @@ async def start(client: Client):
             await bot_channel.send(embed=embed)
             return
 
+        if battle_status.startswith("battle_reschedule"):  # バトルスキップ（最終マッチに追加する場合）
+            embed = Embed(
+                title=f"{playerlist[i]} vs {playerlist[i + 1]} をスキップします",
+                description=f"{playerlist[i]} vs {playerlist[i + 1]} は最終マッチの後に行います",
+                color=0x00bfff)
+            await bot_channel.send(embed=embed)
+            await chat.send(embed=embed)
+            rescheduled_match.append(
+                battle_status.replace("battle_reschedule ", ""))
+
+    ##############################
+    # スキップしたマッチを開催
+    # whileでひたすら回す
+    ##############################
+
+    while len(rescheduled_match) > 0:
+        current_match = rescheduled_match.deepcopy()
+        embed = Embed(title="これより、スキップされたバトルを開催します",
+                      description="開催するバトルは以下の通りです",
+                      color=0x00bfff)
+        for match in current_match:
+            embed.description += f"\n- {match}"
+        await bot_channel.send(embed=embed)
+        await chat.send(embed=embed)
+
+        for match in current_match:
+            battle_status = await battle(f"{match} auto", client)
+            rescheduled_match.remove(match)  # 1つ終わったら削除
+
+            if battle_status == "battle_error":  # 異常終了
+                embed = Embed(
+                    title="自動入力中止",
+                    description="s.battleコマンド自動入力を中止します\ns.battle [名前1] [名前2] と入力してください",
+                    color=0xff0000)
+                await bot_channel.send(embed=embed)
+                return
+
+            if battle_status.startswith("battle_reschedule"):  # バトルスキップ
+                embed = Embed(
+                    title=f"{match} をスキップします",
+                    description=f"{match} は最終マッチの後に行います",
+                    color=0x00bfff)
+                await bot_channel.send(embed=embed)
+                await chat.send(embed=embed)
+                rescheduled_match.append(
+                    battle_status.replace("battle_reschedule ", ""))
+
     # すべてのバトル終了
-    embed = Embed(title="ラストMatchが終了しました",
+    embed = Embed(title="すべてのバトルが終了しました all battles are over",
                   description="ご参加ありがとうございました！\nmake some noise for all of amazing performance!!",
                   color=0x00bfff)
     await bot_channel.send(embed=embed)
