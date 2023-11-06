@@ -51,9 +51,6 @@ async def battle(text: str, client: Client):
             await bot_channel.send(embed=embed)
             await chat.send(embed=embed)
 
-        if names[2] == "auto":  # 自動入力モード（自動入力のメッセージを廃止したのでぶっちゃけ不要）
-            del names[2]
-
         last_match = False
         if names[2] == "last":  # 最終マッチ
             del names[2]
@@ -483,13 +480,39 @@ async def start(client: Client):
     # マ イ ク チ ェ ッ ク を し ろ
     await maiku_check.send(f"{bs_role.mention}", embed=embed_maiku_check, delete_after=20)
 
+    ##############################
+    # バトル実行関数
+    ##############################
+
     rescheduled_match = []  # スキップしたマッチ
+
+    async def execute_battle(names, client):
+        battle_status = await battle(names, client)
+        if battle_status == "battle_error":  # 異常終了
+            embed = Embed(
+                title="自動入力中止",
+                description="s.battleコマンド自動入力を中止します\n`s.battle [名前1] [名前2]` と入力してください",
+                color=0xff0000)
+            await bot_channel.send(embed=embed)
+            return "battle_error"
+
+        if battle_status.startswith("battle_reschedule"):  # バトルスキップ（最終マッチに追加する場合）
+            embed = Embed(
+                title=f"{names} をスキップします",
+                description=f"{names} は最終マッチの後に行います",
+                color=0x00bfff)
+            await bot_channel.send(embed=embed)
+            await chat.send(embed=embed)
+            rescheduled_match.append(
+                battle_status.replace("battle_reschedule ", ""))
+            return "battle_skip"
+        return
 
     # バトルループ
     for i in range(0, len(playerlist), 2):
         await sleep(3)
         try:
-            battle_status = await battle(f"{playerlist[i]} {playerlist[i + 1]} auto", client)
+            battle_status = await execute_battle(f"{playerlist[i]} {playerlist[i + 1]}", client)
         except IndexError:  # 参加者数が奇数のとき発生
             embed = Embed(
                 title="最終マッチを行います", description=f"参加者数が奇数だったため、これより\n{playerlist[-1]} vs `{playerlist[0]}(2回目)`\nを行う予定です。\n{playerlist[-1]} さんの対戦相手を変更しますか？\n\n⭕ 変更する\n❌ `{playerlist[-1]} vs {playerlist[0]} を行う`", color=0xffff00)
@@ -523,29 +546,15 @@ async def start(client: Client):
                     return
                 last_player = message.content.replace(
                     "`", "").replace(" ", "-")
+
             if reaction.emoji == "❌":  # 変更しない
                 last_player = playerlist[0]
 
             # 最終マッチ開始
-            battle_status = await battle(f"{playerlist[-1]} {last_player} last", client)
+            battle_status = await execute_battle(f"{playerlist[-1]} {last_player} last", client)
 
         if battle_status == "battle_error":  # 異常終了
-            embed = Embed(
-                title="自動入力中止",
-                description="s.battleコマンド自動入力を中止します\ns.battle [名前1] [名前2] と入力してください",
-                color=0xff0000)
-            await bot_channel.send(embed=embed)
-            return
-
-        if battle_status.startswith("battle_reschedule"):  # バトルスキップ（最終マッチに追加する場合）
-            embed = Embed(
-                title=f"{playerlist[i]} vs {playerlist[i + 1]} をスキップします",
-                description=f"{playerlist[i]} vs {playerlist[i + 1]} は最終マッチの後に行います",
-                color=0x00bfff)
-            await bot_channel.send(embed=embed)
-            await chat.send(embed=embed)
-            rescheduled_match.append(
-                battle_status.replace("battle_reschedule ", ""))
+            return "battle_error"
 
     ##############################
     # スキップしたマッチを開催
@@ -553,36 +562,23 @@ async def start(client: Client):
     ##############################
 
     while len(rescheduled_match) > 0:
-        current_match = rescheduled_match.deepcopy()
-        embed = Embed(title="これより、スキップされたバトルを開催します",
-                      description="開催するバトルは以下の通りです",
-                      color=0x00bfff)
-        for match in current_match:
-            embed.description += f"\n- {match}"
+        current_matches = rescheduled_match.deepcopy()
+        embed = Embed(
+            title="スキップされたバトル",
+            description="これより、スキップされたバトルを開催します\n開催するバトルは以下の通りです",
+            color=0x00bfff)
+        for names in current_matches:
+            embed.description += f"\n- {names}"
         await bot_channel.send(embed=embed)
         await chat.send(embed=embed)
+        await pairing_channel.send(embed=embed)
 
-        for match in current_match:
-            battle_status = await battle(f"{match} auto", client)
-            rescheduled_match.remove(match)  # 1つ終わったら削除
+        for names in current_matches:
+            battle_status = await execute_battle(names, client)
+            rescheduled_match.remove(names)  # 1つ終わったら削除
 
             if battle_status == "battle_error":  # 異常終了
-                embed = Embed(
-                    title="自動入力中止",
-                    description="s.battleコマンド自動入力を中止します\ns.battle [名前1] [名前2] と入力してください",
-                    color=0xff0000)
-                await bot_channel.send(embed=embed)
-                return
-
-            if battle_status.startswith("battle_reschedule"):  # バトルスキップ
-                embed = Embed(
-                    title=f"{match} をスキップします",
-                    description=f"{match} は最終マッチの後に行います",
-                    color=0x00bfff)
-                await bot_channel.send(embed=embed)
-                await chat.send(embed=embed)
-                rescheduled_match.append(
-                    battle_status.replace("battle_reschedule ", ""))
+                return "battle_error"
 
     # すべてのバトル終了
     embed = Embed(title="すべてのバトルが終了しました all battles are over",
@@ -680,11 +676,12 @@ async def start(client: Client):
     else:
         if reaction.emoji == "⭕":  # 2週間後のバトスタイベントを設定
             # 以下s.bsと同じ処理
-            event = await message.guild.create_scheduled_event(name="BATTLE STADIUM",
-                                                               description="【エキシビションBeatboxバトルイベント】\n今週もやります！いつでも何回でも参加可能です。\nぜひご参加ください！\n観戦も可能です。観戦中、マイクがオンになることはありません。\n\n※エントリー受付・当日の進行はすべてbotが行います。\n※エントリー受付開始時間は、バトル開始1分前です。", start_time=dt_next_start,
-                                                               end_time=dt_next_end,
-                                                               channel=stage_channel,
-                                                               privacy_level=PrivacyLevel.guild_only)
+            event = await message.guild.create_scheduled_event(
+                name="BATTLE STADIUM",
+                description="【エキシビションBeatboxバトルイベント】\n今週もやります！いつでも何回でも参加可能です。\nぜひご参加ください！\n観戦も可能です。観戦中、マイクがオンになることはありません。\n\n※エントリー受付・当日の進行はすべてbotが行います。\n※エントリー受付開始時間は、バトル開始1分前です。", start_time=dt_next_start,
+                end_time=dt_next_end,
+                channel=stage_channel,
+                privacy_level=PrivacyLevel.guild_only)
             await bot_channel.send(f"イベント設定完了しました\n{event.url}")
             await announce.send(file=File(f"battle_stadium_{random.randint(1, 3)}.gif"))
             await announce.send(event.url)
