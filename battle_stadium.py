@@ -669,7 +669,7 @@ async def start(client: Client):
         return bool(role_check) and reaction.emoji in stamps and reaction.message == next_battle_stadium
 
     try:
-        reaction, _ = await client.wait_for('reaction_add', check=check)
+        reaction, _ = await client.wait_for('reaction_add', check=check, timeout=600)
         await next_battle_stadium.delete()
     except TimeoutError:
         await next_battle_stadium.delete()
