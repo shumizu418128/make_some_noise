@@ -1,12 +1,12 @@
 import random
 import re
 
-from discord import ChannelType, Embed
+from discord import ChannelType, Embed, Message
 
 from gbb_countdown import gbb_countdown
 
 
-async def natural_language(message):
+async def natural_language(message: Message):
     if "草" in message.content:
         emoji = message.guild.get_emoji(990222099744432198)  # 草
         await message.add_reaction(emoji)
