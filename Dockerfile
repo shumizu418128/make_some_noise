@@ -1,5 +1,5 @@
 # ベースイメージとしてPython 3.10を使用
-FROM python:3.10
+FROM python:3.11
 
 # 環境変数を一度に設定
 ENV LANG=ja_JP.UTF-8 \
@@ -22,7 +22,7 @@ RUN apt-get update \
 
 # ファイルをコピー
 COPY main.py /app/
-COPY *.mp3 /app/
+COPY mp3/*.mp3 /app/
 COPY *.gif /app/
 COPY *.py /app/
 COPY *.json /app/
