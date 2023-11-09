@@ -9,7 +9,7 @@ from discord import (Client, Embed, EventStatus, File, Intents, Member,
 from discord.errors import ClientException
 from discord.ext import tasks
 
-import battle_stadium
+from battle_stadium import battle, start
 from gbb_countdown import gbb_countdown
 from keep_alive import keep_alive
 from natural_language import natural_language
@@ -59,7 +59,7 @@ async def advertise():
             return
         if reaction.emoji == "❌":  # ❌ならさよなら
             await battle_stadium_start.delete()
-        await battle_stadium.start(client)
+        await start(client)
     return
 
 
@@ -119,7 +119,6 @@ async def on_message(message: Message):
     # バトスタ対戦表、バトスタチャット
     if message.author.bot or message.content.startswith("l.") or message.channel.id in [930767329137143839, 930839018671837184]:
         return
-
     # s.から始まらない場合(コマンドではない場合)
     if not message.content.startswith("s."):
         await natural_language(message)
@@ -158,11 +157,11 @@ async def on_message(message: Message):
     ##############################
 
     if message.content.startswith("s.battle"):
-        await battle_stadium.battle(message.content, client)
+        await battle(message.content, client)
         return
 
     if message.content == "s.start":
-        await battle_stadium.start(client)
+        await start(client)
         return
 
     if message.content == "s.end":
