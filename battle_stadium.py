@@ -312,11 +312,6 @@ async def battle(text: str, client: Client):
     await poll.add_reaction("1⃣")
     await poll.add_reaction("2⃣")
     await poll.add_reaction("🔥")
-    audio = PCMVolumeTransformer(FFmpegPCMAudio(
-        f"msn_{random.randint(1, 3)}.mp3"), volume=0.7)
-    audio.read()
-    await sleep(3.9)
-    chat.guild.voice_client.play(audio)
     await chat.send("make some noise for the battle!\ncome on!!", embed=embed_chat_info)
     return
 
