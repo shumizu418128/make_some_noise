@@ -354,12 +354,7 @@ async def entry_replacement(client: Client):
             # DB更新
             await worksheet.update_cell(cell_id.row, 5, "出場")
             cell_time = await worksheet.cell(row=cell_id.row, col=8)
-            await worksheet.update_cell(
-                cell_time.row,
-                cell_time.col,
-                cell_time.value + " 繰り上げ: " +
-                datetime.now(JST).strftime("%Y-%m-%d %H:%M:%S")
-            )
+            await worksheet.update_cell(cell_time.row, cell_time.col, cell_time.value + " 繰り上げ: " + datetime.now(JST).strftime("%Y-%m-%d %H:%M:%S"))
 
             await bot_channel.send(f"{member_replace.display_name}さんが繰り上げ出場しました。\n\n{thread.jump_url}")
             return
