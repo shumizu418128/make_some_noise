@@ -4,12 +4,15 @@ from asyncio import sleep
 from datetime import datetime, time, timedelta, timezone
 
 import discord
-from discord import (Client, Embed, EventStatus, File, Intents, Member,
-                     Message, PrivacyLevel, VoiceState)
+from discord import (Client, Embed, EventStatus, File, Intents, Interaction,
+                     Member, Message, PrivacyLevel, VoiceState)
 from discord.errors import ClientException
 from discord.ext import tasks
 
 from battle_stadium import battle, start
+from contact import (button_call_admin, button_cancel, button_contact,
+                     button_entry_confirm)
+from entry import button_entry
 from gbb_countdown import gbb_countdown
 from keep_alive import keep_alive
 from natural_language import natural_language
@@ -67,6 +70,50 @@ async def advertise():
 async def on_ready():  # 起動時に動作する処理
     advertise.start()  # バトスタ宣伝
     return
+
+
+@client.event
+async def on_interaction(interaction: Interaction):
+    custom_id = interaction.data["custom_id"]
+
+    # interaction通知
+    embed = Embed(
+        title=custom_id,
+        description=f"{interaction.user.mention}\n{interaction.channel.jump_url}",
+        color=0x00bfff
+    )
+    embed.set_author(
+        name=interaction.user.display_name,
+        icon_url=interaction.user.display_avatar.url
+    )
+    bot_channel = interaction.guild.get_channel(
+        897784178958008322  # bot用チャット
+    )
+    await bot_channel.send(f"{interaction.user.id}", embed=embed)
+
+    ##############################
+    # 参加者が押すボタン
+    ##############################
+
+    # ビト森杯エントリー
+    if custom_id == "button_entry":
+        await button_entry(interaction)
+
+    # お問い合わせ
+    if custom_id == "button_contact":
+        await button_contact(interaction)
+
+    # 運営呼び出し
+    if custom_id == "button_call_admin":
+        await button_call_admin(interaction)
+
+    # キャンセル
+    if custom_id == "button_cancel":
+        await button_cancel(interaction)
+
+    # エントリー状況照会
+    if custom_id == "button_entry_confirm":
+        await button_entry_confirm(interaction)
 
 
 @client.event
