@@ -161,7 +161,7 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
 
         # 問い合わせスレッドにメンション付きで送信
         await thread.send(f"{member.mention}", embeds=[embed_overseas, embed_jp])
-        # await thread.send(f"{admin.mention}\n海外対応モード")
+        await thread.send(f"{admin.mention}\n海外対応モード")
 
         # しゃべってよし
         await contact.set_permissions(member, send_messages_in_threads=True)
