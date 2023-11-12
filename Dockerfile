@@ -1,4 +1,4 @@
-# ベースイメージとしてPython 3.10を使用
+# ベースイメージとしてPython 3.11を使用
 FROM python:3.11
 
 # 環境変数を一度に設定
@@ -8,11 +8,12 @@ ENV LANG=ja_JP.UTF-8 \
     TZ=JST-9 \
     TERM=xterm
 
-# pipでPythonパッケージをインストール
-RUN pip install git+https://github.com/Rapptz/discord.py pynacl flask waitress
-
 # Pythonのpipをアップグレード
 RUN /usr/local/bin/python -m pip install --upgrade pip
+
+# pipでPythonパッケージをインストール
+COPY requirements.txt /app/
+RUN pip install -r /app/requirements.txt
 
 # apt-getコマンドで必要なパッケージをインストールし、クリーンアップ
 RUN apt-get update \
