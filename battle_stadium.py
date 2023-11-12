@@ -1,4 +1,3 @@
-import asyncio
 import random
 from asyncio import sleep
 from datetime import datetime, timedelta, timezone
@@ -76,7 +75,7 @@ async def battle(text: str, client: Client):
             return message.channel == bot_channel and bool(role_check)
         try:
             message = await client.wait_for('message', timeout=600, check=check)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             await bot_channel.send("Error: timeout")
             return "battle_error"
         if message.content == "cancel":
@@ -116,7 +115,7 @@ async def battle(text: str, client: Client):
             return bool(role_check) and str(reaction.emoji) == '❌' and reaction.message == message
         try:
             _, _ = await client.wait_for('reaction_add', timeout=time, check=check)
-        except asyncio.TimeoutError:
+        except TimeoutError:
             pass
         else:  # このelseにかかったら絶対ここで終わらせる
             audio = PCMVolumeTransformer(FFmpegPCMAudio("timer_stop.mp3"))
@@ -533,7 +532,7 @@ async def start(client: Client):
                     return message.channel == bot_channel and bool(role_check)
                 try:
                     message = await client.wait_for('message', timeout=600, check=check)
-                except asyncio.TimeoutError:
+                except TimeoutError:
                     await bot_channel.send("Error: timeout")
                     return
                 if message.content == "cancel":
