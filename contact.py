@@ -6,7 +6,7 @@ from discord import ButtonStyle, Client, Embed, Intents, Interaction, Member
 from discord.ui import Button, View
 from oauth2client.service_account import ServiceAccountCredentials
 
-from entry import entry_cancel, entry_replacement
+from entry_cancel import entry_cancel, entry_replacement
 
 """
 search_contact: ユーザーの問い合わせスレッドを取得もしくは作成(createのboolで選択)
@@ -207,7 +207,8 @@ async def button_contact(interaction: Interaction):
     embed = Embed(
         title="お問い合わせチャンネル作成",
         description=f"{thread.jump_url} までお問い合わせください。",
-        color=0x00bfff)
+        color=0x00bfff
+    )
     await interaction.followup.send(embed=embed, ephemeral=True)
     await contact_start(client=interaction.client, member=interaction.user)
 
