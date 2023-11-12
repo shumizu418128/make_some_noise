@@ -1,0 +1,6 @@
+git+https://github.com/Rapptz/discord.py
+pynacl
+flask
+waitress
+gspread_asyncio
+oauth2client
