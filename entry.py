@@ -36,28 +36,30 @@ class modal_entry(Modal):
 
         self.add_item(
             TextInput(
-                label="名前",
-                placeholder="あなたの名前",
+                label="あなたの名前",
+                placeholder="名前",
                 default=display_name
             )
         )
         self.add_item(
             TextInput(
-                label="よみがな",
-                placeholder="あなたの名前の「よみがな」"
+                label="あなたの名前の「よみがな」",
+                placeholder="よみがな"
             )
         )
         self.add_item(
             TextInput(
-                label="利用デバイス",
-                placeholder="大会で利用するデバイス",
+                label="使用するデバイス（すべて記入）",
+                placeholder="使用するデバイス",
                 style=TextStyle.long
             )
         )
         self.add_item(
             TextInput(
-                label="備考",
-                style=TextStyle.long, required=False
+                label="備考（任意回答）",
+                placeholder="連絡事項など",
+                style=TextStyle.long,
+                required=False
             )
         )
 
@@ -70,6 +72,8 @@ class modal_entry(Modal):
         read = self.children[1].value
         device = self.children[2].value
         note = self.children[3].value
+        if note == "":  # 備考が空欄の場合
+            note = "なし"  # なしと記載
 
         # よみがなのひらがな判定
         if not re_hiragana.fullmatch(read):
