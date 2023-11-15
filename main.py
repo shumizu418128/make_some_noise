@@ -79,7 +79,7 @@ async def on_interaction(interaction: Interaction):
     # interaction通知
     embed = Embed(
         title=custom_id,
-        description=f"{interaction.user.mention}\n{interaction.channel.jump_url}",
+        description=f"{interaction.user.mention}\n{interaction.message.jump_url}",
         color=0x00bfff
     )
     embed.set_author(
