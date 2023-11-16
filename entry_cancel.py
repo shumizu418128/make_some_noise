@@ -134,10 +134,10 @@ async def entry_replacement(client: Client):
     # キャンセル待ちへの通知
     while len(role_reserve) > 0 and len(role) < 16:  # キャンセル待ちがいて、出場枠に空きがある場合
         # キャンセル待ちの順番最初の人を取得
-        cell_wait_list = await worksheet.find("キャンセル待ち", in_column=5)
+        cell_waitlist_first = await worksheet.find("キャンセル待ち", in_column=5)
 
         # ユーザーIDを取得
-        cell_id = await worksheet.cell(row=cell_wait_list.row, col=9)
+        cell_id = await worksheet.cell(row=cell_waitlist_first.row, col=9)
         member_replace = bot_channel.guild.get_member(int(cell_id.value))
 
         # 問い合わせスレッドを取得
@@ -166,7 +166,6 @@ async def entry_replacement(client: Client):
                 \n\n出場する場合: **出場**\nキャンセルする場合: **キャンセル**\n\nとこのチャットに__72時間以内__に入力してください。",
             color=yellow
         )
-
         # 画像添付
         file_name = "description.png"
         file = File(fp=file_name, filename=file_name)
@@ -181,8 +180,8 @@ async def entry_replacement(client: Client):
         )
         view = View(timeout=None)
         view.add_item(button_call_admin)
-        await thread.send(file=file, embed=embed, view=view)
-        await thread.send("↓↓↓ このチャットに入力 ↓↓↓")
+        await thread.send(member_replace.mention, file=file, embed=embed, view=view)
+        await thread.send("### ↓↓↓ このチャットに入力 ↓↓↓")
 
         # 繰り上げ通知のみ、DMでも送信
         embed = Embed(
@@ -197,7 +196,7 @@ async def entry_replacement(client: Client):
             name="あつまれ！ビートボックスの森",
             icon_url=bot_channel.guild.icon.url
         )
-        await member_replace.send("🙏繰り上げ出場手続きのお願い🙏", embed=embed)
+        await member_replace.send(member_replace.mention, embed=embed)
         await member_replace.send("### このDMは送信専用です。ここに何も入力しないでください。")
 
         # 海外からのエントリー
@@ -209,8 +208,8 @@ async def entry_replacement(client: Client):
         def check(m):
             return m.channel == thread and m.content in ["出場", "キャンセル"]
         try:
-            hour = 60 * 60
-            message = await client.wait_for("message", check=check, timeout=72 * hour)
+            hours = 60 * 60
+            message = await client.wait_for("message", check=check, timeout=72 * hours)
         except TimeoutError:
             embed = Embed(
                 title="ビト森杯 キャンセル通知",
@@ -233,6 +232,14 @@ async def entry_replacement(client: Client):
             # ロール付け替え
             await member_replace.remove_roles(role_reserve)
             await member_replace.add_roles(role)
+
+            # Google spreadsheet worksheet読み込み
+            # ここで再度読み込まないと、認証情報が失効してエラーになる可能性がある
+            gc = gspread_asyncio.AsyncioGspreadClientManager(get_credits)
+            agc = await gc.authorize()
+            # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
+            workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
+            worksheet = await workbook.worksheet('エントリー名簿')
 
             # DB更新
             await worksheet.update_cell(cell_id.row, 5, "出場")
