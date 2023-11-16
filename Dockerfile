@@ -27,6 +27,7 @@ COPY mp3/*.mp3 /app/
 COPY *.gif /app/
 COPY *.py /app/
 COPY *.json /app/
+COPY *.png /app/
 COPY *.traineddata /app/
 
 # 作業ディレクトリを/appに設定
