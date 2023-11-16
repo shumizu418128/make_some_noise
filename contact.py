@@ -220,23 +220,93 @@ async def button_call_admin(interaction: Interaction):
     admin = interaction.user.get_role(
         904368977092964352  # ビト森杯運営
     )
+    bot_channel = interaction.guild.get_channel(
+        897784178958008322  # bot用チャット
+    )
+    tari3210 = interaction.guild.get_member(
+        412082841829113877
+    )
+    role_reserve = interaction.guild.get_role(
+        1172542396597289093  # キャンセル待ち ビト森杯
+    )
+
+    role_check = [
+        interaction.user.get_role(
+            1036149651847524393  # ビト森杯
+        ),
+        interaction.user.get_role(
+            1172542396597289093  # キャンセル待ち ビト森杯
+        )
+    ]
 
     # しゃべってよし
     await contact.set_permissions(interaction.user, send_messages_in_threads=True)
+
     embed = Embed(
         title="このチャンネルにご用件をご記入ください",
         description="運営メンバーが対応します",
         color=blue
     )
     await interaction.response.send_message(f"{admin.mention}\n{interaction.user.mention}", embed=embed)
+
+    # どちらのロールも持っている場合（異常なロール付与）
+    if all(role_check):
+        await bot_channel.send(f"{tari3210.mention}\nbutton_entry_check Error: 重複ロール付与\n\n{interaction.channel.jump_url}")
+        return
+
+    # エントリー状況確認（正常）
+    if not any(role_check):  # エントリーしていない
+        embed = Embed(
+            title="エントリー状況",
+            description=f"{interaction.user.display_name}さんはビト森杯にエントリーしていません。"
+        )
+        await interaction.channel.send(embed=embed)
+        return
+
+    # Google spreadsheet worksheet読み込み
+    gc = gspread_asyncio.AsyncioGspreadClientManager(get_credits)
+    agc = await gc.authorize()
+    # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
+    workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
+    worksheet = await workbook.worksheet('エントリー名簿')
+
+    # DBから取得
+    cell_id = await worksheet.find(f'{interaction.user.id}')  # ユーザーIDで検索
+
+    # DB登録なし
+    if bool(cell_id) is False:
+        await bot_channel.send(f"{tari3210.mention}\nbutton_entry_info Error: DB登録なし\n\n{interaction.channel.jump_url}")
+        return
+
+    # DB登録あり
+    cell_values = await worksheet.row_values(cell_id.row)  # ユーザーIDの行の値を取得
+    cell_values = cell_values[2:9]
+
+    if role_check[1]:  # キャンセル待ちの場合、何番目かを取得
+        # キャンセル待ちの順番最初の人を取得
+        cell_wait_first = await worksheet.find("キャンセル待ち", in_column=5)
+
+        # キャンセル待ちの順番を取得
+        cell_waitlist_position = cell_id.row - cell_wait_first.row + 1
+        cell_values[2] += f" {len(role_reserve)}人中 {cell_waitlist_position}番目"
+
+    embed = Embed(
+        title=f"{interaction.user.display_name}さん エントリー状況 詳細",
+        description=f"- 名前: {cell_values[0]}\n- 読み: {cell_values[1]}\n- 出場可否: {cell_values[2]}\
+            \n- デバイス: {cell_values[3]}\n- 備考: {cell_values[4]}\n- 受付時刻: {cell_values[5]}"
+    )
+    await interaction.channel.send(embed=embed)
     return
 
 
 async def button_cancel(interaction: Interaction):
     await interaction.response.defer(ephemeral=True)
+    contact = interaction.client.get_channel(
+        1035964918198960128  # 問い合わせ
+    )
 
     # 喋るな(スレッドでキャンセルしている前提)
-    await interaction.channel.set_permissions(interaction.user, send_messages_in_threads=False)
+    await contact.set_permissions(interaction.user, send_messages_in_threads=False)
 
     # そもそもエントリーしてる？
     role_check = [
@@ -290,15 +360,21 @@ async def button_cancel(interaction: Interaction):
 
 async def button_entry_confirm(interaction: Interaction):
     await interaction.response.defer(ephemeral=True)
+    contact = interaction.client.get_channel(
+        1035964918198960128  # 問い合わせ
+    )
 
     # 喋るな(スレッドでボタン押してる前提)
-    await interaction.channel.set_permissions(interaction.user, send_messages_in_threads=False)
+    await contact.set_permissions(interaction.user, send_messages_in_threads=False)
 
     bot_channel = interaction.guild.get_channel(
         897784178958008322  # bot用チャット
     )
     tari3210 = interaction.guild.get_member(
         412082841829113877
+    )
+    role_reserve = interaction.guild.get_role(
+        1172542396597289093  # キャンセル待ち ビト森杯
     )
 
     role_check = [
@@ -342,12 +418,6 @@ async def button_entry_confirm(interaction: Interaction):
             description=f"{interaction.user.display_name}さんはビト森杯キャンセル待ち登録済みです。",
             color=green
         )
-    bot_channel = interaction.guild.get_channel(
-        897784178958008322  # bot用チャット
-    )
-    tari3210 = interaction.guild.get_member(
-        412082841829113877
-    )
 
     # Google spreadsheet worksheet読み込み
     gc = gspread_asyncio.AsyncioGspreadClientManager(get_credits)
@@ -373,8 +443,17 @@ async def button_entry_confirm(interaction: Interaction):
     # DB登録あり
     cell_values = await worksheet.row_values(cell_id.row)  # ユーザーIDの行の値を取得
     cell_values = cell_values[2:9]
+
+    if role_check[1]:  # キャンセル待ちの場合、何番目かを取得
+        # キャンセル待ちの順番最初の人を取得
+        cell_wait_first = await worksheet.find("キャンセル待ち", in_column=5)
+
+        # キャンセル待ちの順番を取得
+        cell_waitlist_position = cell_id.row - cell_wait_first.row + 1
+        cell_values[2] += f" {len(role_reserve)}人中 {cell_waitlist_position}番目"
+
     embed = Embed(
-        title="エントリー状況照会 詳細情報",
+        title=f"エントリー状況照会 詳細情報",
         description=f"- 名前: {cell_values[0]}\n- 読み: {cell_values[1]}\n- 出場可否: {cell_values[2]}\
             \n- デバイス: {cell_values[3]}\n- 備考: {cell_values[4]}\n- 受付時刻: {cell_values[5]}"
     )
