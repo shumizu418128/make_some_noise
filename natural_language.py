@@ -7,6 +7,9 @@ from gbb_countdown import gbb_countdown
 
 
 async def natural_language(message: Message):
+    if message.channel.category.name == "ビト森杯":
+        return
+
     if "草" in message.content:
         emoji = message.guild.get_emoji(990222099744432198)  # 草
         await message.add_reaction(emoji)
