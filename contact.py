@@ -184,7 +184,7 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
 
         # エントリー時の問い合わせリダイレクトの場合
         if entry_redirect:
-            embed.description += "\n\n以下のボタンからエントリーできます。"
+            embed.description += "\n\n以下のボタンからエントリーしてください。"
             button = Button(
                 style=ButtonStyle.green,
                 label="エントリー",
@@ -234,6 +234,9 @@ async def button_call_admin(interaction: Interaction):
 
 async def button_cancel(interaction: Interaction):
     await interaction.response.defer(ephemeral=True)
+
+    # 喋るな(スレッドでキャンセルしている前提)
+    await interaction.channel.set_permissions(interaction.user, send_messages_in_threads=False)
 
     # そもそもエントリーしてる？
     role_check = [
@@ -287,6 +290,10 @@ async def button_cancel(interaction: Interaction):
 
 async def button_entry_confirm(interaction: Interaction):
     await interaction.response.defer(ephemeral=True)
+
+    # 喋るな(スレッドでボタン押してる前提)
+    await interaction.channel.set_permissions(interaction.user, send_messages_in_threads=False)
+
     bot_channel = interaction.guild.get_channel(
         897784178958008322  # bot用チャット
     )
