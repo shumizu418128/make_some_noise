@@ -2,8 +2,11 @@
 from datetime import datetime, timedelta, timezone
 
 import gspread_asyncio
-from discord import Client, Embed
+from discord import ButtonStyle, Client, Embed, File
+from discord.ui import Button, View
 from oauth2client.service_account import ServiceAccountCredentials
+
+from contact import search_contact
 
 JST = timezone(timedelta(hours=9))
 green = 0x00ff00
@@ -138,3 +141,105 @@ async def entry_list_update(client: Client):
     embed.timestamp = dt_now
 
     await bot_notice_channel.send(embed=embed)
+
+
+# 繰り上げ手続きは毎日21時に実行
+async def entry_replacement(client: Client):
+    bot_channel = client.get_channel(
+        897784178958008322  # bot用チャット
+    )
+    role = bot_channel.guild.get_role(
+        1036149651847524393  # ビト森杯
+    )
+    role_reserve = bot_channel.guild.get_role(
+        1172542396597289093  # キャンセル待ち ビト森杯
+    )
+    admin = bot_channel.guild.get_role(
+        904368977092964352  # ビト森杯運営
+    )
+
+    # Google spreadsheet worksheet読み込み
+    gc = gspread_asyncio.AsyncioGspreadClientManager(get_credits)
+    agc = await gc.authorize()
+    # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
+    workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
+    worksheet = await workbook.worksheet('エントリー名簿')
+
+    cell_replacements = await worksheet.col_values(10)  # 繰り上げ手続き締切
+    cell_replacements = [x for x in cell_replacements if bool(x)]  # 空白を除外
+
+    # 繰り上げ手続き締切が設定されている = 繰り上げ手続き中
+    # = その人の枠は確保されている
+
+    entry_count = len(role.members) + len(cell_replacements)  # エントリー数
+
+    # キャンセル待ちへの通知
+    while len(role_reserve.members) > 0 and entry_count < 16:  # キャンセル待ちがいて、出場枠に空きがある場合
+        # キャンセル待ちの順番最初の人を取得
+        cell_waitlist_first = await worksheet.find("キャンセル待ち", in_column=5)
+
+        # ユーザーIDを取得
+        cell_id = await worksheet.cell(row=cell_waitlist_first.row, col=9)
+        member_replace = bot_channel.guild.get_member(int(cell_id.value))
+
+        # 問い合わせスレッドを取得
+        thread = await search_contact(member=member_replace)
+
+        # 通知
+        embed = Embed(
+            title="繰り上げエントリー確認中",
+            description=thread.jump_url,
+            color=blue
+        )
+        embed.set_author(
+            name=member_replace.display_name,
+            icon_url=member_replace.avatar.url
+        )
+        await bot_channel.send(embed=embed)
+
+        # しゃべってよし
+        await thread.parent.set_permissions(member_replace, send_messages_in_threads=True)
+
+        embed = Embed(
+            title="繰り上げ出場通知",
+            description=f"エントリーをキャンセルした方がいたため、{member_replace.display_name}さんは繰り上げ出場できます。\
+                繰り上げ出場するためには、手続きが必要です。\
+                \n\n```※他の出場希望者の機会確保のため、__72時間以内__の返答をお願いしています。```\
+                \n\n出場する場合: **出場**\nキャンセルする場合: **キャンセル**\n\nとこのチャットに__72時間以内__に入力してください。",
+            color=yellow
+        )
+        button_call_admin = Button(
+            label="ビト森杯運営に問い合わせ",
+            style=ButtonStyle.primary,
+            custom_id="button_call_admin",
+            emoji="📩"
+        )
+        view = View(timeout=None)
+        view.add_item(button_call_admin)
+        await thread.send(member_replace.mention, embed=embed, view=view)
+        await thread.send("### ↓↓↓ このチャットに入力 ↓↓↓")
+
+        # 繰り上げ通知のみ、DMでも送信
+        embed = Embed(
+            title="🙏ビト森杯 繰り上げ出場手続きのお願い🙏",
+            description=f"ビト森杯エントリーをキャンセルした方がいたため、{member_replace.display_name}さんは繰り上げ出場できます。\
+                繰り上げ出場するためには、手続きが必要です。\
+                \n\n```※他の出場希望者の機会確保のため、__72時間以内__の返答をお願いしています。```\
+                \n\n__72時間以内__に {thread.jump_url} にて手続きをお願いします。",
+            color=yellow
+        )
+        embed.set_author(
+            name="あつまれ！ビートボックスの森",
+            icon_url=bot_channel.guild.icon.url
+        )
+        await member_replace.send(member_replace.mention, embed=embed)
+        await member_replace.send("### このDMは送信専用です。ここに何も入力しないでください。")
+
+        # 海外からのエントリー
+        locale = thread.name.split("_")[1]  # スレッド名からlocaleを取得
+        if locale != "ja":
+            await thread.send(f"{admin.mention}\n繰り上げ出場意思確認中：海外からのエントリー")
+
+    """
+    返答に対するコードは別途検討
+    """
