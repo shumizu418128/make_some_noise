@@ -2,7 +2,7 @@ import re
 from datetime import datetime, timedelta, timezone
 
 import gspread_asyncio
-from discord import Embed, Interaction, TextStyle
+from discord import Embed, Interaction, Member, TextStyle
 from discord.ui import Modal, TextInput
 from oauth2client.service_account import ServiceAccountCredentials
 
@@ -173,64 +173,68 @@ class modal_entry(Modal):
         await contact_start(client=interaction.client, member=interaction.user, entry_redirect=True)
 
 
-async def button_entry(interaction: Interaction):
-    dt_now = datetime.now(JST)
-    dt_entry_start = datetime(
-        year=2024,
-        month=1,
-        day=6,
-        tzinfo=JST
+async def entry_cancel(member: Member):
+    bot_channel = member.guild.get_channel(
+        897784178958008322  # bot用チャット
     )
-    # エントリー開始時刻確認
-    if dt_now < dt_entry_start:
-        await interaction.response.send_message(
-            "エントリー受付開始は1月6日です。",
-            ephemeral=True)
+    tari3210 = member.guild.get_member(
+        412082841829113877
+    )
+    # 問い合わせスレッドを取得
+    thread = await search_contact(member=member)
+
+    # キャンセル完了通知
+    embed = Embed(
+        title="エントリーキャンセル",
+        description="ビト森杯エントリーキャンセル完了しました。",
+        color=green
+    )
+    embed.timestamp = datetime.now(JST)
+    await thread.send(member.mention, embed=embed)
+
+    role_check = [
+        member.get_role(
+            1036149651847524393),  # ビト森杯
+        member.get_role(
+            1172542396597289093)   # キャンセル待ち ビト森杯
+    ]
+
+    # ロール削除
+    if role_check[0]:  # ビト森杯
+        role = member.guild.get_role(
+            1036149651847524393  # ビト森杯
+        )
+        await member.remove_roles(role)
+    if role_check[1]:  # キャンセル待ち ビト森杯
+        role_reserve = member.guild.get_role(
+            1172542396597289093  # キャンセル待ち ビト森杯
+        )
+        await member.remove_roles(role_reserve)
+
+    # Google spreadsheet worksheet読み込み
+    gc = gspread_asyncio.AsyncioGspreadClientManager(get_credits)
+    agc = await gc.authorize()
+    # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
+    workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
+    worksheet = await workbook.worksheet('エントリー名簿')
+
+    # DBから削除
+    cell_id = await worksheet.find(f'{member.id}')
+    if bool(cell_id):  # DB登録あり
+        for i in range(3, 10):
+            await worksheet.update_cell(cell_id.row, i, '')
+    else:  # DB登録なし
+        await bot_channel.send(f"{tari3210.mention}\nError: DB登録なし\nキャンセル作業中止\n\n{thread.jump_url}")
         return
 
-    # 問い合わせ確認
-    locale = str(interaction.locale)
-    thread = await search_contact(member=interaction.user, create=False, locale=str(interaction.locale))
-    if bool(thread):  # 問い合わせスレッドあり
-        locale = thread.name.split("_")[1]
-
-    # 日本からのエントリー
-    if locale == "ja":
-        await interaction.response.send_modal(modal_entry(interaction.user.display_name))
-        return
-
-    # 海外からのエントリー
-    else:
-        await interaction.response.defer(ephemeral=True)
-        thread = await search_contact(member=interaction.user, create=True, locale=str(interaction.locale))
-
-        if str(interaction.locale) == "zh-TW":  # 台湾
-            embed = Embed(
-                title="contact required: access from overseas",
-                description=f"錯誤：請點一下 {thread.mention} 聯係我們\
-                    \nお手数ですが {thread.mention} までお問い合わせください。",
-                color=red
-            )
-        elif str(interaction.locale) == "zh-CN":  # 中国
-            embed = Embed(
-                title="contact required: access from overseas",
-                description=f"错误：请点击 {thread.mention} 联系我们\
-                    \nお手数ですが {thread.mention} までお問い合わせください。",
-                color=red
-            )
-        elif str(interaction.locale) == "ko":  # 韓国
-            embed = Embed(
-                title="contact required: access from overseas",
-                description=f"문의는 {thread.mention} 로 보내주세요\
-                    \nお手数ですが {thread.mention} までお問い合わせください。",
-                color=red
-            )
-        else:  # 英語
-            embed = Embed(
-                title="contact required: access from overseas",
-                description=f"please contact us via {thread.mention}\
-                    \nお手数ですが {thread.mention} までお問い合わせください。",
-                color=red
-            )
-        await interaction.followup.send(embed=embed, ephemeral=True)
-        await contact_start(client=interaction.client, member=interaction.user, entry_redirect=True)
+    # 通知
+    embed = Embed(
+        title="エントリーキャンセル",
+        description=thread.jump_url,
+        color=blue
+    )
+    embed.set_author(
+        name=member.display_name,
+        icon_url=member.avatar.url
+    )
+    await bot_channel.send(embed=embed)
