@@ -6,7 +6,7 @@ from discord import ButtonStyle, Client, Embed, Intents, Interaction, Member
 from discord.ui import Button, View
 from oauth2client.service_account import ServiceAccountCredentials
 
-from entry_cancel import entry_cancel, entry_replacement
+from entry_cancel import entry_cancel
 
 """
 search_contact: ユーザーの問い合わせスレッドを取得もしくは作成(createのboolで選択)
@@ -355,7 +355,6 @@ async def button_cancel(interaction: Interaction):
         return
 
     await entry_cancel(interaction.user)
-    await entry_replacement(interaction.client)
 
 
 async def button_entry_confirm(interaction: Interaction):
@@ -453,7 +452,7 @@ async def button_entry_confirm(interaction: Interaction):
         cell_values[2] += f" {len(role_reserve)}人中 {cell_waitlist_position}番目"
 
     embed = Embed(
-        title=f"エントリー状況照会 詳細情報",
+        title="エントリー状況照会 詳細情報",
         description=f"- 名前: {cell_values[0]}\n- 読み: {cell_values[1]}\n- 出場可否: {cell_values[2]}\
             \n- デバイス: {cell_values[3]}\n- 備考: {cell_values[4]}\n- 受付時刻: {cell_values[5]}"
     )
