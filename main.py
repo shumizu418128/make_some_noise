@@ -10,9 +10,8 @@ from discord.errors import ClientException
 from discord.ext import tasks
 
 from battle_stadium import battle, start
-from contact import (button_call_admin, button_cancel, button_contact,
-                     button_entry_confirm)
-from entry import button_entry
+from button_callback import (button_call_admin, button_cancel, button_contact,
+                             button_entry, button_entry_confirm)
 from gbb_countdown import gbb_countdown
 from keep_alive import keep_alive
 from natural_language import natural_language
