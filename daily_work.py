@@ -1,7 +1,8 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, time, timedelta, timezone
 
 import gspread_asyncio
 from discord import ButtonStyle, Client, Embed
+from discord.ext import tasks
 from discord.ui import Button, View
 from oauth2client.service_account import ServiceAccountCredentials
 
@@ -9,6 +10,7 @@ from contact import search_contact
 from entry import entry_cancel
 
 JST = timezone(timedelta(hours=9))
+PM9 = time(21, 0, tzinfo=JST)
 green = 0x00ff00
 yellow = 0xffff00
 red = 0xff0000
@@ -29,6 +31,7 @@ def get_credits():
          'https://www.googleapis.com/auth/spreadsheets'])
 
 
+# TODO: 動作テスト
 async def maintenance(client: Client):
     bot_channel = client.get_channel(
         897784178958008322  # bot用チャット
@@ -123,6 +126,7 @@ async def maintenance(client: Client):
         await notice.reply(embed=embed)
 
 
+# TODO: 動作テスト
 async def replacement_expire(client: Client):
     bot_channel = client.get_channel(
         897784178958008322  # bot用チャット
@@ -134,24 +138,27 @@ async def replacement_expire(client: Client):
     workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
     worksheet = await workbook.worksheet('エントリー名簿')
 
-    cell_replacements = await worksheet.col_values(10)  # 繰り上げ手続き締切
-    cell_replacements = [x for x in cell_replacements if bool(x)]  # 空白を除外
+    values_replacement_deadlines = await worksheet.col_values(10)  # 繰り上げ手続き締切
+    values_replacement_deadlines = [
+        x for x in values_replacement_deadlines if bool(x)]  # 空白を除外
 
     dt_now = datetime.now(JST)
     today = dt_now.strftime("%m/%d")  # 月/日の形式に変換
-    for x in cell_replacements:
-        if x == today:
+    for value_deadline in values_replacement_deadlines:
+        if value_deadline == today:
             # 今日が繰り上げ手続き締切の人を取得
             cell_deadline_today = await worksheet.find(today)
+
             # ユーザーIDを取得
             cell_id = await worksheet.cell(row=cell_deadline_today.row, col=9)
 
+            # 問い合わせスレッドを取得
             member_replace = bot_channel.guild.get_member(int(cell_id.value))
             thread = await search_contact(member=member_replace)
 
             embed = Embed(
                 title="ビト森杯 キャンセル通知",
-                description="ビト森杯 繰り上げ出場手続きのお願いを送信しましたが、72時間以内の返答がなかったため、キャンセルとみなします。\
+                description="ビト森杯 繰り上げ出場手続きのお願いを送信しましたが、72時間以内に返答がなかったため、キャンセルとみなします。\
                     \n\n※エントリー手続きを行えば、再度キャンセル待ち登録は可能ですが、キャンセル待ちの最後尾に追加されます。",
                 color=red
             )
@@ -186,6 +193,7 @@ async def get_view_replacement():
     return view
 
 
+# TODO: 動作テスト
 # 繰り上げ手続きは毎日21時に実行
 async def entry_replacement(client: Client):
     bot_channel = client.get_channel(
@@ -208,13 +216,13 @@ async def entry_replacement(client: Client):
     workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
     worksheet = await workbook.worksheet('エントリー名簿')
 
-    cell_replacements = await worksheet.col_values(5)  # 出場可否
-    cell_replacements = [
-        x for x in cell_replacements if x == "繰り上げ出場手続き中"  # 繰り上げ出場手続き中の人を取得
+    values_status = await worksheet.col_values(5)  # 出場可否
+    values_status = [
+        status for status in values_status if status == "繰り上げ出場手続き中"  # 繰り上げ出場手続き中の人を取得
     ]
     # 繰り上げ手続き中の枠は確保されている
 
-    entry_count = len(role.members) + len(cell_replacements)  # エントリー数
+    entry_count = len(role.members) + len(values_status)  # エントリー数
 
     # キャンセル待ちへの通知
     for _ in range(16 - entry_count):  # エントリー数 + 繰り上げ出場確認中 が16人を下回り
@@ -284,6 +292,7 @@ async def entry_replacement(client: Client):
             await worksheet.update_cell(cell_id.row, 5, "繰り上げ出場手続き中")
 
 
+# TODO: 動作テスト
 async def entry_list_update(client: Client):
     bot_notice_channel = client.get_channel(
         916608669221806100  # ビト森杯 進行bot
@@ -302,3 +311,11 @@ async def entry_list_update(client: Client):
     embed.timestamp = dt_now
 
     await bot_notice_channel.send(embed=embed)
+
+
+@tasks.loop(time=PM9)
+async def daily_work(client: Client):
+    await maintenance(client)
+    await replacement_expire(client)
+    await entry_replacement(client)
+    await entry_list_update(client)
