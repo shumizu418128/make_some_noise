@@ -103,6 +103,7 @@ async def button_contact(interaction: Interaction):
     await contact_start(client=interaction.client, member=interaction.user)
 
 
+# TODO: 動作テスト
 async def button_call_admin(interaction: Interaction):
     contact = interaction.client.get_channel(
         1035964918198960128  # 問い合わせ
@@ -188,6 +189,7 @@ async def button_call_admin(interaction: Interaction):
     return
 
 
+# TODO: entry_cancelの動作テスト
 async def button_cancel(interaction: Interaction):
     await interaction.response.defer(ephemeral=True)
     contact = interaction.client.get_channel(
@@ -246,6 +248,7 @@ async def button_cancel(interaction: Interaction):
     await entry_cancel(interaction.user)
 
 
+# TODO: 動作テスト
 async def button_entry_confirm(interaction: Interaction):
     await interaction.response.defer(ephemeral=True)
     contact = interaction.client.get_channel(
