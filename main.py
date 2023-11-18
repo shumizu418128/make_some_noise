@@ -13,7 +13,7 @@ from battle_stadium import battle, start
 from button_callback import (button_accept_replace, button_call_admin,
                              button_cancel, button_contact, button_entry,
                              button_entry_confirm)
-from contact import get_view_contact
+# from contact import get_view_contact
 from gbb_countdown import gbb_countdown
 from keep_alive import keep_alive
 from natural_language import natural_language
