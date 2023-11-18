@@ -1,3 +1,4 @@
+import asyncio
 import random
 from asyncio import sleep
 from datetime import datetime, timedelta, timezone
@@ -11,7 +12,6 @@ from discord.ui import Button, View
 battle status について
 None: battle続行可能
 battle_skip: battleを終了し、次のbattleをスタートする
-battle_reschedule: battleを一旦スキップし、最終マッチ後に追加）
 battle_error: battleを強制終了、自動入力中止
 """
 JST = timezone(timedelta(hours=9))
@@ -49,12 +49,8 @@ async def battle(text: str, client: Client):
                 title="バトル再開モード", description=f"Round {stamps[count]}: **{names[1 - count % 2]}**\nから、バトルを再開します。", color=0x00bfff)
             await bot_channel.send(embed=embed)
             await chat.send(embed=embed)
-
-        last_match = False
-        if names[2] == "last":  # 最終マッチ
+        if names[2] == "auto":  # 自動入力モード
             del names[2]
-            last_match = True
-
     embed = Embed(title="処理中...")
     before_start = await bot_channel.send(embed=embed)  # 処理中パネル
     if len(names) == 2:  # 順番を抽選で決定（通常スタート）
@@ -75,7 +71,7 @@ async def battle(text: str, client: Client):
             return message.channel == bot_channel and bool(role_check)
         try:
             message = await client.wait_for('message', timeout=600, check=check)
-        except TimeoutError:
+        except asyncio.TimeoutError:
             await bot_channel.send("Error: timeout")
             return "battle_error"
         if message.content == "cancel":
@@ -115,7 +111,7 @@ async def battle(text: str, client: Client):
             return bool(role_check) and str(reaction.emoji) == '❌' and reaction.message == message
         try:
             _, _ = await client.wait_for('reaction_add', timeout=time, check=check)
-        except TimeoutError:
+        except asyncio.TimeoutError:
             pass
         else:  # このelseにかかったら絶対ここで終わらせる
             audio = PCMVolumeTransformer(FFmpegPCMAudio("timer_stop.mp3"))
@@ -163,35 +159,22 @@ async def battle(text: str, client: Client):
     if len(names) == 2:  # 通常スタート時
         embed.description += "\n`（抽選で決定されました）`"
         await chat.send(f"{names[0]}さん\n{names[1]}さん\n\nステージのスピーカーになってください。\nやり方がわからない場合はチャット欄にてお知らせください。こちらから招待を送信します。")
-    await chat.send(embed=embed)
-
-    embed.description += "\n- ▶️ スタート\n- ❌ キャンセル"
-    """if last_match is False:  # 最終マッチでない場合スキップ可
-        embed.description += "\n- ⏭️ このバトルをスキップ（最終マッチ後に自動追加されます）"
-    elif last_match is True:  # 最終マッチの場合スキップ不可
-        embed.description += "\n\n※最終マッチ（スキップしたバトルがある場合、この後開催されます）"""
     await before_start.edit(embed=embed)
+    await chat.send(embed=embed)
 
     # バトル開始ボタン
     await before_start.add_reaction("▶️")
     await before_start.add_reaction("❌")
-    """if last_match is False:  # 最終マッチでない場合スキップ可
-        await before_start.add_reaction("⏭️")"""
 
     def check(reaction, user):
-        stamps = ["▶️", "❌", "⏭️"]
+        stamps = ["▶️", "❌"]
         role_check = user.get_role(1096821566114902047)  # バトスタ運営
         return bool(role_check) and reaction.emoji in stamps and reaction.message == before_start
-
     reaction, _ = await client.wait_for('reaction_add', check=check)
     await before_start.clear_reactions()
-
-    if reaction.emoji == "❌":  # s.startの自動スタート中止
+    if reaction.emoji == "❌":
         await before_start.delete()
         return "battle_error"
-    if reaction.emoji == "⏭️":  # このバトルをスキップ（最終マッチ後に追加）
-        await before_start.delete()
-        return f"battle_reschedule {names[0]} vs {names[1]}"
 
     ##############################
     # いざ参らん
@@ -207,22 +190,16 @@ async def battle(text: str, client: Client):
     await chat.send(embed=embed)
     await sent_message.add_reaction("❌")  # タイマー停止ボタン
 
-    # 最初は4.8秒
-    battle_status = await timer(4.8, sent_message, voice_client, count)
-    if bool(battle_status):
-        return battle_status
-
-    # 4.8秒後ミュートしてるか確認
+    # ミュートしてない
     if all([bool(tari3210.voice), tari3210.voice.self_mute is False, tari3210.voice.suppress is False]):
         await chat.send(mute_right_now)
 
     if random_start == 1:
-        battle_status = await timer(4, sent_message, voice_client, count)
+        battle_status = await timer(9, sent_message, voice_client, count)
     else:
-        battle_status = await timer(6, sent_message, voice_client, count)
+        battle_status = await timer(11, sent_message, voice_client, count)
     if bool(battle_status):
         return battle_status
-
     embed = Embed(title="🔥🔥 3, 2, 1, Beatbox! 🔥🔥", color=0xff0000)
     await sent_message.edit(embed=embed)
     await chat.send(embed=embed)
@@ -311,6 +288,11 @@ async def battle(text: str, client: Client):
     await poll.add_reaction("1⃣")
     await poll.add_reaction("2⃣")
     await poll.add_reaction("🔥")
+    audio = PCMVolumeTransformer(FFmpegPCMAudio(
+        f"msn_{random.randint(1, 3)}.mp3"), volume=0.7)
+    audio.read()
+    await sleep(3.9)
+    chat.guild.voice_client.play(audio)
     await chat.send("make some noise for the battle!\ncome on!!", embed=embed_chat_info)
     return
 
@@ -474,39 +456,11 @@ async def start(client: Client):
     # マ イ ク チ ェ ッ ク を し ろ
     await maiku_check.send(f"{bs_role.mention}", embed=embed_maiku_check, delete_after=20)
 
-    ##############################
-    # バトル実行関数
-    ##############################
-
-    rescheduled_match = []  # スキップしたマッチ
-
-    async def execute_battle(names, client):
-        battle_status = await battle(names, client)
-        if battle_status == "battle_error":  # 異常終了
-            embed = Embed(
-                title="自動入力中止",
-                description="s.battleコマンド自動入力を中止します\n`s.battle [名前1] [名前2]` と入力してください",
-                color=0xff0000)
-            await bot_channel.send(embed=embed)
-            return "battle_error"
-
-        if battle_status.startswith("battle_reschedule"):  # バトルスキップ（最終マッチに追加する場合）
-            embed = Embed(
-                title=f"{names} をスキップします",
-                description=f"{names} は最終マッチの後に行います",
-                color=0x00bfff)
-            await bot_channel.send(embed=embed)
-            await chat.send(embed=embed)
-            rescheduled_match.append(
-                battle_status.replace("battle_reschedule ", ""))
-            return "battle_skip"
-        return
-
     # バトルループ
     for i in range(0, len(playerlist), 2):
         await sleep(3)
         try:
-            battle_status = await execute_battle(f"{playerlist[i]} {playerlist[i + 1]}", client)
+            battle_status = await battle(f"{playerlist[i]} {playerlist[i + 1]} auto", client)
         except IndexError:  # 参加者数が奇数のとき発生
             embed = Embed(
                 title="最終マッチを行います", description=f"参加者数が奇数だったため、これより\n{playerlist[-1]} vs `{playerlist[0]}(2回目)`\nを行う予定です。\n{playerlist[-1]} さんの対戦相手を変更しますか？\n\n⭕ 変更する\n❌ `{playerlist[-1]} vs {playerlist[0]} を行う`", color=0xffff00)
@@ -532,7 +486,7 @@ async def start(client: Client):
                     return message.channel == bot_channel and bool(role_check)
                 try:
                     message = await client.wait_for('message', timeout=600, check=check)
-                except TimeoutError:
+                except asyncio.TimeoutError:
                     await bot_channel.send("Error: timeout")
                     return
                 if message.content == "cancel":
@@ -540,42 +494,22 @@ async def start(client: Client):
                     return
                 last_player = message.content.replace(
                     "`", "").replace(" ", "-")
-
             if reaction.emoji == "❌":  # 変更しない
                 last_player = playerlist[0]
 
             # 最終マッチ開始
-            battle_status = await execute_battle(f"{playerlist[-1]} {last_player} last", client)
+            battle_status = await battle(f"{playerlist[-1]} {last_player} auto", client)
 
         if battle_status == "battle_error":  # 異常終了
-            return "battle_error"
-
-    ##############################
-    # スキップしたマッチを開催
-    # whileでひたすら回す
-    ##############################
-
-    while len(rescheduled_match) > 0:
-        current_matches = rescheduled_match.deepcopy()
-        embed = Embed(
-            title="スキップされたバトル",
-            description="これより、スキップされたバトルを開催します\n開催するバトルは以下の通りです",
-            color=0x00bfff)
-        for names in current_matches:
-            embed.description += f"\n- {names}"
-        await bot_channel.send(embed=embed)
-        await chat.send(embed=embed)
-        await pairing_channel.send(embed=embed)
-
-        for names in current_matches:
-            battle_status = await execute_battle(names, client)
-            rescheduled_match.remove(names)  # 1つ終わったら削除
-
-            if battle_status == "battle_error":  # 異常終了
-                return "battle_error"
+            embed = Embed(
+                title="自動入力中止",
+                description="s.battleコマンド自動入力を中止します\ns.battle [名前1] [名前2] と入力してください",
+                color=0xff0000)
+            await bot_channel.send(embed=embed)
+            return
 
     # すべてのバトル終了
-    embed = Embed(title="すべてのバトルが終了しました all battles are over",
+    embed = Embed(title="ラストMatchが終了しました",
                   description="ご参加ありがとうございました！\nmake some noise for all of amazing performance!!",
                   color=0x00bfff)
     await bot_channel.send(embed=embed)
@@ -585,30 +519,27 @@ async def start(client: Client):
     # 終了時刻が22:30以前
     if dt_now.time() < datetime.time(hour=22, minute=30):
         embed = Embed(title="BATTLE STADIUM エントリー再受付 開始ボタン",
-                      description="- ▶️ エントリー再受付開始\n- ❌ このメッセージを削除\n- 👋 バトスタ終了")
+                      description="▶️を押すとバトスタエントリー再受付を開始します")
         battle_stadium_restart = await bot_channel.send(embed=embed)
         await battle_stadium_restart.add_reaction("▶️")
         await battle_stadium_restart.add_reaction("❌")
-        await battle_stadium_restart.add_reaction("👋")
 
         def check(reaction, user):
-            stamps = ["▶️", "❌", "👋"]
+            stamps = ["▶️", "❌"]
             role_check = user.get_role(1096821566114902047)  # バトスタ運営
             return bool(role_check) and reaction.emoji in stamps and reaction.message == battle_stadium_restart
 
+        reaction, _ = await client.wait_for('reaction_add', check=check, timeout=600)
         try:
-            reaction, _ = await client.wait_for('reaction_add', check=check, timeout=600)
-            await battle_stadium_restart.delete()
+            await battle_stadium_restart.clear_reactions()
         except TimeoutError:  # 10分経過ならさよなら
+            return
+        if reaction.emoji == "❌":
             await battle_stadium_restart.delete()
-            return
-        if reaction.emoji == "❌":  # ❌ならさよなら
-            return
-        if reaction.emoji == "▶️":
-            await start(client)  # バトスタ再受付開始
-            return
+        await start(client)  # バトスタ再受付開始
+        return
 
-    # 終了時刻が22:30以降 or エントリー再受付しない
+    # 終了時刻が22:30以降
     # バトスタ終了ボタン
     embed = Embed(title="BATTLE STADIUMを終了しますか？",
                   description="- 👋 バトスタ終了\n- ❌ このメッセージを削除")
@@ -623,14 +554,15 @@ async def start(client: Client):
 
     try:
         reaction, _ = await client.wait_for('reaction_add', check=check, timeout=600)
-        await battle_stadium_end.delete()
     except TimeoutError:  # 10分経過なら処理終了
-        await battle_stadium_end.delete()
-        return
-    if reaction.emoji == "❌":  # ❌ならさよなら
-        return
+        pass
+    else:
+        if reaction.emoji == "❌":  # ❌ならさよなら
+            await battle_stadium_end.delete()
+            return
+    await battle_stadium_end.clear_reactions()
 
-    # ステージインスタンス終了
+    # 以下s.endと同じ処理
     scheduled_events = message.guild.scheduled_events
     for scheduled_event in scheduled_events:
         if scheduled_event.status == EventStatus.active and scheduled_event.name == "BATTLE STADIUM":
@@ -641,8 +573,12 @@ async def start(client: Client):
         pass
     else:
         await instance.delete()
+    await pairing_channel.purge()
+    for member in bs_role.members:
+        await member.remove_roles(bs_role)
 
-    # 次のバトスタ設定 datetimeだけ用意
+    # 2週間後のバトスタイベントを設定
+    # 以下s.bsと同じ処理
     weekday = dt_now.weekday()  # 今日の曜日を取得
     days_to_saturday = (5 - weekday) % 7  # 土曜日までの日数を計算
     dt_next = dt_now + timedelta(days=days_to_saturday + 14)  # 2週間後の土曜日を計算
@@ -662,28 +598,21 @@ async def start(client: Client):
         role_check = user.get_role(1096821566114902047)  # バトスタ運営
         return bool(role_check) and reaction.emoji in stamps and reaction.message == next_battle_stadium
 
-    try:
-        reaction, _ = await client.wait_for('reaction_add', check=check, timeout=600)
+    reaction, _ = await client.wait_for('reaction_add', check=check)
+    if reaction.emoji == "❌":  # ❌ならさよなら
         await next_battle_stadium.delete()
-    except TimeoutError:
-        await next_battle_stadium.delete()
-    else:
-        if reaction.emoji == "⭕":  # 2週間後のバトスタイベントを設定
-            # 以下s.bsと同じ処理
-            event = await message.guild.create_scheduled_event(
-                name="BATTLE STADIUM",
-                description="【エキシビションBeatboxバトルイベント】\n今週もやります！いつでも何回でも参加可能です。\nぜひご参加ください！\n観戦も可能です。観戦中、マイクがオンになることはありません。\n\n※エントリー受付・当日の進行はすべてbotが行います。\n※エントリー受付開始時間は、バトル開始1分前です。", start_time=dt_next_start,
-                end_time=dt_next_end,
-                channel=stage_channel,
-                privacy_level=PrivacyLevel.guild_only)
-            await bot_channel.send(f"イベント設定完了しました\n{event.url}")
-            await announce.send(file=File(f"battle_stadium_{random.randint(1, 3)}.gif"))
-            await announce.send(event.url)
-            await chat.send(file=File(f"battle_stadium_{random.randint(1, 3)}.gif"))
-            await chat.send(event.url)
+        return
+    await next_battle_stadium.clear_reactions()
 
-    # ここの後片付けは時間がかかるので最後にやる
-    await pairing_channel.purge()
-    for member in bs_role.members:
-        await member.remove_roles(bs_role)
+    # イベント設定
+    event = await message.guild.create_scheduled_event(name="BATTLE STADIUM",
+                                                       description="【エキシビションBeatboxバトルイベント】\n今週もやります！いつでも何回でも参加可能です。\nぜひご参加ください！\n観戦も可能です。観戦中、マイクがオンになることはありません。\n\n※エントリー受付・当日の進行はすべてbotが行います。\n※エントリー受付開始時間は、バトル開始1分前です。", start_time=dt_next_start,
+                                                       end_time=dt_next_end,
+                                                       channel=stage_channel,
+                                                       privacy_level=PrivacyLevel.guild_only)
+    await bot_channel.send(f"イベント設定完了しました\n{event.url}")
+    await announce.send(file=File(f"battle_stadium_{random.randint(1, 3)}.gif"))
+    await announce.send(event.url)
+    await chat.send(file=File(f"battle_stadium_{random.randint(1, 3)}.gif"))
+    await chat.send(event.url)
     return
