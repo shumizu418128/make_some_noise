@@ -1,6 +1,6 @@
 discord.py == 2.3.2
-pynacl
-flask
-waitress
-gspread_asyncio
-oauth2client
+pynacl == 1.5.0
+flask == 3.0.0
+waitress == 2.1.2
+gspread_asyncio == 1.9.0
+oauth2client == 4.1.3
