@@ -21,6 +21,7 @@ from search_next_event import search_next_event
 
 # from daily_work import daily_work
 
+# NOTE: ビト森杯運営機能搭載ファイル
 TOKEN = os.environ['DISCORD_BOT_TOKEN']
 intents = Intents.all()  # デフォルトのIntentsオブジェクトを生成
 intents.typing = False  # typingを受け取らないように
