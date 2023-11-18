@@ -7,6 +7,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from contact import contact_start, search_contact
 from entry import entry_cancel, modal_entry
 
+# NOTE: ビト森杯運営機能搭載ファイル
 JST = timezone(timedelta(hours=9))
 green = 0x00ff00
 yellow = 0xffff00
