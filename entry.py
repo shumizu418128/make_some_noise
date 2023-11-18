@@ -8,6 +8,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 
 from contact import contact_start, search_contact
 
+# NOTE: ビト森杯運営機能搭載ファイル
 re_hiragana = re.compile(r'^[ぁ-ゞ　 ー]+$')
 JST = timezone(timedelta(hours=9))
 green = 0x00ff00
