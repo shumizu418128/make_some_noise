@@ -166,17 +166,17 @@ async def battle(text: str, client: Client):
     await chat.send(embed=embed)
 
     embed.description += "\n- ▶️ スタート\n- ❌ キャンセル"
-    if last_match is False:  # 最終マッチでない場合スキップ可
+    """if last_match is False:  # 最終マッチでない場合スキップ可
         embed.description += "\n- ⏭️ このバトルをスキップ（最終マッチ後に自動追加されます）"
     elif last_match is True:  # 最終マッチの場合スキップ不可
-        embed.description += "\n\n※最終マッチ（スキップしたバトルがある場合、この後開催されます）"
+        embed.description += "\n\n※最終マッチ（スキップしたバトルがある場合、この後開催されます）"""
     await before_start.edit(embed=embed)
 
     # バトル開始ボタン
     await before_start.add_reaction("▶️")
     await before_start.add_reaction("❌")
-    if last_match is False:  # 最終マッチでない場合スキップ可
-        await before_start.add_reaction("⏭️")
+    """if last_match is False:  # 最終マッチでない場合スキップ可
+        await before_start.add_reaction("⏭️")"""
 
     def check(reaction, user):
         stamps = ["▶️", "❌", "⏭️"]
