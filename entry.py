@@ -63,6 +63,7 @@ class modal_entry(Modal):
             )
         )
 
+    # TODO: 動作テスト
     # モーダル提出後の処理
     async def on_submit(self, interaction: Interaction):
         await interaction.response.defer(ephemeral=True)
@@ -78,8 +79,8 @@ class modal_entry(Modal):
         # よみがなのひらがな判定
         if not re_hiragana.fullmatch(read):
             embed = Embed(
-                title="Error",
-                description=f"登録できませんでした。\nよみがなは、**「ひらがな・伸ばし棒** `ー` **のみ」**で入力してください\
+                title="❌ Error ❌",
+                description=f"エントリーに失敗しました。\nよみがなは、**「ひらがな・伸ばし棒** `ー` **のみ」** で入力してください\
                     \n\n入力したよみがな：{read}",
                 color=red
             )
@@ -173,6 +174,7 @@ class modal_entry(Modal):
         await contact_start(client=interaction.client, member=interaction.user, entry_redirect=True)
 
 
+# TODO: 動作テスト
 async def entry_cancel(member: Member):
     bot_channel = member.guild.get_channel(
         897784178958008322  # bot用チャット
