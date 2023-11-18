@@ -9,6 +9,7 @@ from oauth2client.service_account import ServiceAccountCredentials
 from contact import search_contact
 from entry import entry_cancel
 
+# NOTE: ビト森杯運営機能搭載ファイル
 JST = timezone(timedelta(hours=9))
 PM9 = time(21, 0, tzinfo=JST)
 green = 0x00ff00
