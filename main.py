@@ -1,21 +1,25 @@
 import os
 import random
 from asyncio import sleep
-from datetime import datetime, time, timedelta, timezone
+from datetime import datetime, timedelta, timezone
 
 import discord
 from discord import (Client, Embed, EventStatus, File, Intents, Interaction,
                      Member, Message, PrivacyLevel, VoiceState)
 from discord.errors import ClientException
-from discord.ext import tasks
 
+from advertise import advertise
 from battle_stadium import battle, start
-from button_callback import (button_call_admin, button_cancel, button_contact,
-                             button_entry, button_entry_confirm)
+from button_callback import (button_accept_replace, button_call_admin,
+                             button_cancel, button_contact, button_entry,
+                             button_entry_confirm)
+from contact import get_view_contact
 from gbb_countdown import gbb_countdown
 from keep_alive import keep_alive
 from natural_language import natural_language
 from search_next_event import search_next_event
+
+# from daily_work import daily_work
 
 TOKEN = os.environ['DISCORD_BOT_TOKEN']
 intents = Intents.all()  # デフォルトのIntentsオブジェクトを生成
@@ -24,50 +28,13 @@ client = Client(intents=intents)
 print(f"Make Some Noise! (server): {discord.__version__}")
 
 JST = timezone(timedelta(hours=9))
-PM9 = time(21, 0, tzinfo=JST)
-
-
-@tasks.loop(time=PM9)
-async def advertise():
-    channel = client.get_channel(864475338340171791)  # 全体チャット
-    # 次のイベント
-    next_event = await search_next_event(channel.guild.scheduled_events)
-    if bool(next_event) and next_event.name == "BATTLE STADIUM":  # バトスタの場合
-        # gif
-        await channel.send(file=File(f"battle_stadium_{random.randint(1, 3)}.gif"))
-    await channel.send(next_event.url)  # 次のイベントのURL送信
-    dt_now = datetime.now(JST)  # 現在時刻
-
-    # バトスタ開始まで35分以内の場合
-    if next_event.name == "BATTLE STADIUM" and next_event.start_time - dt_now < timedelta(minutes=35):
-        await sleep(29 * 60)  # 29分待機
-        embed = Embed(title="BATTLE STADIUM 開始ボタン",
-                      description="▶️を押すとバトスタを開始します")
-        bot_channel = client.get_channel(930447365536612353)  # バトスタbot
-        battle_stadium_start = await bot_channel.send(embed=embed)
-        await battle_stadium_start.add_reaction("▶️")
-        await battle_stadium_start.add_reaction("❌")
-
-        def check(reaction, user):
-            stamps = ["▶️", "❌"]
-            role_check = user.get_role(1096821566114902047)  # バトスタ運営
-            return bool(role_check) and reaction.emoji in stamps and reaction.message == battle_stadium_start
-        try:
-            # 10分待機
-            reaction, _ = await client.wait_for('reaction_add', check=check, timeout=600)
-            await battle_stadium_start.clear_reactions()
-        except TimeoutError:  # 10分経過ならさよなら
-            await battle_stadium_start.clear_reactions()
-            return
-        if reaction.emoji == "❌":  # ❌ならさよなら
-            await battle_stadium_start.delete()
-        await start(client)
-    return
 
 
 @client.event
 async def on_ready():  # 起動時に動作する処理
-    advertise.start()  # バトスタ宣伝
+    advertise.start(client)  # バトスタ宣伝、バトスタ開始ボタン
+    # TODO エントリー開始時、有効化
+    # daily_work.start(client)  # ビト森杯定期作業
     return
 
 
@@ -114,6 +81,10 @@ async def on_interaction(interaction: Interaction):
     if custom_id == "button_entry_confirm":
         await button_entry_confirm(interaction)
 
+    # 繰り上げエントリー
+    if custom_id == "button_accept_replace":
+        await button_accept_replace(interaction)
+
 
 @client.event
 async def on_voice_state_update(member: Member, before: VoiceState, after: VoiceState):
@@ -159,6 +130,10 @@ async def on_member_join(member: Member):
         await sleep(1)
         await channel.send(next_event.url)
 
+    # TODO エントリー開始時、有効化
+    """view = await get_view_contact(entry=True, confirm=False)
+    await channel.send("第3回ビト森杯", view=view)"""
+
 
 @client.event
 async def on_message(message: Message):
@@ -173,6 +148,23 @@ async def on_message(message: Message):
     if message.content == "s.test":
         await message.channel.send(f"{str(client.user)}\n{discord.__version__}")
         return
+
+    # TODO エントリー開始時、有効化
+    """if message.content == "s.loop":
+        await message.delete(delay=1)
+        announce = client.get_channel(
+            1035965200341401600  # ビト森杯 お知らせ
+        )
+        bot_notice_channel = client.get_channel(
+            916608669221806100  # ビト森杯 進行bot
+        )
+        contact = client.get_channel(
+            1035964918198960128  # 問い合わせ
+        )
+        view = await get_view_contact(entry=True)
+        await announce.send(view=view)
+        await bot_notice_channel.send(view=view)
+        await contact.send(view=view)"""
 
     # VS参加・退出
     if message.content == "s.join":
