@@ -49,7 +49,7 @@ async def search_contact(member: Member, create: bool = False, locale: str = "ja
     return thread
 
 
-async def get_view_contact(entry: bool):
+async def get_view_contact(entry: bool, confirm: bool = True):
     button_call_admin = Button(
         label="ビト森杯運営に問い合わせ",
         style=ButtonStyle.primary,
@@ -81,6 +81,8 @@ async def get_view_contact(entry: bool):
         view.add_item(button_cancel)
     else:  # エントリーしていない場合
         view.add_item(button_entry)
+    if confirm:  # 確認ボタンを表示する場合
+        view.add_item(button_entry_confirm)
     return view
 
 
