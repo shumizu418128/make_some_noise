@@ -41,6 +41,9 @@ async def on_ready():  # 起動時に動作する処理
 
 @client.event
 async def on_interaction(interaction: Interaction):
+    bot_channel = interaction.guild.get_channel(
+        897784178958008322  # bot用チャット
+    )
     custom_id = interaction.data["custom_id"]
 
     # interaction通知
@@ -52,9 +55,6 @@ async def on_interaction(interaction: Interaction):
     embed.set_author(
         name=interaction.user.display_name,
         icon_url=interaction.user.display_avatar.url
-    )
-    bot_channel = interaction.guild.get_channel(
-        897784178958008322  # bot用チャット
     )
     await bot_channel.send(f"{interaction.user.id}", embed=embed)
 
