@@ -68,6 +68,15 @@ class modal_entry(Modal):
     # モーダル提出後の処理
     async def on_submit(self, interaction: Interaction):
         await interaction.response.defer(ephemeral=True)
+        role = interaction.guild.get_role(
+            1036149651847524393  # ビト森杯
+        )
+        role_reserve = interaction.guild.get_role(
+            1172542396597289093  # キャンセル待ち ビト森杯
+        )
+        bot_channel = interaction.guild.get_channel(
+            897784178958008322  # bot用チャット
+        )
 
         # 入力内容を取得
         name = self.children[0].value
@@ -114,34 +123,42 @@ class modal_entry(Modal):
             await interaction.followup.send(embed=embed, ephemeral=True)
             return
 
-        role = interaction.guild.get_role(
-            1036149651847524393  # ビト森杯
-        )
-        role_reserve = interaction.guild.get_role(
-            1172542396597289093  # キャンセル待ち ビト森杯
-        )
-
         # エントリー数が上限に達している or キャンセル待ちリストに人がいる場合
         if len(role.members) >= 16 or len(role_reserve.members) > 0:
             await interaction.user.add_roles(role_reserve)
             embed = Embed(
                 title="キャンセル待ち登録",
-                description="エントリー数が上限に達しているため、キャンセル待ちリストに登録しました。",
+                description="参加者数が上限に達しているため、キャンセル待ちリストに登録しました。\n\n",
                 color=blue
             )
             entry_status = "キャンセル待ち"
 
-        # エントリー受付
+        # エントリー受付完了通知
         else:
             await interaction.user.add_roles(role)
             embed = Embed(
                 title="エントリー完了",
-                description="エントリー受付完了しました。",
+                description="エントリー受付完了しました。\n\n",
                 color=green
             )
             entry_status = "出場"
 
+        submission = f"受付内容\n- 名前: {name}\
+            \n- よみがな: {read}\n- 出場可否: {entry_status}\n- デバイス: {device}\n- 備考: {note}"
+        embed.description += submission
         await interaction.followup.send(embed=embed, ephemeral=True)
+
+        # 一応bot_channelにも通知
+        embed = Embed(
+            title="modal_entry",
+            description=submission,
+            color=blue
+        )
+        embed.set_author(
+            name=interaction.user.display_name,
+            icon_url=interaction.user.avatar.url
+        )
+        await bot_channel.send(f"{interaction.user.id}", embed=embed)
 
         # Google spreadsheet worksheet読み込み
         gc = gspread_asyncio.AsyncioGspreadClientManager(get_credits)
