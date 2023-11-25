@@ -106,6 +106,7 @@ async def button_contact(interaction: Interaction):
 
 # TODO: 動作テスト
 async def button_call_admin(interaction: Interaction):
+    await interaction.response.defer(ephemeral=True)
     contact = interaction.client.get_channel(
         1035964918198960128  # 問い合わせ
     )
@@ -133,61 +134,66 @@ async def button_call_admin(interaction: Interaction):
     # しゃべってよし
     await contact.set_permissions(interaction.user, send_messages_in_threads=True)
 
+    embed_entry_status = Embed(
+        title="エントリー状況",
+        description="エントリー済み"
+    )
+    # どちらのロールも持っている場合（異常なロール付与）
+    if all(role_check):
+        await bot_channel.send(f"{tari3210.mention}\nbutton_entry_check Error: 重複ロール付与\n\n{interaction.channel.jump_url}")
+
+    # エントリーしている
+    elif any(role_check):
+        # Google spreadsheet worksheet読み込み
+        gc = gspread_asyncio.AsyncioGspreadClientManager(get_credits)
+        agc = await gc.authorize()
+        # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
+        workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
+        worksheet = await workbook.worksheet('BATTLEエントリー名簿')
+
+        # DBから取得
+        cell_id = await worksheet.find(f'{interaction.user.id}')  # ユーザーIDで検索
+
+        if bool(cell_id):  # DB登録あり
+            # ユーザーIDの行の値を取得
+            cell_values = await worksheet.row_values(cell_id.row)
+            cell_values = cell_values[2:9]
+
+            if role_check[1]:  # キャンセル待ちの場合、何番目かを取得
+                # キャンセル待ちの順番最初の人を取得
+                cell_wait_first = await worksheet.find("キャンセル待ち", in_column=5)
+
+                # キャンセル待ちの順番を取得
+                cell_waitlist_position = cell_id.row - cell_wait_first.row + 1
+                cell_values[2] += f" {len(role_reserve)}人中 {cell_waitlist_position}番目"
+
+            embed_entry_status = Embed(
+                title=f"{interaction.user.display_name}さん エントリー状況 詳細",
+                description=f"- 名前: {cell_values[0]}\n- 読み: {cell_values[1]}\n- 出場可否: {cell_values[2]}\
+                    \n- デバイス: {cell_values[3]}\n- 備考: {cell_values[4]}\n- 受付時刻: {cell_values[5]}"
+            )
+        else:  # DB登録なし
+            await bot_channel.send(f"{tari3210.mention}\nbutton_entry_info Error: DB登録なし\n\n{interaction.channel.jump_url}")
+
+    # エントリーしていない
+    else:
+        embed_entry_status = Embed(
+            title="エントリー状況",
+            description=f"{interaction.user.display_name}さんはビト森杯にエントリーしていません。"
+        )
     embed = Embed(
         title="このチャンネルにご用件をご記入ください",
         description="運営メンバーが対応します",
         color=blue
     )
-    await interaction.response.send_message(f"{admin.mention}\n{interaction.user.mention}", embed=embed)
+    await interaction.followup.send(interaction.user.mention, embed=embed)
 
-    # どちらのロールも持っている場合（異常なロール付与）
-    if all(role_check):
-        await bot_channel.send(f"{tari3210.mention}\nbutton_entry_check Error: 重複ロール付与\n\n{interaction.channel.jump_url}")
-        return
+    # メッセージが来たら運営へ通知
+    def check(m):
+        return m.channel == contact and m.author == interaction.user
 
-    # エントリー状況確認（正常）
-    if not any(role_check):  # エントリーしていない
-        embed = Embed(
-            title="エントリー状況",
-            description=f"{interaction.user.display_name}さんはビト森杯にエントリーしていません。"
-        )
-        await interaction.channel.send(embed=embed)
-        return
-
-    # Google spreadsheet worksheet読み込み
-    gc = gspread_asyncio.AsyncioGspreadClientManager(get_credits)
-    agc = await gc.authorize()
-    # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
-    workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
-    worksheet = await workbook.worksheet('エントリー名簿')
-
-    # DBから取得
-    cell_id = await worksheet.find(f'{interaction.user.id}')  # ユーザーIDで検索
-
-    # DB登録なし
-    if bool(cell_id) is False:
-        await bot_channel.send(f"{tari3210.mention}\nbutton_entry_info Error: DB登録なし\n\n{interaction.channel.jump_url}")
-        return
-
-    # DB登録あり
-    cell_values = await worksheet.row_values(cell_id.row)  # ユーザーIDの行の値を取得
-    cell_values = cell_values[2:9]
-
-    if role_check[1]:  # キャンセル待ちの場合、何番目かを取得
-        # キャンセル待ちの順番最初の人を取得
-        cell_wait_first = await worksheet.find("キャンセル待ち", in_column=5)
-
-        # キャンセル待ちの順番を取得
-        cell_waitlist_position = cell_id.row - cell_wait_first.row + 1
-        cell_values[2] += f" {len(role_reserve)}人中 {cell_waitlist_position}番目"
-
-    embed = Embed(
-        title=f"{interaction.user.display_name}さん エントリー状況 詳細",
-        description=f"- 名前: {cell_values[0]}\n- 読み: {cell_values[1]}\n- 出場可否: {cell_values[2]}\
-            \n- デバイス: {cell_values[3]}\n- 備考: {cell_values[4]}\n- 受付時刻: {cell_values[5]}"
-    )
-    await interaction.channel.send(embed=embed)
-    return
+    msg = await interaction.client.wait_for('message', check=check)
+    await msg.reply(f"{admin.mention}\n{interaction.user.display_name}さんからの問い合わせ", embed=embed_entry_status, mention_author=False)
 
 
 # TODO: entry_cancelの動作テスト
@@ -314,7 +320,7 @@ async def button_entry_confirm(interaction: Interaction):
     agc = await gc.authorize()
     # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
     workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
-    worksheet = await workbook.worksheet('エントリー名簿')
+    worksheet = await workbook.worksheet('BATTLEエントリー名簿')
 
     # DBから取得
     cell_id = await worksheet.find(f'{interaction.user.id}')  # ユーザーIDで検索
@@ -378,7 +384,7 @@ async def button_accept_replace(interaction: Interaction):
     agc = await gc.authorize()
     # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
     workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
-    worksheet = await workbook.worksheet('エントリー名簿')
+    worksheet = await workbook.worksheet('BATTLEエントリー名簿')
 
     # DB更新
     cell_id = await worksheet.find(f'{interaction.user.id}')  # ユーザーIDで検索

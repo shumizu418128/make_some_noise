@@ -47,7 +47,7 @@ async def maintenance(client: Client):
     agc = await gc.authorize()
     # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
     workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
-    worksheet = await workbook.worksheet('エントリー名簿')
+    worksheet = await workbook.worksheet('BATTLEエントリー名簿')
 
     # 各種データ取得
     tari3210 = bot_channel.guild.get_member(
@@ -137,7 +137,7 @@ async def replacement_expire(client: Client):
     agc = await gc.authorize()
     # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
     workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
-    worksheet = await workbook.worksheet('エントリー名簿')
+    worksheet = await workbook.worksheet('BATTLEエントリー名簿')
 
     values_replacement_deadlines = await worksheet.col_values(10)  # 繰り上げ手続き締切
     values_replacement_deadlines = [
@@ -215,7 +215,7 @@ async def entry_replacement(client: Client):
     agc = await gc.authorize()
     # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
     workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
-    worksheet = await workbook.worksheet('エントリー名簿')
+    worksheet = await workbook.worksheet('BATTLEエントリー名簿')
 
     values_status = await worksheet.col_values(5)  # 出場可否
     values_status = [
@@ -303,7 +303,7 @@ async def entry_list_update(client: Client):
     )
     dt_now = datetime.now(JST)
 
-    entry_list = [member.display_name for member in role.members]   # エントリー名簿
+    entry_list = [member.display_name for member in role.members]
     embed = Embed(
         title="参加者一覧",
         description="\n".join(entry_list),

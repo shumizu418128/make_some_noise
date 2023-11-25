@@ -165,7 +165,7 @@ class modal_entry(Modal):
         agc = await gc.authorize()
         # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
         workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
-        worksheet = await workbook.worksheet('エントリー名簿')
+        worksheet = await workbook.worksheet('BATTLEエントリー名簿')
 
         # エントリー数を更新
         num_entries = await worksheet.cell(row=3, col=1)
@@ -236,7 +236,7 @@ async def entry_cancel(member: Member):
     agc = await gc.authorize()
     # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
     workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
-    worksheet = await workbook.worksheet('エントリー名簿')
+    worksheet = await workbook.worksheet('BATTLEエントリー名簿')
 
     # DBから削除
     cell_id = await worksheet.find(f'{member.id}')
