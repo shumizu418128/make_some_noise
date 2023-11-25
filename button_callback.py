@@ -29,6 +29,7 @@ def get_credits():
          'https://www.googleapis.com/auth/spreadsheets'])
 
 
+# TODO: すでに片方にエントリーしている場合の動作を実装（モーダル省略）
 async def button_entry(interaction: Interaction):
     dt_now = datetime.now(JST)
     dt_entry_start = datetime(
@@ -52,7 +53,7 @@ async def button_entry(interaction: Interaction):
 
     # 日本からのエントリー
     if locale == "ja":
-        await interaction.response.send_modal(modal_entry(interaction.user.display_name))
+        await interaction.response.send_modal(modal_entry(interaction.user.display_name, "bitomori"))
         return
 
     # 海外からのエントリー
