@@ -87,6 +87,7 @@ async def get_view_contact(entry: bool, confirm: bool = True):
     return view
 
 
+# TODO: OLEB実装
 async def contact_start(client: Client, member: Member, entry_redirect: bool = False):
     # 問い合わせスレッドを取得 リダイレクトならスレッド作成
     thread = await search_contact(member, create=entry_redirect)
@@ -99,6 +100,14 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
     admin = thread.guild.get_role(
         904368977092964352  # ビト森杯運営
     )
+    role_check = [
+        member.get_role(
+            1036149651847524393  # ビト森杯
+        ),
+        member.get_role(
+            1172542396597289093  # キャンセル待ち ビト森杯
+        )
+    ]
     locale = thread.name.split("_")[1]  # スレッド名からlocaleを取得
 
     # 最初は喋るな
@@ -112,14 +121,6 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
                 \n\nこれらの内容を必ずご確認ください。もし、ご質問がありましたら\n「ビト森杯運営に問い合わせ」ボタンを押してください。運営が対応します。",
             color=yellow
         )
-        role_check = [
-            member.get_role(
-                1036149651847524393  # ビト森杯
-            ),
-            member.get_role(
-                1172542396597289093  # キャンセル待ち ビト森杯
-            )
-        ]
         if any(role_check):  # エントリーしている場合
             view = await get_view_contact(entry=True)
         else:  # エントリーしていない場合

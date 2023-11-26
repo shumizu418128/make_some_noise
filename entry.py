@@ -68,6 +68,30 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
     # モーダル提出後の処理
     async def on_submit(self, interaction: Interaction):
         await interaction.response.defer(ephemeral=True)
+        role = interaction.guild.get_role(
+            1036149651847524393  # ビト森杯
+        )
+        role_reserve = interaction.guild.get_role(
+            1172542396597289093  # キャンセル待ち ビト森杯
+        )
+        role_exhibition = interaction.guild.get_role(
+            1171760161778581505  # エキシビション
+        )
+        bot_channel = interaction.guild.get_channel(
+            897784178958008322  # bot用チャット
+        )
+        # ビト森杯エントリー済みかどうか確認
+        role_check = [
+            interaction.user.get_role(
+                1036149651847524393  # ビト森杯
+            ),
+            interaction.user.get_role(
+                1172542396597289093  # キャンセル待ち ビト森杯
+            ),
+            interaction.user.get_role(
+                1171760161778581505  # エキシビション
+            )
+        ]
         category = self.custom_id.split("_")[1]  # "bitomori" or "exhibition"
 
         # 入力内容を取得
@@ -77,6 +101,9 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
         note = self.children[3].value
         if note == "":  # 備考が空欄の場合
             note = "なし"  # なしと記載
+
+        bitomori_entry_status = ""
+        exhibition_entry_status = ""
 
         # よみがなのひらがな判定
         if not re_hiragana.fullmatch(read):
@@ -89,210 +116,132 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
             await interaction.followup.send(embed=embed, ephemeral=True)
             return
 
-        # エントリー処理（初めてのエントリー前提）
-        if category == "bitomori":
-            await entry_bitomori(
-                interaction=interaction,
-                name=name,
-                read=read,
-                device=device,
-                note=note
+        # ビト森杯エントリー済み
+        if role_check[0] and category == "bitomori":
+            embed = Embed(
+                title="エントリー済み",
+                description="ビト森杯\nすでにエントリー済みです。",
+                color=red
             )
+            await interaction.followup.send(embed=embed, ephemeral=True)
+            return
+
+        # ビト森杯キャンセル待ち登録済み
+        if role_check[1] and category == "bitomori":
+            embed = Embed(
+                title="キャンセル待ち登録済み",
+                description="すでにビト森杯キャンセル待ち登録済みです。",
+                color=red
+            )
+            await interaction.followup.send(embed=embed, ephemeral=True)
+            return
+
+        # エキシビションエントリー済み
+        if role_check[2] and category == "exhibition":
+            embed = Embed(
+                title="エントリー済み",
+                description="Online Loopstation Exhibition Battle\nすでにエントリー済みです。",
+                color=red
+            )
+            await interaction.followup.send(embed=embed, ephemeral=True)
+            return
+
+        # エントリー数が上限に達している or キャンセル待ちリストに人がいる場合
+        if any([len(role.members) >= 16, len(role_reserve.members) > 0]) and category == "bitomori":
+            await interaction.user.add_roles(role_reserve)
+            embed = Embed(
+                title="キャンセル待ち登録",
+                description="参加者数が上限に達しているため、キャンセル待ちリストに登録しました。\n\n",
+                color=blue
+            )
+            bitomori_entry_status = "キャンセル待ち"
+
+        # ビト森杯エントリー受付完了通知
+        elif category == "bitomori":
+            await interaction.user.add_roles(role)
+            embed = Embed(
+                title="エントリー完了",
+                description="エントリー受付完了しました。\n\n",
+                color=green
+            )
+            bitomori_entry_status = "出場"
+
+        # エキシビションエントリー受付完了通知
         elif category == "exhibition":
-            await entry_exhibition(
-                interaction=interaction,
-                name=name,
-                read=read,
-                device=device,
-                note=note
+            await interaction.user.add_roles(role_exhibition)
+            embed = Embed(
+                title="エントリー完了",
+                description="エントリー受付完了しました。\n\n",
+                color=green
             )
+            exhibition_entry_status = "参加"
 
-
-# TODO: 動作テスト
-async def entry_bitomori(interaction: Interaction, name: str, read: str, device: str, note: str):
-    role = interaction.guild.get_role(
-        1036149651847524393  # ビト森杯
-    )
-    role_reserve = interaction.guild.get_role(
-        1172542396597289093  # キャンセル待ち ビト森杯
-    )
-    bot_channel = interaction.guild.get_channel(
-        897784178958008322  # bot用チャット
-    )
-    # ビト森杯エントリー済みかどうか確認
-    role_check = [
-        interaction.user.get_role(
-            1036149651847524393  # ビト森杯
-        ),
-        interaction.user.get_role(
-            1172542396597289093  # キャンセル待ち ビト森杯
-        )
-    ]
-    if role_check[0]:  # ビト森杯エントリー済み
-        embed = Embed(
-            title="エントリー済み",
-            description="既にエントリー済みです。",
-            color=red
-        )
+        submission = f"受付内容\n- 名前: {name}\
+            \n- よみがな: {read}\n- デバイス: {device}\n- 備考: {note}"
+        embed.description += submission
         await interaction.followup.send(embed=embed, ephemeral=True)
-        return
-    if role_check[1]:  # ビト森杯キャンセル待ち登録済み
-        embed = Embed(
-            title="キャンセル待ち登録済み",
-            description="既にキャンセル待ち登録済みです。",
-            color=red
-        )
-        await interaction.followup.send(embed=embed, ephemeral=True)
-        return
 
-    # エントリー数が上限に達している or キャンセル待ちリストに人がいる場合
-    if len(role.members) >= 16 or len(role_reserve.members) > 0:
-        await interaction.user.add_roles(role_reserve)
+        # 一応bot_channelにも通知
         embed = Embed(
-            title="キャンセル待ち登録",
-            description="参加者数が上限に達しているため、キャンセル待ちリストに登録しました。\n\n",
+            title=f"modal_entry_{category}",
+            description=submission,
             color=blue
         )
-        entry_status = "キャンセル待ち"
-
-    # エントリー受付完了通知
-    else:
-        await interaction.user.add_roles(role)
-        embed = Embed(
-            title="エントリー完了",
-            description="エントリー受付完了しました。\n\n",
-            color=green
+        embed.set_author(
+            name=interaction.user.display_name,
+            icon_url=interaction.user.avatar.url
         )
-        entry_status = "出場"
+        await bot_channel.send(f"{interaction.user.id}", embed=embed)
 
-    submission = f"受付内容\n- 名前: {name}\
-        \n- よみがな: {read}\n- 出場可否: {entry_status}\n- デバイス: {device}\n- 備考: {note}"
-    embed.description += submission
-    await interaction.followup.send(embed=embed, ephemeral=True)
+        # Google spreadsheet worksheet読み込み
+        gc = gspread_asyncio.AsyncioGspreadClientManager(get_credits)
+        agc = await gc.authorize()
+        # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
+        workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
+        worksheet = await workbook.worksheet('エントリー名簿')
 
-    # 一応bot_channelにも通知
-    embed = Embed(
-        title="modal_entry",
-        description=submission,
-        color=blue
-    )
-    embed.set_author(
-        name=interaction.user.display_name,
-        icon_url=interaction.user.avatar.url
-    )
-    await bot_channel.send(f"{interaction.user.id}", embed=embed)
+        # エントリー数を更新
+        num_entries = await worksheet.cell(row=3, col=1)
+        num_entries.value = int(num_entries.value) + 1
+        await worksheet.update_cell(row=3, col=1, value=num_entries.value)
 
-    # Google spreadsheet worksheet読み込み
-    gc = gspread_asyncio.AsyncioGspreadClientManager(get_credits)
-    agc = await gc.authorize()
-    # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
-    workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
-    worksheet = await workbook.worksheet('BATTLEエントリー名簿')
+        # エントリー情報を書き込み
+        row = int(num_entries.value) + 1
+        values = [
+            name,
+            read,
+            bitomori_entry_status,
+            exhibition_entry_status,
+            device,
+            note,
+            str(datetime.now(JST).strftime("%Y-%m-%d %H:%M:%S")),
+            str(interaction.user.id)
+        ]
+        for col, value in zip(range(3, 11), values):
+            await worksheet.update_cell(row=row, col=col, value=value)
 
-    # エントリー数を更新
-    num_entries = await worksheet.cell(row=3, col=1)
-    num_entries.value = int(num_entries.value) + 1
-    await worksheet.update_cell(row=3, col=1, value=num_entries.value)
-
-    # エントリー情報を書き込み
-    row = int(num_entries.value) + 1
-    values = [
-        name,
-        read,
-        entry_status,
-        device,
-        note,
-        str(datetime.now(JST).strftime("%Y-%m-%d %H:%M:%S")),
-        str(interaction.user.id)
-    ]
-    for col, value in zip(range(3, 10), values):
-        await worksheet.update_cell(row=row, col=col, value=value)
-
-    # ニックネームを更新
-    await interaction.user.edit(nick=name)
-    await contact_start(client=interaction.client, member=interaction.user, entry_redirect=True)
+        # ニックネームを更新
+        await interaction.user.edit(nick=name)
+        await contact_start(client=interaction.client, member=interaction.user, entry_redirect=True)
 
 
 # TODO: 動作テスト
-async def entry_exhibition(interaction: Interaction, name: str, read: str, device: str, note: str):
-    role_exhibition = interaction.guild.get_role(
-        1171760161778581505  # エキシビション
-    )
-    role_check = interaction.user.get_role(
-        1171760161778581505  # エキシビション
-    )
-    bot_channel = interaction.guild.get_channel(
-        897784178958008322  # bot用チャット
-    )
-    if role_check:  # エキシビションエントリー済み
-        embed = Embed(
-            title="エントリー済み",
-            description="既にエントリー済みです。",
-            color=red
-        )
-        await interaction.followup.send(embed=embed, ephemeral=True)
-        return
-
-    await interaction.user.add_roles(role_exhibition)
-    embed = Embed(
-        title="エントリー完了",
-        description="エントリー受付完了しました。\n\n",
-        color=green
-    )
-    submission = f"受付内容\n- 名前: {name}\
-        \n- よみがな: {read}\n- デバイス: {device}\n- 備考: {note}"
-    embed.description += submission
-    await interaction.followup.send(embed=embed, ephemeral=True)
-
-    # 一応bot_channelにも通知
-    embed = Embed(
-        title="modal_entry_exhibition",
-        description=submission,
-        color=blue
-    )
-    embed.set_author(
-        name=interaction.user.display_name,
-        icon_url=interaction.user.avatar.url
-    )
-    await bot_channel.send(f"{interaction.user.id}", embed=embed)
-
-    # Google spreadsheet worksheet読み込み
-    gc = gspread_asyncio.AsyncioGspreadClientManager(get_credits)
-    agc = await gc.authorize()
-    # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
-    workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
-    worksheet = await workbook.worksheet('エキシビションエントリー名簿')
-
-    # エントリー数を更新
-    num_entries = await worksheet.cell(row=3, col=1)
-    num_entries.value = int(num_entries.value) + 1
-    await worksheet.update_cell(row=3, col=1, value=num_entries.value)
-
-    # エントリー情報を書き込み
-    row = int(num_entries.value) + 1
-    values = [
-        name,
-        read,
-        device,
-        note,
-        str(datetime.now(JST).strftime("%Y-%m-%d %H:%M:%S")),
-        str(interaction.user.id)
-    ]
-    for col, value in zip(range(3, 9), values):
-        await worksheet.update_cell(row=row, col=col, value=value)
-
-    # ニックネームを更新
-    await interaction.user.edit(nick=name)
-    await contact_start(client=interaction.client, member=interaction.user, entry_redirect=True)
-
-
-# TODO: 動作テスト
-async def entry_cancel(member: Member):
+# TODO: OLEB実装
+async def entry_cancel(member: Member, category: str):
     bot_channel = member.guild.get_channel(
         897784178958008322  # bot用チャット
     )
     tari3210 = member.guild.get_member(
         412082841829113877
+    )
+    role = member.guild.get_role(
+        1036149651847524393  # ビト森杯
+    )
+    role_reserve = member.guild.get_role(
+        1172542396597289093  # キャンセル待ち ビト森杯
+    )
+    role_exhibition = member.guild.get_role(
+        1171760161778581505  # エキシビション
     )
     # 問い合わせスレッドを取得
     thread = await search_contact(member=member)
@@ -308,34 +257,38 @@ async def entry_cancel(member: Member):
 
     role_check = [
         member.get_role(
-            1036149651847524393),  # ビト森杯
+            1036149651847524393  # ビト森杯
+        ),
         member.get_role(
-            1172542396597289093)   # キャンセル待ち ビト森杯
+            1172542396597289093  # キャンセル待ち ビト森杯
+        ),
+        member.get_role(
+            1171760161778581505  # エキシビション
+        )
     ]
 
     # ロール削除
-    if role_check[0]:  # ビト森杯
-        role = member.guild.get_role(
-            1036149651847524393  # ビト森杯
-        )
+    if role_check[0] and category == "bitomori":  # ビト森杯
         await member.remove_roles(role)
-    if role_check[1]:  # キャンセル待ち ビト森杯
-        role_reserve = member.guild.get_role(
-            1172542396597289093  # キャンセル待ち ビト森杯
-        )
+
+    elif role_check[1] and category == "bitomori":  # キャンセル待ち ビト森杯
         await member.remove_roles(role_reserve)
+
+    elif role_check[2] and category == "exhibition":  # エキシビション
+        await member.remove_roles(role_exhibition)
 
     # Google spreadsheet worksheet読み込み
     gc = gspread_asyncio.AsyncioGspreadClientManager(get_credits)
     agc = await gc.authorize()
     # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
     workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
-    worksheet = await workbook.worksheet('BATTLEエントリー名簿')
+    worksheet = await workbook.worksheet('エントリー名簿')
 
-    # DBから削除
+    # DBのセルを特定
     cell_id = await worksheet.find(f'{member.id}')
+
     if bool(cell_id):  # DB登録あり
-        for i in range(3, 10):
+        for i in range(3, 12):
             await worksheet.update_cell(cell_id.row, i, '')
     else:  # DB登録なし
         await bot_channel.send(f"{tari3210.mention}\nError: DB登録なし\nキャンセル作業中止\n\n{thread.jump_url}")
@@ -343,7 +296,7 @@ async def entry_cancel(member: Member):
 
     # 通知
     embed = Embed(
-        title="エントリーキャンセル",
+        title=f"キャンセル実行 {category}",
         description=thread.jump_url,
         color=blue
     )

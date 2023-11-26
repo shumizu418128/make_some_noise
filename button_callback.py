@@ -93,6 +93,9 @@ async def button_entry(interaction: Interaction):
         await contact_start(client=interaction.client, member=interaction.user, entry_redirect=True)
 
 
+# TODO: button_entry_OLEB 実装
+
+
 async def button_contact(interaction: Interaction):
     await interaction.response.defer(ephemeral=True)
     thread = await search_contact(member=interaction.user, create=True, locale=str(interaction.locale))
@@ -106,6 +109,7 @@ async def button_contact(interaction: Interaction):
 
 
 # TODO: 動作テスト
+# TODO: OLEB実装
 async def button_call_admin(interaction: Interaction):
     await interaction.response.defer(ephemeral=True)
     contact = interaction.client.get_channel(
@@ -129,28 +133,33 @@ async def button_call_admin(interaction: Interaction):
         ),
         interaction.user.get_role(
             1172542396597289093  # キャンセル待ち ビト森杯
+        ),
+        interaction.user.get_role(
+            1171760161778581505  # エキシビション
         )
     ]
 
     # しゃべってよし
     await contact.set_permissions(interaction.user, send_messages_in_threads=True)
 
-    embed_entry_status = Embed(
-        title="エントリー状況",
-        description="エントリー済み"
-    )
-    # どちらのロールも持っている場合（異常なロール付与）
-    if all(role_check):
+    # ビト森杯のどちらのロールも持っている場合（異常なロール付与）
+    if role_check[0] and role_check[1]:
         await bot_channel.send(f"{tari3210.mention}\nbutton_entry_check Error: 重複ロール付与\n\n{interaction.channel.jump_url}")
 
-    # エントリーしている
-    elif any(role_check):
+    joined_category = ""
+    if role_check[0] or role_check[1]:  # ビト森杯にエントリーしている場合
+        joined_category += "ビト森杯 "
+    if role_check[2]:  # エキシビションにエントリーしている場合
+        joined_category += "OLEB"
+
+    # 何かしらエントリーしている
+    if any(role_check):
         # Google spreadsheet worksheet読み込み
         gc = gspread_asyncio.AsyncioGspreadClientManager(get_credits)
         agc = await gc.authorize()
         # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
         workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
-        worksheet = await workbook.worksheet('BATTLEエントリー名簿')
+        worksheet = await workbook.worksheet('エントリー名簿')
 
         # DBから取得
         cell_id = await worksheet.find(f'{interaction.user.id}')  # ユーザーIDで検索
@@ -169,35 +178,32 @@ async def button_call_admin(interaction: Interaction):
                 cell_values[2] += f" {len(role_reserve)}人中 {cell_waitlist_position}番目"
 
             embed_entry_status = Embed(
-                title=f"{interaction.user.display_name}さん エントリー状況 詳細",
-                description=f"- 名前: {cell_values[0]}\n- 読み: {cell_values[1]}\n- 出場可否: {cell_values[2]}\
-                    \n- デバイス: {cell_values[3]}\n- 備考: {cell_values[4]}\n- 受付時刻: {cell_values[5]}"
+                title="エントリー情報詳細",
+                description=f"- 出場するイベント: {joined_category}\n- 名前: {cell_values[0]}\n- 読み: {cell_values[1]}\
+                    \n- ビト森杯出場可否: {cell_values[2]}\n- デバイス: {cell_values[3]}\n- 備考: {cell_values[4]}"
             )
+            await interaction.channel.send(embed=embed_entry_status)
         else:  # DB登録なし
             await bot_channel.send(f"{tari3210.mention}\nbutton_entry_info Error: DB登録なし\n\n{interaction.channel.jump_url}")
 
-    # エントリーしていない
-    else:
-        embed_entry_status = Embed(
-            title="エントリー状況",
-            description=f"{interaction.user.display_name}さんはビト森杯にエントリーしていません。"
-        )
     embed = Embed(
         title="このチャンネルにご用件をご記入ください",
-        description="運営メンバーが対応します",
+        description="運営が対応します",
         color=blue
     )
     await interaction.followup.send(interaction.user.mention, embed=embed)
+    await interaction.channel.send("↓↓↓ このチャットにご記入ください ↓↓↓")
 
     # メッセージが来たら運営へ通知
     def check(m):
         return m.channel == contact and m.author == interaction.user
 
     msg = await interaction.client.wait_for('message', check=check)
-    await msg.reply(f"{admin.mention}\n{interaction.user.display_name}さんからの問い合わせ", embed=embed_entry_status, mention_author=False)
+    await msg.reply(f"{admin.mention}\n{interaction.user.display_name}さんからの問い合わせ", mention_author=False)
 
 
 # TODO: entry_cancelの動作テスト
+# TODO: OLEB実装
 async def button_cancel(interaction: Interaction):
     await interaction.response.defer(ephemeral=True)
     contact = interaction.client.get_channel(
@@ -257,6 +263,7 @@ async def button_cancel(interaction: Interaction):
 
 
 # TODO: 動作テスト
+# TODO: OLEB実装
 async def button_entry_confirm(interaction: Interaction):
     await interaction.response.defer(ephemeral=True)
     contact = interaction.client.get_channel(
@@ -277,6 +284,9 @@ async def button_entry_confirm(interaction: Interaction):
         ),
         interaction.user.get_role(
             1172542396597289093  # キャンセル待ち ビト森杯
+        ),
+        interaction.user.get_role(
+            1171760161778581505  # エキシビション
         )
     ]
 
@@ -284,7 +294,7 @@ async def button_entry_confirm(interaction: Interaction):
     await contact.set_permissions(interaction.user, send_messages_in_threads=False)
 
     # どちらのロールも持っている場合（異常なロール付与）
-    if all(role_check):
+    if role_check[0] and role_check[1]:
         embed = Embed(
             title="エントリー状況照会",
             description="Error: 運営が対処しますので、しばらくお待ちください。",
@@ -295,7 +305,7 @@ async def button_entry_confirm(interaction: Interaction):
         return
 
     # エントリー状況確認（正常）
-    if not any(role_check):  # エントリーしていない
+    if any(role_check) is False:  # エントリーしていない
         embed = Embed(
             title="エントリー状況照会",
             description=f"{interaction.user.display_name}さんはビト森杯にエントリーしていません。"
@@ -321,7 +331,7 @@ async def button_entry_confirm(interaction: Interaction):
     agc = await gc.authorize()
     # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
     workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
-    worksheet = await workbook.worksheet('BATTLEエントリー名簿')
+    worksheet = await workbook.worksheet('エントリー名簿')
 
     # DBから取得
     cell_id = await worksheet.find(f'{interaction.user.id}')  # ユーザーIDで検索
@@ -357,6 +367,7 @@ async def button_entry_confirm(interaction: Interaction):
     await interaction.channel.send(embed=embed)
 
 
+# TODO: OLEBに対応した実装
 async def button_accept_replace(interaction: Interaction):
     await interaction.response.defer(ephemeral=True)
     role = interaction.guild.get_role(
@@ -385,7 +396,7 @@ async def button_accept_replace(interaction: Interaction):
     agc = await gc.authorize()
     # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
     workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
-    worksheet = await workbook.worksheet('BATTLEエントリー名簿')
+    worksheet = await workbook.worksheet('エントリー名簿')
 
     # DB更新
     cell_id = await worksheet.find(f'{interaction.user.id}')  # ユーザーIDで検索

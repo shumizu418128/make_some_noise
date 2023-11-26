@@ -33,6 +33,7 @@ def get_credits():
 
 
 # TODO: 動作テスト
+# TODO: OLEBに対応した実装
 async def maintenance(client: Client):
     bot_channel = client.get_channel(
         897784178958008322  # bot用チャット
@@ -47,7 +48,7 @@ async def maintenance(client: Client):
     agc = await gc.authorize()
     # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
     workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
-    worksheet = await workbook.worksheet('BATTLEエントリー名簿')
+    worksheet = await workbook.worksheet('エントリー名簿')
 
     # 各種データ取得
     tari3210 = bot_channel.guild.get_member(
@@ -128,6 +129,7 @@ async def maintenance(client: Client):
 
 
 # TODO: 動作テスト
+# TODO: OLEBに対応した実装
 async def replacement_expire(client: Client):
     bot_channel = client.get_channel(
         897784178958008322  # bot用チャット
@@ -137,7 +139,7 @@ async def replacement_expire(client: Client):
     agc = await gc.authorize()
     # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
     workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
-    worksheet = await workbook.worksheet('BATTLEエントリー名簿')
+    worksheet = await workbook.worksheet('エントリー名簿')
 
     values_replacement_deadlines = await worksheet.col_values(10)  # 繰り上げ手続き締切
     values_replacement_deadlines = [
@@ -195,8 +197,9 @@ async def get_view_replacement():
 
 
 # TODO: 動作テスト
+# TODO: OLEBに対応した実装
 # 繰り上げ手続きは毎日21時に実行
-async def entry_replacement(client: Client):
+async def replacement(client: Client):
     bot_channel = client.get_channel(
         897784178958008322  # bot用チャット
     )
@@ -215,7 +218,7 @@ async def entry_replacement(client: Client):
     agc = await gc.authorize()
     # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
     workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
-    worksheet = await workbook.worksheet('BATTLEエントリー名簿')
+    worksheet = await workbook.worksheet('エントリー名簿')
 
     values_status = await worksheet.col_values(5)  # 出場可否
     values_status = [
@@ -318,5 +321,5 @@ async def entry_list_update(client: Client):
 async def daily_work(client: Client):
     await maintenance(client)
     await replacement_expire(client)
-    await entry_replacement(client)
+    await replacement(client)
     await entry_list_update(client)
