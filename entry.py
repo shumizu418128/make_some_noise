@@ -92,7 +92,7 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
                 1171760161778581505  # エキシビション
             )
         ]
-        category = self.custom_id.split("_")[1]  # "bitomori" or "exhibition"
+        category = self.custom_id.split("_")[2]  # "bitomori" or "exhibition"
 
         # 入力内容を取得
         name = self.children[0].value
@@ -271,10 +271,10 @@ async def entry_cancel(member: Member, category: str):
     if role_check[0] and category == "bitomori":  # ビト森杯
         await member.remove_roles(role)
 
-    elif role_check[1] and category == "bitomori":  # キャンセル待ち ビト森杯
+    if role_check[1] and category == "bitomori":  # キャンセル待ち ビト森杯
         await member.remove_roles(role_reserve)
 
-    elif role_check[2] and category == "exhibition":  # エキシビション
+    if role_check[2] and category == "exhibition":  # エキシビション
         await member.remove_roles(role_exhibition)
 
     # Google spreadsheet worksheet読み込み

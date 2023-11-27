@@ -30,6 +30,8 @@ def get_credits():
 
 
 # TODO: すでに片方にエントリーしている場合の動作を実装（モーダル省略）
+# ビト森杯のエントリーフォーム
+# OLEBは別途実装
 async def button_entry(interaction: Interaction):
     dt_now = datetime.now(JST)
     dt_entry_start = datetime(
@@ -56,44 +58,44 @@ async def button_entry(interaction: Interaction):
         await interaction.response.send_modal(modal_entry(interaction.user.display_name, "bitomori"))
         return
 
+    await interaction.response.defer(ephemeral=True)
+
     # 海外からのエントリー
-    else:
-        await interaction.response.defer(ephemeral=True)
-        thread = await search_contact(member=interaction.user, create=True, locale=str(interaction.locale))
+    thread = await search_contact(member=interaction.user, create=True, locale=str(interaction.locale))
 
-        if str(interaction.locale) == "zh-TW":  # 台湾
-            embed = Embed(
-                title="contact required: access from overseas",
-                description=f"錯誤：請點一下 {thread.mention} 聯係我們\
-                    \nお手数ですが {thread.mention} までお問い合わせください。",
-                color=red
-            )
-        elif str(interaction.locale) == "zh-CN":  # 中国
-            embed = Embed(
-                title="contact required: access from overseas",
-                description=f"错误：请点击 {thread.mention} 联系我们\
-                    \nお手数ですが {thread.mention} までお問い合わせください。",
-                color=red
-            )
-        elif str(interaction.locale) == "ko":  # 韓国
-            embed = Embed(
-                title="contact required: access from overseas",
-                description=f"문의는 {thread.mention} 로 보내주세요\
-                    \nお手数ですが {thread.mention} までお問い合わせください。",
-                color=red
-            )
-        else:  # 英語
-            embed = Embed(
-                title="contact required: access from overseas",
-                description=f"please contact us via {thread.mention}\
-                    \nお手数ですが {thread.mention} までお問い合わせください。",
-                color=red
-            )
-        await interaction.followup.send(embed=embed, ephemeral=True)
-        await contact_start(client=interaction.client, member=interaction.user, entry_redirect=True)
+    if str(interaction.locale) == "zh-TW":  # 台湾
+        embed = Embed(
+            title="contact required: access from overseas",
+            description=f"錯誤：請點一下 {thread.mention} 聯係我們\
+                \nお手数ですが {thread.mention} までお問い合わせください。",
+            color=red
+        )
+    elif str(interaction.locale) == "zh-CN":  # 中国
+        embed = Embed(
+            title="contact required: access from overseas",
+            description=f"错误：请点击 {thread.mention} 联系我们\
+                \nお手数ですが {thread.mention} までお問い合わせください。",
+            color=red
+        )
+    elif str(interaction.locale) == "ko":  # 韓国
+        embed = Embed(
+            title="contact required: access from overseas",
+            description=f"문의는 {thread.mention} 로 보내주세요\
+                \nお手数ですが {thread.mention} までお問い合わせください。",
+            color=red
+        )
+    else:  # 英語
+        embed = Embed(
+            title="contact required: access from overseas",
+            description=f"please contact us via {thread.mention}\
+                \nお手数ですが {thread.mention} までお問い合わせください。",
+            color=red
+        )
+    await interaction.followup.send(embed=embed, ephemeral=True)
+    await contact_start(client=interaction.client, member=interaction.user, entry_redirect=True)
 
 
-# TODO: button_entry_OLEB 実装
+# TODO: button_entry_OLEB 実装（or button_entryで両方対応）
 
 
 async def button_contact(interaction: Interaction):
@@ -109,7 +111,6 @@ async def button_contact(interaction: Interaction):
 
 
 # TODO: 動作テスト
-# TODO: OLEB実装
 async def button_call_admin(interaction: Interaction):
     await interaction.response.defer(ephemeral=True)
     contact = interaction.client.get_channel(
@@ -142,15 +143,27 @@ async def button_call_admin(interaction: Interaction):
     # しゃべってよし
     await contact.set_permissions(interaction.user, send_messages_in_threads=True)
 
+    embed = Embed(
+        title="このチャンネルにご用件をご記入ください",
+        description="運営が対応します",
+        color=blue
+    )
+    await interaction.followup.send(interaction.user.mention, embed=embed)
+    await interaction.channel.send("↓↓↓ このチャットにご記入ください ↓↓↓")
+
+    # メッセージが来たら運営へ通知
+    def check(m):
+        return m.channel == contact and m.author == interaction.user
+
+    msg = await interaction.client.wait_for('message', check=check)
+    await msg.reply(
+        f"{admin.mention}\n{interaction.user.display_name}さんからの問い合わせ",
+        mention_author=False
+    )
     # ビト森杯のどちらのロールも持っている場合（異常なロール付与）
     if role_check[0] and role_check[1]:
         await bot_channel.send(f"{tari3210.mention}\nbutton_entry_check Error: 重複ロール付与\n\n{interaction.channel.jump_url}")
-
-    joined_category = ""
-    if role_check[0] or role_check[1]:  # ビト森杯にエントリーしている場合
-        joined_category += "ビト森杯 "
-    if role_check[2]:  # エキシビションにエントリーしている場合
-        joined_category += "OLEB"
+        return
 
     # 何かしらエントリーしている
     if any(role_check):
@@ -167,39 +180,49 @@ async def button_call_admin(interaction: Interaction):
         if bool(cell_id):  # DB登録あり
             # ユーザーIDの行の値を取得
             cell_values = await worksheet.row_values(cell_id.row)
-            cell_values = cell_values[2:9]
+            name = cell_values[2]
+            read = cell_values[3]
+            status_bitomori = cell_values[4]
+            status_exhibition = cell_values[5]
+            device = cell_values[6]
+            note = cell_values[7]
+            time = cell_values[8]
+            replace_deadline = cell_values[10]
 
-            if role_check[1]:  # キャンセル待ちの場合、何番目かを取得
+            embed_entry_status = Embed(
+                title="エントリー情報詳細",
+                description=f"- 名前: {name}\n- 読み: {read}\n- ビト森杯出場可否: {status_bitomori}\
+                    \n- OLEB参加状況: {status_exhibition}\n- デバイス: {device}\n- 備考: {note}\
+                    \n- 受付時刻: {time}"
+            )
+            if role_check[1]:  # キャンセル待ちの場合、情報を追記
                 # キャンセル待ちの順番最初の人を取得
                 cell_wait_first = await worksheet.find("キャンセル待ち", in_column=5)
 
                 # キャンセル待ちの順番を取得
                 cell_waitlist_position = cell_id.row - cell_wait_first.row + 1
-                cell_values[2] += f" {len(role_reserve)}人中 {cell_waitlist_position}番目"
 
-            embed_entry_status = Embed(
-                title="エントリー情報詳細",
-                description=f"- 出場するイベント: {joined_category}\n- 名前: {cell_values[0]}\n- 読み: {cell_values[1]}\
-                    \n- ビト森杯出場可否: {cell_values[2]}\n- デバイス: {cell_values[3]}\n- 備考: {cell_values[4]}"
-            )
+                # 繰り上げ手続き中でない場合、待ち人数を表示
+                if bool(replace_deadline) is False:
+                    embed_entry_status.description += f"\n- キャンセル待ち {len(role_reserve)}人中 {cell_waitlist_position}番目"
+
+                # 繰り上げ手続き中の場合、締切日を表示
+                else:
+                    embed_entry_status.description += "\n- 繰り上げ手続き締切: " + replace_deadline
+
+            # 通知
             await interaction.channel.send(embed=embed_entry_status)
+
         else:  # DB登録なし
-            await bot_channel.send(f"{tari3210.mention}\nbutton_entry_info Error: DB登録なし\n\n{interaction.channel.jump_url}")
+            await bot_channel.send(f"{tari3210.mention}\nbutton_call_admin Error: DB登録なし\n\n{interaction.channel.jump_url}")
 
-    embed = Embed(
-        title="このチャンネルにご用件をご記入ください",
-        description="運営が対応します",
-        color=blue
-    )
-    await interaction.followup.send(interaction.user.mention, embed=embed)
-    await interaction.channel.send("↓↓↓ このチャットにご記入ください ↓↓↓")
-
-    # メッセージが来たら運営へ通知
-    def check(m):
-        return m.channel == contact and m.author == interaction.user
-
-    msg = await interaction.client.wait_for('message', check=check)
-    await msg.reply(f"{admin.mention}\n{interaction.user.display_name}さんからの問い合わせ", mention_author=False)
+    # 何もエントリーしていない
+    else:
+        embed = Embed(
+            title="エントリー情報詳細",
+            description=f"{interaction.user.display_name}さんはエントリーしていません。"
+        )
+        await interaction.channel.send(embed=embed)
 
 
 # TODO: entry_cancelの動作テスト
