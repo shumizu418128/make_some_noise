@@ -181,6 +181,9 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
         embed.description += submission
         await interaction.followup.send(embed=embed, ephemeral=True)
 
+        # ニックネームを更新
+        await interaction.user.edit(nick=name)
+
         # 一応bot_channelにも通知
         embed = Embed(
             title=f"modal_entry_{category}",
@@ -220,8 +223,6 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
         for col, value in zip(range(3, 11), values):
             await worksheet.update_cell(row=row, col=col, value=value)
 
-        # ニックネームを更新
-        await interaction.user.edit(nick=name)
         await contact_start(client=interaction.client, member=interaction.user, entry_redirect=True)
 
 
