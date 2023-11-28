@@ -130,6 +130,7 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
         await thread.send(f"ここは {member.mention} さん専用のお問い合わせチャンネルです。", embed=embed, view=view)
         return
 
+    # TODO: 辞書使って各言語に対応
     # 海外アクセスの場合
     else:
         embed_overseas = Embed(  # 通常の問い合わせ

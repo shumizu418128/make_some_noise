@@ -74,6 +74,7 @@ async def button_entry(interaction: Interaction):
     # 海外からのエントリー
     thread = await search_contact(member=interaction.user, create=True, locale=str(interaction.locale))
 
+    # TODO: 辞書使って翻訳
     if str(interaction.locale) == "zh-TW":  # 台湾
         embed = Embed(
             title="contact required: access from overseas",
