@@ -287,7 +287,7 @@ async def button_cancel(interaction: Interaction):
 
 # TODO: 動作テスト
 # TODO: OLEB実装
-async def button_entry_confirm(interaction: Interaction):
+async def button_submission_content(interaction: Interaction):
     await interaction.response.defer(ephemeral=True)
     contact = interaction.client.get_channel(
         1035964918198960128  # 問い合わせ

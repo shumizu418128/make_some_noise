@@ -12,7 +12,7 @@ from advertise import advertise
 from battle_stadium import battle, start
 from button_callback import (button_accept_replace, button_call_admin,
                              button_cancel, button_contact, button_entry,
-                             button_entry_confirm)
+                             button_submission_content)
 # from contact import get_view_contact
 from gbb_countdown import gbb_countdown
 from keep_alive import keep_alive
@@ -80,8 +80,8 @@ async def on_interaction(interaction: Interaction):
         await button_cancel(interaction)
 
     # エントリー状況照会
-    if custom_id == "button_entry_confirm":
-        await button_entry_confirm(interaction)
+    if custom_id == "button_submission_content":
+        await button_submission_content(interaction)
 
     # 繰り上げエントリー
     if custom_id == "button_accept_replace":

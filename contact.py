@@ -63,10 +63,10 @@ async def get_view_contact(entry: bool, confirm: bool = True):
         custom_id="button_cancel",
         emoji="❌"
     )
-    button_entry_confirm = Button(
+    button_submission_content = Button(
         label="エントリー状況照会",
         style=ButtonStyle.gray,
-        custom_id="button_entry_confirm",
+        custom_id="button_submission_content",
         emoji="🔍"
     )
     button_entry = Button(
@@ -77,13 +77,13 @@ async def get_view_contact(entry: bool, confirm: bool = True):
     )
     view = View(timeout=None)
     view.add_item(button_call_admin)
-    view.add_item(button_entry_confirm)
+    view.add_item(button_submission_content)
     if entry:  # エントリーしている場合
         view.add_item(button_cancel)
     else:  # エントリーしていない場合
         view.add_item(button_entry)
     if confirm:  # 確認ボタンを表示する場合
-        view.add_item(button_entry_confirm)
+        view.add_item(button_submission_content)
     return view
 
 
