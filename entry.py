@@ -81,13 +81,16 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
             897784178958008322  # bot用チャット
         )
         # ビト森杯エントリー済みかどうか確認
+        # ビト森杯はanyでキャンセル待ちも含む
         role_check = [
-            interaction.user.get_role(
-                1036149651847524393  # ビト森杯
-            ),
-            interaction.user.get_role(
-                1172542396597289093  # キャンセル待ち ビト森杯
-            ),
+            any([
+                interaction.user.get_role(
+                    1036149651847524393  # ビト森杯
+                ),
+                interaction.user.get_role(
+                    1172542396597289093  # キャンセル待ち ビト森杯
+                )
+            ]),
             interaction.user.get_role(
                 1171760161778581505  # エキシビション
             )
@@ -126,18 +129,8 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
             await interaction.followup.send(embed=embed, ephemeral=True)
             return
 
-        # ビト森杯キャンセル待ち登録済み
-        if role_check[1] and category == "bitomori":
-            embed = Embed(
-                title="キャンセル待ち登録済み",
-                description="すでにビト森杯キャンセル待ち登録済みです。",
-                color=red
-            )
-            await interaction.followup.send(embed=embed, ephemeral=True)
-            return
-
         # エキシビションエントリー済み
-        if role_check[2] and category == "exhibition":
+        if role_check[1] and category == "exhibition":
             embed = Embed(
                 title="エントリー済み",
                 description="Online Loopstation Exhibition Battle\nすでにエントリー済みです。",
@@ -161,7 +154,8 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
             await interaction.user.add_roles(role)
             embed = Embed(
                 title="エントリー完了",
-                description="エントリー受付完了しました。\n\n",
+                description="エントリー受付完了しました。\
+                    ビト森杯ご参加ありがとうございます。\n\n",
                 color=green
             )
             bitomori_entry_status = "出場"
@@ -171,13 +165,14 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
             await interaction.user.add_roles(role_exhibition)
             embed = Embed(
                 title="エントリー完了",
-                description="エントリー受付完了しました。\n\n",
+                description="エントリー受付完了しました。\
+                    Online Loopstation Exhibition Battleご参加ありがとうございます。\n\n\n",
                 color=green
             )
             exhibition_entry_status = "参加"
 
         submission = f"受付内容\n- 名前: {name}\
-            \n- よみがな: {read}\n- デバイス: {device}\n- 備考: {note}"
+            \n- よみがな: {read}\n- デバイス: {device}\n- 備考: {note}\n\n※エントリー状況照会ボタンで確認できるまで、10秒ほどかかります。"
         embed.description += submission
         await interaction.followup.send(embed=embed, ephemeral=True)
 

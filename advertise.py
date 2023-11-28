@@ -51,5 +51,5 @@ async def advertise(client: Client):
         await start(client)
 
     # TODO エントリー開始時、有効化
-    """view = await get_view_contact(entry=True, confirm=False)
+    """view = await get_view_contact(cancel=False, confirm=False)
     await channel.send("第3回ビト森杯", view=view)"""

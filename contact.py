@@ -50,7 +50,7 @@ async def search_contact(member: Member, create: bool = False, locale: str = "ja
     return thread
 
 
-async def get_view_contact(entry: bool, confirm: bool = True):
+async def get_view_contact(cancel: bool, confirm: bool):
     button_call_admin = Button(
         label="ビト森杯運営に問い合わせ",
         style=ButtonStyle.primary,
@@ -69,19 +69,24 @@ async def get_view_contact(entry: bool, confirm: bool = True):
         custom_id="button_submission_content",
         emoji="🔍"
     )
-    button_entry = Button(
+    button_entry_bitomori = Button(
         style=ButtonStyle.green,
-        label="エントリー",
-        custom_id="button_entry",
-        emoji="✅"
+        label="ビト森杯エントリー",
+        custom_id="button_entry_bitomori",
+        emoji="🏆"
+    )
+    button_entry_exhibition = Button(
+        style=ButtonStyle.green,
+        label="OLEBエントリー",
+        custom_id="button_entry_exhibition",
+        emoji="🆚"
     )
     view = View(timeout=None)
     view.add_item(button_call_admin)
-    view.add_item(button_submission_content)
-    if entry:  # エントリーしている場合
+    view.add_item(button_entry_bitomori)
+    view.add_item(button_entry_exhibition)
+    if cancel:
         view.add_item(button_cancel)
-    else:  # エントリーしていない場合
-        view.add_item(button_entry)
     if confirm:  # 確認ボタンを表示する場合
         view.add_item(button_submission_content)
     return view
@@ -121,10 +126,7 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
                 \n\nこれらの内容を必ずご確認ください。もし、ご質問がありましたら\n「ビト森杯運営に問い合わせ」ボタンを押してください。運営が対応します。",
             color=yellow
         )
-        if any(role_check):  # エントリーしている場合
-            view = await get_view_contact(entry=True)
-        else:  # エントリーしていない場合
-            view = await get_view_contact(entry=False)
+        view = await get_view_contact(cancel=True, confirm=True)
         await thread.send(f"ここは {member.mention} さん専用のお問い合わせチャンネルです。", embed=embed, view=view)
         return
 
@@ -177,7 +179,7 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
             button = Button(
                 style=ButtonStyle.green,
                 label="エントリー",
-                custom_id="button_entry",
+                custom_id="button_entry_bitomori",
                 emoji="✅")
             view = View(timeout=None)
             view.add_item(button)

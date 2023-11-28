@@ -11,8 +11,8 @@ from discord.errors import ClientException
 from advertise import advertise
 from battle_stadium import battle, start
 from button_callback import (button_accept_replace, button_call_admin,
-                             button_cancel, button_contact, button_entry,
-                             button_submission_content)
+                             button_cancel, button_contact,
+                             button_entry, button_submission_content)
 # from contact import get_view_contact
 from gbb_countdown import gbb_countdown
 from keep_alive import keep_alive
@@ -64,7 +64,7 @@ async def on_interaction(interaction: Interaction):
     ##############################
 
     # ビト森杯エントリー
-    if custom_id == "button_entry":
+    if custom_id.startswith("button_entry"):
         await button_entry(interaction)
 
     # お問い合わせ
@@ -133,7 +133,7 @@ async def on_member_join(member: Member):
         await channel.send(next_event.url)
 
     # TODO エントリー開始時、有効化
-    """view = await get_view_contact(entry=True, confirm=False)
+    """view = await get_view_contact(cancel=False, confirm=False)
     await channel.send("第3回ビト森杯", view=view)"""
 
 
@@ -163,7 +163,7 @@ async def on_message(message: Message):
         contact = client.get_channel(
             1035964918198960128  # 問い合わせ
         )
-        view = await get_view_contact(entry=True)
+        view = await get_view_contact(cancel=False, confirm=False)
         await announce.send(view=view)
         await bot_notice_channel.send(view=view)
         await contact.send(view=view)"""
