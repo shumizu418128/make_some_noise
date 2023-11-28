@@ -92,7 +92,6 @@ async def get_view_contact(cancel: bool, confirm: bool):
     return view
 
 
-# TODO: OLEB実装
 async def contact_start(client: Client, member: Member, entry_redirect: bool = False):
     # 問い合わせスレッドを取得 リダイレクトならスレッド作成
     thread = await search_contact(member, create=entry_redirect)
@@ -105,14 +104,6 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
     admin = thread.guild.get_role(
         904368977092964352  # ビト森杯運営
     )
-    role_check = [
-        member.get_role(
-            1036149651847524393  # ビト森杯
-        ),
-        member.get_role(
-            1172542396597289093  # キャンセル待ち ビト森杯
-        )
-    ]
     locale = thread.name.split("_")[1]  # スレッド名からlocaleを取得
 
     # 最初は喋るな
@@ -177,13 +168,7 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
         # エントリー時の問い合わせリダイレクトの場合
         if entry_redirect:
             embed.description += "\n\n以下のボタンからエントリーしてください。"
-            button = Button(
-                style=ButtonStyle.green,
-                label="エントリー",
-                custom_id="button_entry_bitomori",
-                emoji="✅")
-            view = View(timeout=None)
-            view.add_item(button)
+            view = await get_view_contact(cancel=False, confirm=False)
             await thread.send(member.mention, embed=embed, view=view)
 
         # 通常の問い合わせ
