@@ -412,7 +412,6 @@ async def button_submission_content(interaction: Interaction):
     await interaction.channel.send(embed=embed)
 
 
-# TODO: OLEBに対応した実装
 async def button_accept_replace(interaction: Interaction):
     await interaction.response.defer(ephemeral=True)
     role = interaction.guild.get_role(
