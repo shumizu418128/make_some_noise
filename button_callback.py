@@ -227,9 +227,6 @@ async def button_call_admin(interaction: Interaction):
 # TODO: 動作テスト
 async def button_cancel(interaction: Interaction):
     await interaction.response.defer(ephemeral=True)
-    contact = interaction.client.get_channel(
-        1035964918198960128  # 問い合わせ
-    )
     role_check = [
         any([
             interaction.user.get_role(
@@ -244,9 +241,6 @@ async def button_cancel(interaction: Interaction):
         )
     ]
     emoji = ""
-
-    # 喋るな(スレッドでキャンセルしている前提)
-    await contact.set_permissions(interaction.user, send_messages_in_threads=False)
 
     # そもそもエントリーしてる？
     if any(role_check) is False:  # どちらのロールも持っていない場合
@@ -319,9 +313,6 @@ async def button_cancel(interaction: Interaction):
 # TODO: 動作テスト
 async def button_submission_content(interaction: Interaction):
     await interaction.response.defer(ephemeral=True)
-    contact = interaction.client.get_channel(
-        1035964918198960128  # 問い合わせ
-    )
     bot_channel = interaction.guild.get_channel(
         897784178958008322  # bot用チャット
     )
@@ -342,9 +333,6 @@ async def button_submission_content(interaction: Interaction):
             1171760161778581505  # エキシビション
         )
     ]
-
-    # 喋るな(スレッドでボタン押してる前提)
-    await contact.set_permissions(interaction.user, send_messages_in_threads=False)
 
     # エントリーしていない
     if any(role_check) is False:
@@ -403,6 +391,7 @@ async def button_submission_content(interaction: Interaction):
     await interaction.channel.send(embed=embed)
 
 
+# TODO: 動作テスト
 async def button_accept_replace(interaction: Interaction):
     await interaction.response.defer(ephemeral=True)
     role = interaction.guild.get_role(

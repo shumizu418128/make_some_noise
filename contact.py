@@ -51,6 +51,7 @@ async def search_contact(member: Member, create: bool = False, locale: str = "ja
     return thread
 
 
+# TODO: 動作テスト
 async def contact_start(client: Client, member: Member, entry_redirect: bool = False):
     # 問い合わせスレッドを取得 リダイレクトならスレッド作成
     thread = await search_contact(member, create=entry_redirect)
