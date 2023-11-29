@@ -11,6 +11,8 @@ async def get_view(
     entry: bool = False,
     replace: bool = False
 ):
+    view = View(timeout=None)
+
     button_contact = Button(
         label="お問い合わせチャンネル作成",
         style=ButtonStyle.primary,
@@ -23,17 +25,17 @@ async def get_view(
         custom_id="button_call_admin",
         emoji="📩"
     )
-    button_cancel = Button(
-        label="エントリーキャンセル",
-        style=ButtonStyle.red,
-        custom_id="button_cancel",
-        emoji="❌"
-    )
     button_submission_content = Button(
         label="エントリー状況照会",
         style=ButtonStyle.gray,
         custom_id="button_submission_content",
         emoji="🔍"
+    )
+    button_cancel = Button(
+        label="エントリーキャンセル",
+        style=ButtonStyle.red,
+        custom_id="button_cancel",
+        emoji="❌"
     )
     button_entry_bitomori = Button(
         style=ButtonStyle.green,
@@ -47,7 +49,6 @@ async def get_view(
         custom_id="button_entry_exhibition",
         emoji="🆚"
     )
-    view = View(timeout=None)
 
     # 問い合わせスレッド作成
     if contact:
@@ -61,14 +62,14 @@ async def get_view(
     if submission_content:
         view.add_item(button_submission_content)
 
+    # キャンセル
+    if cancel:
+        view.add_item(button_cancel)
+
     # エントリー
     if entry:
         view.add_item(button_entry_bitomori)
         view.add_item(button_entry_exhibition)
-
-    # キャンセル
-    if cancel:
-        view.add_item(button_cancel)
 
     # 繰り上げ出場
     button_accept_replace = Button(
@@ -76,18 +77,6 @@ async def get_view(
         label="ビト森杯に出場する",
         custom_id="button_accept_replace",
         emoji="✅"
-    )
-    button_cancel = Button(
-        label="エントリーキャンセル",
-        style=ButtonStyle.red,
-        custom_id="button_cancel",
-        emoji="❌"
-    )
-    button_call_admin = Button(
-        label="ビト森杯運営に問い合わせ",
-        style=ButtonStyle.primary,
-        custom_id="button_call_admin",
-        emoji="📩"
     )
     if replace:
         view.add_item(button_accept_replace)
