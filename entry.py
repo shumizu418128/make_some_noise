@@ -248,6 +248,10 @@ async def entry_cancel(member: Member, category: str):
         description="ビト森杯エントリーキャンセル完了しました。",
         color=green
     )
+    embed.set_author(
+        name=member.display_name,
+        icon_url=member.avatar.url
+    )
     embed.timestamp = datetime.now(JST)
     await thread.send(member.mention, embed=embed)
 
