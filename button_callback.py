@@ -74,8 +74,10 @@ async def button_entry(interaction: Interaction):
     # 海外からのエントリー
     thread = await search_contact(member=interaction.user, create=True, locale=str(interaction.locale))
 
-    available_langs = ["ko", "zh-TW", "zh-CN",
-                       "en-US", "en-GB", "es-ES", "pt-BR"]
+    available_langs = [
+        "ko", "zh-TW", "zh-CN",
+        "en-US", "en-GB", "es-ES", "pt-BR"
+    ]
     if locale not in available_langs:
         locale = "en-US"
     langs = {
