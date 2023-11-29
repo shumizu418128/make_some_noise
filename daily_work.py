@@ -1,10 +1,10 @@
 from datetime import datetime, time, timedelta, timezone
 
 import gspread_asyncio
-from discord import ButtonStyle, Client, Embed
+from discord import Client, Embed
 from discord.ext import tasks
-from discord.ui import Button, View
 from oauth2client.service_account import ServiceAccountCredentials
+from button_view import get_view
 
 from contact import search_contact
 from entry import entry_cancel
@@ -170,32 +170,6 @@ async def replacement_expire(client: Client):
             await entry_cancel(member_replace)
 
 
-async def get_view_replacement():
-    button_accept_replace = Button(
-        style=ButtonStyle.green,
-        label="ビト森杯に出場する",
-        custom_id="button_accept_replace",
-        emoji="✅"
-    )
-    button_cancel = Button(
-        label="エントリーキャンセル",
-        style=ButtonStyle.red,
-        custom_id="button_cancel",
-        emoji="❌"
-    )
-    button_call_admin = Button(
-        label="ビト森杯運営に問い合わせ",
-        style=ButtonStyle.primary,
-        custom_id="button_call_admin",
-        emoji="📩"
-    )
-    view = View(timeout=None)
-    view.add_item(button_accept_replace)
-    view.add_item(button_cancel)
-    view.add_item(button_call_admin)
-    return view
-
-
 # TODO: 動作テスト
 # TODO: OLEBに対応した実装
 # 繰り上げ手続きは毎日21時に実行
@@ -261,7 +235,7 @@ async def replacement(client: Client):
                     \n\n以下のどちらかのボタンを押してください。",
                 color=yellow
             )
-            view = await get_view_replacement()
+            view = await get_view(replace=True)
             await thread.send(member_replace.mention, embed=embed, view=view)
 
             # 繰り上げ通知のみ、DMでも送信

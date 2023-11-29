@@ -1,8 +1,9 @@
 from datetime import timedelta, timezone
 
-from discord import ButtonStyle, Client, Embed, Intents, Member
-from discord.ui import Button, View
+from discord import Client, Embed, Intents, Member
 from oauth2client.service_account import ServiceAccountCredentials
+
+from button_view import get_view
 
 # NOTE: ビト森杯運営機能搭載ファイル
 intents = Intents.all()  # デフォルトのIntentsオブジェクトを生成
@@ -50,49 +51,6 @@ async def search_contact(member: Member, create: bool = False, locale: str = "ja
     return thread
 
 
-# BUG: この関数は問い合わせスレッドの外でも使われているので、いきなりcall_adminを使えない
-async def get_view_contact(cancel: bool, confirm: bool):
-    button_call_admin = Button(
-        label="ビト森杯運営に問い合わせ",
-        style=ButtonStyle.primary,
-        custom_id="button_call_admin",
-        emoji="📩"
-    )
-    button_cancel = Button(
-        label="エントリーキャンセル",
-        style=ButtonStyle.red,
-        custom_id="button_cancel",
-        emoji="❌"
-    )
-    button_submission_content = Button(
-        label="エントリー状況照会",
-        style=ButtonStyle.gray,
-        custom_id="button_submission_content",
-        emoji="🔍"
-    )
-    button_entry_bitomori = Button(
-        style=ButtonStyle.green,
-        label="ビト森杯エントリー",
-        custom_id="button_entry_bitomori",
-        emoji="🏆"
-    )
-    button_entry_exhibition = Button(
-        style=ButtonStyle.green,
-        label="OLEBエントリー",
-        custom_id="button_entry_exhibition",
-        emoji="🆚"
-    )
-    view = View(timeout=None)
-    view.add_item(button_call_admin)
-    view.add_item(button_entry_bitomori)
-    view.add_item(button_entry_exhibition)
-    if cancel:
-        view.add_item(button_cancel)
-    if confirm:  # 確認ボタンを表示する場合
-        view.add_item(button_submission_content)
-    return view
-
-
 async def contact_start(client: Client, member: Member, entry_redirect: bool = False):
     # 問い合わせスレッドを取得 リダイレクトならスレッド作成
     thread = await search_contact(member, create=entry_redirect)
@@ -106,6 +64,17 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
         904368977092964352  # ビト森杯運営
     )
     locale = thread.name.split("_")[1]  # スレッド名からlocaleを取得
+    role_check = [
+        member.get_role(
+            1036149651847524393  # ビト森杯
+        ),
+        member.get_role(
+            1172542396597289093  # キャンセル待ち ビト森杯
+        ),
+        member.get_role(
+            1171760161778581505  # エキシビション
+        )
+    ]
 
     # 最初は喋るな
     await contact.set_permissions(member, send_messages_in_threads=False)
@@ -118,7 +87,12 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
                 \n\nこれらの内容を必ずご確認ください。もし、ご質問がありましたら\n「ビト森杯運営に問い合わせ」ボタンを押してください。運営が対応します。",
             color=yellow
         )
-        view = await get_view_contact(cancel=True, confirm=True)
+        view = await get_view(
+            call_admin=True,
+            submission_content=True,
+            cancel=any(role_check),  # 何かにエントリーしているならキャンセルボタンを表示
+            entry=not any(role_check)  # 何もエントリーしていないならエントリーボタンを表示
+        )
         await thread.send(f"ここは {member.mention} さん専用のお問い合わせチャンネルです。", embed=embed, view=view)
         return
 
@@ -169,7 +143,7 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
         # エントリー時の問い合わせリダイレクトの場合
         if entry_redirect:
             embed.description += "\n\n以下のボタンからエントリーしてください。"
-            view = await get_view_contact(cancel=False, confirm=False)
+            view = await get_view(entry=True)
             await thread.send(member.mention, embed=embed, view=view)
 
         # 通常の問い合わせ

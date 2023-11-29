@@ -13,7 +13,7 @@ from battle_stadium import battle, start
 from button_callback import (button_accept_replace, button_call_admin,
                              button_cancel, button_contact,
                              button_entry, button_submission_content)
-# from contact import get_view_contact
+
 from gbb_countdown import gbb_countdown
 from keep_alive import keep_alive
 from natural_language import natural_language
@@ -133,8 +133,8 @@ async def on_member_join(member: Member):
         await channel.send(next_event.url)
 
     # TODO エントリー開始時、有効化
-    """view = await get_view_contact(cancel=False, confirm=False)
-    await channel.send("第3回ビト森杯", view=view)"""
+    """view = await get_view_contact(entry=True, contact=True)
+    await channel.send("第3回ビト森杯・Online Loopstation Exhibition Battle", view=view)"""
 
 
 @client.event
@@ -163,10 +163,9 @@ async def on_message(message: Message):
         contact = client.get_channel(
             1035964918198960128  # 問い合わせ
         )
-        view = await get_view_contact(cancel=False, confirm=False)
-        await announce.send(view=view)
-        await bot_notice_channel.send(view=view)
-        await contact.send(view=view)"""
+        view = await get_view(entry=True, contact=True)
+        await announce.send("第3回ビト森杯・Online Loopstation Exhibition Battle", view=view)
+        """
 
     # VS参加・退出
     if message.content == "s.join":
