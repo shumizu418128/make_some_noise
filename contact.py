@@ -50,6 +50,7 @@ async def search_contact(member: Member, create: bool = False, locale: str = "ja
     return thread
 
 
+# BUG: この関数は問い合わせスレッドの外でも使われているので、いきなりcall_adminを使えない
 async def get_view_contact(cancel: bool, confirm: bool):
     button_call_admin = Button(
         label="ビト森杯運営に問い合わせ",
