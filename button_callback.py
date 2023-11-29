@@ -74,7 +74,8 @@ async def button_entry(interaction: Interaction):
     # 海外からのエントリー
     thread = await search_contact(member=interaction.user, create=True, locale=str(interaction.locale))
 
-    available_langs = ["ko", "zh-TW", "zh-CN", "en-US", "en-GB", "es-ES", "pt-BR"]
+    available_langs = ["ko", "zh-TW", "zh-CN",
+                       "en-US", "en-GB", "es-ES", "pt-BR"]
     if locale not in available_langs:
         locale = "en-US"
     langs = {
@@ -86,7 +87,8 @@ async def button_entry(interaction: Interaction):
         "es-ES": f"Error: por favor contáctenos a través de {thread.mention}",
         "pt-BR": f"Erro: entre em contato conosco através de {thread.mention}"
     }
-    description = langs[str(interaction.locale)] + f"\nお手数ですが {thread.mention} までお問い合わせください。"
+    description = langs[str(interaction.locale)] + \
+        f"\nお手数ですが {thread.mention} までお問い合わせください。"
 
     embed = Embed(
         title="contact required: access from overseas",

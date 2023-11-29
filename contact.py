@@ -97,7 +97,8 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
 
     # 海外アクセスの場合
     else:
-        available_langs = ["ko", "zh-TW", "zh-CN", "en-US", "en-GB", "es-ES", "pt-BR"]
+        available_langs = ["ko", "zh-TW", "zh-CN",
+                           "en-US", "en-GB", "es-ES", "pt-BR"]
         if locale not in available_langs:
             locale = "en-US"
         lang_contact = {

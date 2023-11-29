@@ -11,9 +11,8 @@ from discord.errors import ClientException
 from advertise import advertise
 from battle_stadium import battle, start
 from button_callback import (button_accept_replace, button_call_admin,
-                             button_cancel, button_contact,
-                             button_entry, button_submission_content)
-
+                             button_cancel, button_contact, button_entry,
+                             button_submission_content)
 from gbb_countdown import gbb_countdown
 from keep_alive import keep_alive
 from natural_language import natural_language
