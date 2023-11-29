@@ -6,8 +6,6 @@ from oauth2client.service_account import ServiceAccountCredentials
 from button_view import get_view
 
 # NOTE: ビト森杯運営機能搭載ファイル
-intents = Intents.all()  # デフォルトのIntentsオブジェクトを生成
-intents.typing = False  # typingを受け取らないように
 green = 0x00ff00
 yellow = 0xffff00
 red = 0xff0000
