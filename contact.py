@@ -96,29 +96,48 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
         await thread.send(f"ここは {member.mention} さん専用のお問い合わせチャンネルです。", embed=embed, view=view)
         return
 
-    # TODO: 辞書使って各言語に対応
     # 海外アクセスの場合
     else:
+        available_langs = ["ko", "zh-TW", "zh-CN", "en-US", "en-GB", "es-ES", "pt-BR"]
+        if locale not in available_langs:
+            locale = "en-US"
+        lang_contact = {
+            "en-US": "Please write your inquiry here",
+            "en-GB": "Please write your inquiry here",
+            "zh-TW": "請把疑問寫在這裡",
+            "zh-CN": "请把疑问写在这里 ※此服务器仅以日英交流",
+            "ko": "문의 내용을 이 채널에 기입해주세요",
+            "es-ES": "Por favor, escriba su consulta aquí",
+            "pt-BR": "Por favor, escreva sua consulta aqui"
+        }
+        lang_entry_redirect = {
+            "en-US": "Please hold on, the moderator will be here soon",
+            "en-GB": "Please hold on, the moderator will be here soon",
+            "zh-TW": "請稍候片刻, 正與管理員對接",
+            "zh-CN": "请稍候片刻, 正与管理员对接 ※此服务器仅以日英交流",
+            "ko": "대회 운영자가 대응합니다. 잠시 기다려주십시오",
+            "es-ES": "Por favor, espere un momento, el moderador estará aquí pronto",
+            "pt-BR": "Por favor, aguarde um momento, o moderador estará aqui em breve"
+        }
         embed_overseas = Embed(  # 通常の問い合わせ
-            title="Please write your inquiry here",
-            description="請把疑問寫在這裡\n문의 내용을 이 채널에 기입해주세요",
+            title="海外からのお問い合わせ contact from overseas",
+            description=lang_contact[locale],
             color=blue
         )
         if entry_redirect:  # 海外エントリー時の問い合わせリダイレクトの場合
             embed_overseas = Embed(
-                title="海外からのエントリー",
-                description="Please hold on, the moderator will be here soon\
-                    \n請稍候片刻, 正與管理員對接\n대회 운영자가 대응합니다. 잠시 기다려주십시오",
+                title="海外からのエントリー entry from overseas",
+                description=lang_entry_redirect[locale],
                 color=blue
             )
-        embed_jp = Embed(
+        embed_ja = Embed(
             description=f"{member.display_name}さんのDiscord言語設定が日本語ではなかったため、海外対応モードになっています。\
                 \n日本語対応をご希望の場合、このチャンネルに\n\n**日本語希望**\n\nとご記入ください。\n自動で日本語対応に切り替わります。"
         )
-        embed_jp.set_footer(text=f"ISO 639-1 code: {locale}")
+        embed_ja.set_footer(text=f"ISO 639-1 code: {locale}")
 
         # 問い合わせスレッドにメンション付きで送信
-        await thread.send(f"{member.mention}", embeds=[embed_overseas, embed_jp])
+        await thread.send(f"{member.mention}", embeds=[embed_overseas, embed_ja])
         await thread.send(f"{admin.mention}\n海外対応モード")
 
         # しゃべってよし

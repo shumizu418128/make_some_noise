@@ -74,35 +74,26 @@ async def button_entry(interaction: Interaction):
     # 海外からのエントリー
     thread = await search_contact(member=interaction.user, create=True, locale=str(interaction.locale))
 
-    # TODO: 辞書使って翻訳
-    if str(interaction.locale) == "zh-TW":  # 台湾
-        embed = Embed(
-            title="contact required: access from overseas",
-            description=f"錯誤：請點一下 {thread.mention} 聯係我們\
-                \nお手数ですが {thread.mention} までお問い合わせください。",
-            color=red
-        )
-    elif str(interaction.locale) == "zh-CN":  # 中国
-        embed = Embed(
-            title="contact required: access from overseas",
-            description=f"错误：请点击 {thread.mention} 联系我们\
-                \nお手数ですが {thread.mention} までお問い合わせください。",
-            color=red
-        )
-    elif str(interaction.locale) == "ko":  # 韓国
-        embed = Embed(
-            title="contact required: access from overseas",
-            description=f"문의는 {thread.mention} 로 보내주세요\
-                \nお手数ですが {thread.mention} までお問い合わせください。",
-            color=red
-        )
-    else:  # 英語
-        embed = Embed(
-            title="contact required: access from overseas",
-            description=f"please contact us via {thread.mention}\
-                \nお手数ですが {thread.mention} までお問い合わせください。",
-            color=red
-        )
+    available_langs = ["ko", "zh-TW", "zh-CN", "en-US", "en-GB", "es-ES", "pt-BR"]
+    locale = str(interaction.locale)
+    if locale not in available_langs:
+        locale = "en-US"
+    langs = {
+        "en-US": f"Error: please contact us via {thread.mention}",
+        "en-GB": f"Error: please contact us via {thread.mention}",
+        "zh-TW": f"錯誤：請點一下 {thread.mention} 聯係我們",
+        "zh-CN": f"错误：请点击 {thread.mention} 联系我们 ※此服务器仅以日英交流",
+        "ko": f"문의는 {thread.mention} 로 보내주세요",
+        "es-ES": f"Error: por favor contáctenos a través de {thread.mention}",
+        "pt-BR": f"Erro: entre em contato conosco através de {thread.mention}"
+    }
+    description = langs[str(interaction.locale)] + f"\nお手数ですが {thread.mention} までお問い合わせください。"
+
+    embed = Embed(
+        title="contact required: access from overseas",
+        description=description,
+        color=red
+    )
     await interaction.followup.send(embed=embed, ephemeral=True)
     await contact_start(client=interaction.client, member=interaction.user, entry_redirect=True)
 
