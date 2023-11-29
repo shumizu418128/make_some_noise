@@ -1,6 +1,6 @@
 from datetime import timedelta, timezone
 
-from discord import Client, Embed, Intents, Member
+from discord import Client, Embed, Member
 from oauth2client.service_account import ServiceAccountCredentials
 
 from button_view import get_view
