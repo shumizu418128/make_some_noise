@@ -33,7 +33,6 @@ def get_credits():
 
 
 # TODO: 動作テスト
-# TODO: OLEBに対応した実装
 async def maintenance(client: Client):
     bot_channel = client.get_channel(
         897784178958008322  # bot用チャット
@@ -56,7 +55,7 @@ async def maintenance(client: Client):
     )
     # Google spreadsheetからの情報
     DB_names = await worksheet.col_values(3)
-    DB_ids = await worksheet.col_values(9)
+    DB_ids = await worksheet.col_values(10)
 
     # discordからの情報
     role_entry = bot_channel.guild.get_role(
@@ -100,7 +99,7 @@ async def maintenance(client: Client):
     for name in set(DB_names) - set(entry_names + reserve_names):
         cell_name = await worksheet.find(name)  # 該当者のセルを取得
         # 該当者のユーザーIDを取得
-        cell_id = await worksheet.cell(row=cell_name.row, col=9)
+        cell_id = await worksheet.cell(row=cell_name.row, col=10)
         member = bot_channel.guild.get_member(
             int(cell_id.value)  # 該当者のmemberオブジェクトを取得
         )
@@ -129,7 +128,6 @@ async def maintenance(client: Client):
 
 
 # TODO: 動作テスト
-# TODO: OLEBに対応した実装
 async def replacement_expire(client: Client):
     bot_channel = client.get_channel(
         897784178958008322  # bot用チャット
@@ -141,10 +139,10 @@ async def replacement_expire(client: Client):
     workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
     worksheet = await workbook.worksheet('エントリー名簿')
 
-    values_replacement_deadlines = await worksheet.col_values(10)  # 繰り上げ手続き締切
+    values_replacement_deadlines = await worksheet.col_values(11)  # 繰り上げ手続き締切
     values_replacement_deadlines = [
-        x for x in values_replacement_deadlines if bool(x)]  # 空白を除外
-
+        x for x in values_replacement_deadlines if bool(x)  # 空白を除外
+    ]
     dt_now = datetime.now(JST)
     today = dt_now.strftime("%m/%d")  # 月/日の形式に変換
     for value_deadline in values_replacement_deadlines:
@@ -153,7 +151,7 @@ async def replacement_expire(client: Client):
             cell_deadline_today = await worksheet.find(today)
 
             # ユーザーIDを取得
-            cell_id = await worksheet.cell(row=cell_deadline_today.row, col=9)
+            cell_id = await worksheet.cell(row=cell_deadline_today.row, col=10)
 
             # 問い合わせスレッドを取得
             member_replace = bot_channel.guild.get_member(int(cell_id.value))
@@ -171,7 +169,6 @@ async def replacement_expire(client: Client):
 
 
 # TODO: 動作テスト
-# TODO: OLEBに対応した実装
 # 繰り上げ手続きは毎日21時に実行
 async def replacement(client: Client):
     bot_channel = client.get_channel(
@@ -199,7 +196,6 @@ async def replacement(client: Client):
         status for status in values_status if status == "繰り上げ出場手続き中"  # 繰り上げ出場手続き中の人を取得
     ]
     # 繰り上げ手続き中の枠は確保されている
-
     entry_count = len(role.members) + len(values_status)  # エントリー数
 
     # キャンセル待ちへの通知
@@ -209,7 +205,7 @@ async def replacement(client: Client):
             cell_waitlist_first = await worksheet.find("キャンセル待ち", in_column=5)
 
             # ユーザーIDを取得
-            cell_id = await worksheet.cell(row=cell_waitlist_first.row, col=9)
+            cell_id = await worksheet.cell(row=cell_waitlist_first.row, col=10)
             member_replace = bot_channel.guild.get_member(int(cell_id.value))
 
             # 問い合わせスレッドを取得
@@ -264,7 +260,7 @@ async def replacement(client: Client):
             limit = dt_limit.strftime("%m/%d")  # 月/日の形式に変換
 
             cell_id = await worksheet.find(f'{member_replace.id}')  # ユーザーIDで検索
-            await worksheet.update_cell(cell_id.row, 10, limit)  # 繰り上げ手続き締切を設定
+            await worksheet.update_cell(cell_id.row, 11, limit)  # 繰り上げ手続き締切を設定
 
             # 出場可否を繰り上げ出場手続き中に変更
             await worksheet.update_cell(cell_id.row, 5, "繰り上げ出場手続き中")
