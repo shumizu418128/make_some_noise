@@ -6,7 +6,7 @@ from discord import Embed, Interaction, Member, TextStyle
 from discord.ui import Modal, TextInput
 from oauth2client.service_account import ServiceAccountCredentials
 
-from contact import contact_start, search_contact
+from contact import contact_start, get_worksheet, search_contact
 
 # NOTE: ビト森杯運営機能搭載ファイル
 re_hiragana = re.compile(r'^[ぁ-ゞ　 ー]+$')
@@ -21,14 +21,6 @@ Google spreadsheet
 row = 縦 1, 2, 3, ...
 col = 横 A, B, C, ...
 """
-
-
-def get_credits():
-    return ServiceAccountCredentials.from_json_keyfile_name(
-        "makesomenoise-4cb78ac4f8b5.json",
-        ['https://spreadsheets.google.com/feeds',
-         'https://www.googleapis.com/auth/drive',
-         'https://www.googleapis.com/auth/spreadsheets'])
 
 
 class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
@@ -95,6 +87,9 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
                 1171760161778581505  # エキシビション
             )
         ]
+        # Google spreadsheet worksheet読み込み
+        worksheet = await get_worksheet('エントリー名簿')
+
         category = self.custom_id.split("_")[2]  # "bitomori" or "exhibition"
 
         # 入力内容を取得
@@ -191,13 +186,6 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
         )
         await bot_channel.send(f"{interaction.user.id}", embed=embed)
 
-        # Google spreadsheet worksheet読み込み
-        gc = gspread_asyncio.AsyncioGspreadClientManager(get_credits)
-        agc = await gc.authorize()
-        # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
-        workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
-        worksheet = await workbook.worksheet('エントリー名簿')
-
         # エントリー数を更新
         num_entries = await worksheet.cell(row=3, col=1)
         num_entries.value = int(num_entries.value) + 1
@@ -239,6 +227,20 @@ async def entry_cancel(member: Member, category: str):
     role_exhibition = member.guild.get_role(
         1171760161778581505  # エキシビション
     )
+    role_check = [
+        member.get_role(
+            1036149651847524393  # ビト森杯
+        ),
+        member.get_role(
+            1172542396597289093  # キャンセル待ち ビト森杯
+        ),
+        member.get_role(
+            1171760161778581505  # エキシビション
+        )
+    ]
+    # Google spreadsheet worksheet読み込み
+    worksheet = await get_worksheet('エントリー名簿')
+
     # 問い合わせスレッドを取得
     thread = await search_contact(member=member)
 
@@ -255,18 +257,6 @@ async def entry_cancel(member: Member, category: str):
     embed.timestamp = datetime.now(JST)
     await thread.send(member.mention, embed=embed)
 
-    role_check = [
-        member.get_role(
-            1036149651847524393  # ビト森杯
-        ),
-        member.get_role(
-            1172542396597289093  # キャンセル待ち ビト森杯
-        ),
-        member.get_role(
-            1171760161778581505  # エキシビション
-        )
-    ]
-
     # ロール削除
     if role_check[0] and category == "bitomori":  # ビト森杯
         await member.remove_roles(role)
@@ -276,13 +266,6 @@ async def entry_cancel(member: Member, category: str):
 
     if role_check[2] and category == "exhibition":  # エキシビション
         await member.remove_roles(role_exhibition)
-
-    # Google spreadsheet worksheet読み込み
-    gc = gspread_asyncio.AsyncioGspreadClientManager(get_credits)
-    agc = await gc.authorize()
-    # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
-    workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
-    worksheet = await workbook.worksheet('エントリー名簿')
 
     # DBのセルを特定
     cell_id = await worksheet.find(f'{member.id}')

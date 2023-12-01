@@ -3,8 +3,6 @@ from discord.ui import Button, View
 
 
 # NOTE: ビト森杯運営機能搭載ファイル
-
-# TODO: spreadsheetアクセスをモジュール化
 async def get_view(
     contact: bool = False,
     call_admin: bool = False,

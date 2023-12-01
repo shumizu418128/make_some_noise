@@ -6,7 +6,7 @@ from discord.ext import tasks
 from oauth2client.service_account import ServiceAccountCredentials
 
 from button_view import get_view
-from contact import search_contact
+from contact import get_worksheet, search_contact
 from entry import entry_cancel
 
 # NOTE: ビト森杯運営機能搭載ファイル
@@ -24,14 +24,6 @@ col = 横 A, B, C, ...
 """
 
 
-def get_credits():
-    return ServiceAccountCredentials.from_json_keyfile_name(
-        "makesomenoise-4cb78ac4f8b5.json",
-        ['https://spreadsheets.google.com/feeds',
-         'https://www.googleapis.com/auth/drive',
-         'https://www.googleapis.com/auth/spreadsheets'])
-
-
 # TODO: 動作テスト
 async def maintenance(client: Client):
     bot_channel = client.get_channel(
@@ -40,14 +32,10 @@ async def maintenance(client: Client):
     bot_notice_channel = client.get_channel(
         916608669221806100  # ビト森杯 進行bot
     )
-    notice = await bot_channel.send("DB定期メンテナンス中...")
-
     # Google spreadsheet worksheet読み込み
-    gc = gspread_asyncio.AsyncioGspreadClientManager(get_credits)
-    agc = await gc.authorize()
-    # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
-    workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
-    worksheet = await workbook.worksheet('エントリー名簿')
+    worksheet = await get_worksheet('エントリー名簿')
+
+    notice = await bot_channel.send("DB定期メンテナンス中...")
 
     # 各種データ取得
     tari3210 = bot_channel.guild.get_member(
@@ -133,11 +121,7 @@ async def replacement_expire(client: Client):
         897784178958008322  # bot用チャット
     )
     # Google spreadsheet worksheet読み込み
-    gc = gspread_asyncio.AsyncioGspreadClientManager(get_credits)
-    agc = await gc.authorize()
-    # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
-    workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
-    worksheet = await workbook.worksheet('エントリー名簿')
+    worksheet = await get_worksheet('エントリー名簿')
 
     values_replacement_deadlines = await worksheet.col_values(11)  # 繰り上げ手続き締切
     values_replacement_deadlines = [
@@ -183,13 +167,8 @@ async def replacement(client: Client):
     admin = bot_channel.guild.get_role(
         904368977092964352  # ビト森杯運営
     )
-
     # Google spreadsheet worksheet読み込み
-    gc = gspread_asyncio.AsyncioGspreadClientManager(get_credits)
-    agc = await gc.authorize()
-    # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
-    workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
-    worksheet = await workbook.worksheet('エントリー名簿')
+    worksheet = await get_worksheet('エントリー名簿')
 
     values_status = await worksheet.col_values(5)  # 出場可否
     values_status = [

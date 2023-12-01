@@ -4,7 +4,7 @@ import gspread_asyncio
 from discord import Embed, Interaction
 from oauth2client.service_account import ServiceAccountCredentials
 
-from contact import contact_start, search_contact
+from contact import contact_start, get_worksheet, search_contact
 from entry import entry_cancel, modal_entry
 
 # NOTE: ビト森杯運営機能搭載ファイル
@@ -19,14 +19,6 @@ Google spreadsheet
 row = 縦 1, 2, 3, ...
 col = 横 A, B, C, ...
 """
-
-
-def get_credits():
-    return ServiceAccountCredentials.from_json_keyfile_name(
-        "makesomenoise-4cb78ac4f8b5.json",
-        ['https://spreadsheets.google.com/feeds',
-         'https://www.googleapis.com/auth/drive',
-         'https://www.googleapis.com/auth/spreadsheets'])
 
 
 # TODO: 動作テスト
@@ -142,6 +134,8 @@ async def button_call_admin(interaction: Interaction):
             1171760161778581505  # エキシビション
         )
     ]
+    # Google spreadsheet worksheet読み込み
+    worksheet = await get_worksheet('エントリー名簿')
 
     # しゃべってよし
     await contact.set_permissions(interaction.user, send_messages_in_threads=True)
@@ -168,15 +162,7 @@ async def button_call_admin(interaction: Interaction):
         await bot_channel.send(f"{tari3210.mention}\nbutton_call_admin Error: 重複ロール付与\n\n{interaction.channel.jump_url}")
         return
 
-    # 何かしらエントリーしている
-    if any(role_check):
-        # Google spreadsheet worksheet読み込み
-        gc = gspread_asyncio.AsyncioGspreadClientManager(get_credits)
-        agc = await gc.authorize()
-        # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
-        workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
-        worksheet = await workbook.worksheet('エントリー名簿')
-
+    if any(role_check):  # 何かしらエントリーしている
         # DBから取得
         cell_id = await worksheet.find(f'{interaction.user.id}')  # ユーザーIDで検索
 
@@ -337,6 +323,8 @@ async def button_submission_content(interaction: Interaction):
             1171760161778581505  # エキシビション
         )
     ]
+    # Google spreadsheet worksheet読み込み
+    worksheet = await get_worksheet('エントリー名簿')
 
     # エントリーしていない
     if any(role_check) is False:
@@ -353,13 +341,6 @@ async def button_submission_content(interaction: Interaction):
         color=blue
     )
     await interaction.followup.send(embed=embed)
-
-    # Google spreadsheet worksheet読み込み
-    gc = gspread_asyncio.AsyncioGspreadClientManager(get_credits)
-    agc = await gc.authorize()
-    # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
-    workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
-    worksheet = await workbook.worksheet('エントリー名簿')
 
     # DBから取得
     cell_id = await worksheet.find(f'{interaction.user.id}')  # ユーザーIDで検索
@@ -407,6 +388,8 @@ async def button_accept_replace(interaction: Interaction):
     bot_channel = interaction.guild.get_channel(
         897784178958008322  # bot用チャット
     )
+    # Google spreadsheet worksheet読み込み
+    worksheet = await get_worksheet('エントリー名簿')
 
     embed = Embed(
         title="繰り上げ出場手続き完了",
@@ -418,13 +401,6 @@ async def button_accept_replace(interaction: Interaction):
     # ロール付け替え
     await interaction.user.remove_roles(role_reserve)
     await interaction.user.add_roles(role)
-
-    # Google spreadsheet worksheet読み込み
-    gc = gspread_asyncio.AsyncioGspreadClientManager(get_credits)
-    agc = await gc.authorize()
-    # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
-    workbook = await agc.open_by_key('1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw')
-    worksheet = await workbook.worksheet('エントリー名簿')
 
     # DB更新
     cell_id = await worksheet.find(f'{interaction.user.id}')  # ユーザーIDで検索

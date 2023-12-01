@@ -1,5 +1,6 @@
 from datetime import timedelta, timezone
 
+import gspread_asyncio
 from discord import Client, Embed, Member
 from oauth2client.service_account import ServiceAccountCredentials
 
@@ -17,14 +18,6 @@ Google spreadsheet
 row = 縦 1, 2, 3, ...
 col = 横 A, B, C, ...
 """
-
-
-def get_credits():
-    return ServiceAccountCredentials.from_json_keyfile_name(
-        "makesomenoise-4cb78ac4f8b5.json",
-        ['https://spreadsheets.google.com/feeds',
-         'https://www.googleapis.com/auth/drive',
-         'https://www.googleapis.com/auth/spreadsheets'])
 
 
 async def search_contact(member: Member, create: bool = False, locale: str = "ja"):
@@ -172,3 +165,23 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
             await thread.send(member.mention, embed=embed)
             await contact_start(client, member)
         return
+
+
+def get_credits():
+    return ServiceAccountCredentials.from_json_keyfile_name(
+        "makesomenoise-4cb78ac4f8b5.json",
+        ['https://spreadsheets.google.com/feeds',
+         'https://www.googleapis.com/auth/drive',
+         'https://www.googleapis.com/auth/spreadsheets'])
+
+
+async def get_worksheet(name: str):
+    # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
+    gc = gspread_asyncio.AsyncioGspreadClientManager(get_credits)
+    agc = await gc.authorize()
+    workbook = await agc.open_by_key(
+        '1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw'
+    )
+    worksheet = await workbook.worksheet(name)
+
+    return worksheet
