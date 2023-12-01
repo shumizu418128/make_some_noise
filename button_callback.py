@@ -20,8 +20,7 @@ col = 横 A, B, C, ...
 
 
 # TODO: 動作テスト
-# ビト森杯のエントリーフォーム
-# OLEBは別途実装
+# 両カテゴリーのエントリーを受け付ける
 async def button_entry(interaction: Interaction):
     dt_now = datetime.now(JST)
     dt_entry_start = datetime(  # エントリー開始時刻
@@ -46,6 +45,41 @@ async def button_entry(interaction: Interaction):
         await interaction.response.send_message(
             "エントリー受付開始は1月6日です。",
             ephemeral=True)
+        return
+
+    # ビト森杯エントリー済みかどうか確認
+    # ビト森杯はanyでキャンセル待ちも含む
+    role_check = [
+        any([
+            interaction.user.get_role(
+                1036149651847524393  # ビト森杯
+            ),
+            interaction.user.get_role(
+                1172542396597289093  # キャンセル待ち ビト森杯
+            )
+        ]),
+        interaction.user.get_role(
+            1171760161778581505  # エキシビション
+        )
+    ]
+    # ビト森杯エントリー済み
+    if role_check[0] and category == "bitomori":
+        embed = Embed(
+            title="エントリー済み",
+            description="ビト森杯\nすでにエントリー済みです。",
+            color=red
+        )
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+        return
+
+    # エキシビションエントリー済み
+    if role_check[1] and category == "exhibition":
+        embed = Embed(
+            title="エントリー済み",
+            description="Online Loopstation Exhibition Battle\nすでにエントリー済みです。",
+            color=red
+        )
+        await interaction.response.send_message(embed=embed, ephemeral=True)
         return
 
     # 日本からのビト森杯エントリー
