@@ -1,8 +1,6 @@
 from datetime import datetime, timedelta, timezone
 
-import gspread_asyncio
 from discord import Embed, Interaction
-from oauth2client.service_account import ServiceAccountCredentials
 
 from contact import contact_start, get_worksheet, search_contact
 from entry import entry_cancel, modal_entry

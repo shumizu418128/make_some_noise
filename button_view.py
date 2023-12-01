@@ -49,7 +49,6 @@ async def get_view(
         custom_id="button_entry_exhibition",
         emoji="🆚"
     )
-
     # 問い合わせスレッド作成
     if contact:
         view.add_item(button_contact)

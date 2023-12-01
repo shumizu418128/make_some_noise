@@ -1,10 +1,8 @@
 import re
 from datetime import datetime, timedelta, timezone
 
-import gspread_asyncio
 from discord import Embed, Interaction, Member, TextStyle
 from discord.ui import Modal, TextInput
-from oauth2client.service_account import ServiceAccountCredentials
 
 from contact import contact_start, get_worksheet, search_contact
 
