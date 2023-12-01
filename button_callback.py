@@ -253,7 +253,7 @@ async def button_cancel(interaction: Interaction):
         await notice.add_reaction("❌")
 
         def check(reaction, user):
-            return user == interaction.user and reaction.emoji in ["🏆", "🆚"] and reaction.message == notice
+            return user == interaction.user and reaction.emoji in ["🏆", "🆚", "❌"] and reaction.message == notice
 
         reaction, _ = await interaction.client.wait_for('reaction_add', check=check)
         await notice.delete(delay=1)
@@ -261,10 +261,12 @@ async def button_cancel(interaction: Interaction):
             return
         emoji = reaction.emoji
 
-    # エントリーカテゴリー日本語表記定義
+    # エントリーカテゴリー 日本語、英語表記定義
     if role_check[0] or emoji == "🏆":  # ビト森杯
+        category = "bitomori"
         category_ja = "ビト森杯"
     elif role_check[1] or emoji == "🆚":  # エキシビション
+        category = "exhibition"
         category_ja = "Online Loopstation Exhibition Battle"
 
     # キャンセル意思の最終確認
@@ -295,7 +297,7 @@ async def button_cancel(interaction: Interaction):
         await notice.delete(delay=1)
         return
 
-    await entry_cancel(interaction.user)
+    await entry_cancel(interaction.user, category)
 
 
 # TODO: 動作テスト

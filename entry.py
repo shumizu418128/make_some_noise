@@ -208,7 +208,6 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
 
 
 # TODO: 動作テスト
-# TODO: OLEB実装
 async def entry_cancel(member: Member, category: str):
     bot_channel = member.guild.get_channel(
         897784178958008322  # bot用チャット
@@ -269,7 +268,7 @@ async def entry_cancel(member: Member, category: str):
     cell_id = await worksheet.find(f'{member.id}')
 
     if bool(cell_id):  # DB登録あり
-        for i in range(3, 12):
+        for i in range(3, 11):
             await worksheet.update_cell(cell_id.row, i, '')
     else:  # DB登録なし
         await bot_channel.send(f"{tari3210.mention}\nError: DB登録なし\nキャンセル作業中止\n\n{thread.jump_url}")
