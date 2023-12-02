@@ -335,7 +335,7 @@ async def replacement_notice_24h(client: Client):
             await worksheet.update_cell(cell.row, cell.col, "出場")  # 出場可否を出場に変更
             continue
 
-        # 通知
+        # 通知embedを作成
         embed = Embed(
             title="🙏ビト森杯 繰り上げ出場手続きのお願い🙏",
             description=f"ビト森杯エントリーをキャンセルした方がいたため、{member_replace.display_name}さんは繰り上げ出場できます。\
@@ -344,9 +344,11 @@ async def replacement_notice_24h(client: Client):
                 \n\n__72時間以内__に {thread.jump_url} にて手続きをお願いします。\n",
             color=red
         )
+        # viewを作成
+        view = await get_view(replace=True)
 
         # 送信
-        await thread.send(f"{member_replace.mention}\n# 明日21時締切", embed=embed)
+        await thread.send(f"{member_replace.mention}\n# 明日21時締切", embed=embed, view=view)
         await member_replace.send(f"{member_replace.mention}\n# 明日21時締切", embed=embed)
         await member_replace.send("### このDMは送信専用です。ここに何も入力しないでください。")
 
