@@ -258,10 +258,8 @@ async def entry_cancel(member: Member, category: str):
     # ロール削除
     if role_check[0] and category == "bitomori":  # ビト森杯
         await member.remove_roles(role)
-
     if role_check[1] and category == "bitomori":  # キャンセル待ち ビト森杯
         await member.remove_roles(role_reserve)
-
     if role_check[2] and category == "exhibition":  # エキシビション
         await member.remove_roles(role_exhibition)
 
