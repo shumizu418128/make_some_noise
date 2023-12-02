@@ -44,6 +44,7 @@ async def search_contact(member: Member, create: bool = False, locale: str = "ja
 
 # TODO: 動作テスト
 async def contact_start(client: Client, member: Member, entry_redirect: bool = False):
+
     # 問い合わせスレッドを取得 リダイレクトならスレッド作成
     thread = await search_contact(member, create=entry_redirect)
     contact = thread.guild.get_channel(
@@ -98,12 +99,17 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
         embed_ja.set_footer(text=f"ISO 639-1 code: {locale}")
         # この時点でのlocaleは実際の言語設定
 
+        # 有効な言語設定のみをリスト化
         available_langs = [
             "ko", "zh-TW", "zh-CN",
             "en-US", "en-GB", "es-ES", "pt-BR"
         ]
+
+        # 未対応の言語設定の場合は英語として扱う
         if locale not in available_langs:
-            locale = "en-US"  # 未対応の言語設定の場合は英語として扱う
+            locale = "en-US"
+
+        # 各種言語の文言
         lang_contact = {
             "en-US": "Please write your inquiry here",
             "en-GB": "Please write your inquiry here",
@@ -122,18 +128,20 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
             "es-ES": "Por favor, espere un momento, el moderador estará aquí pronto",
             "pt-BR": "Por favor, aguarde um momento, o moderador estará aqui em breve"
         }
-        embed_overseas = Embed(  # 通常の問い合わせ
+
+        # 通常の問い合わせの場合
+        embed_overseas = Embed(
             title="海外からのお問い合わせ contact from overseas",
             description=lang_contact[locale],
             color=blue
         )
-        if entry_redirect:  # 海外エントリー時の問い合わせリダイレクトの場合
+        # 海外エントリー時の問い合わせリダイレクトの場合
+        if entry_redirect:
             embed_overseas = Embed(
                 title="海外からのエントリー entry from overseas",
                 description=lang_entry_redirect[locale],
                 color=blue
             )
-
         # 問い合わせスレッドにメンション付きで送信
         await thread.send(f"{member.mention}", embeds=[embed_overseas, embed_ja])
         await thread.send(f"{admin.mention}\n海外対応モード")
@@ -144,26 +152,23 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
         def check(m):
             return m.channel == thread and m.content == "日本語希望"
 
+        # 日本語希望の場合
         _ = await client.wait_for('message', check=check)
-
-        """
-        日本語モードへ変更
-        """
 
         # スレッド名を日本語モードへ変更
         await thread.edit(name=f"{member.id}_ja")
         embed = Embed(
             title="大変失礼しました",
             description="今後、日本語モードで対応いたします。",
-            color=blue)
-
-        # エントリー時の問い合わせリダイレクトの場合
+            color=blue
+        )
+        # エントリー時の問い合わせリダイレクトの場合、エントリーボタンを表示
         if entry_redirect:
             embed.description += "\n\n以下のボタンからエントリーしてください。"
             view = await get_view(entry=True)
             await thread.send(member.mention, embed=embed, view=view)
 
-        # 通常の問い合わせ
+        # 通常の問い合わせの場合、再度問い合わせ対応を開始
         else:
             await thread.send(member.mention, embed=embed)
             await contact_start(client, member)

@@ -204,6 +204,7 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
         for col, value in zip(range(3, 11), values):
             await worksheet.update_cell(row=row, col=col, value=value)
 
+        # 問い合わせへリダイレクト
         await contact_start(client=interaction.client, member=interaction.user, entry_redirect=True)
 
 
@@ -264,17 +265,20 @@ async def entry_cancel(member: Member, category: str):
     if role_check[2] and category == "exhibition":  # エキシビション
         await member.remove_roles(role_exhibition)
 
-    # DBのセルを特定
+    # DBのセルを取得
     cell_id = await worksheet.find(f'{member.id}')
 
-    if bool(cell_id):  # DB登録あり
+    # DB登録あり
+    if bool(cell_id):
         for i in range(3, 11):
             await worksheet.update_cell(cell_id.row, i, '')
-    else:  # DB登録なし
+
+    # DB登録なし
+    else:
         await bot_channel.send(f"{tari3210.mention}\nError: DB登録なし\nキャンセル作業中止\n\n{thread.jump_url}")
         return
 
-    # 通知
+    # bot_channelへ通知
     embed = Embed(
         title=f"キャンセル実行 {category}",
         description=thread.jump_url,

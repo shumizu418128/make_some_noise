@@ -22,31 +22,14 @@ col = 横 A, B, C, ...
 # TODO: 動作テスト
 # 両カテゴリーのエントリーを受け付ける
 async def button_entry(interaction: Interaction):
+    # エントリー開始時刻を定義
     dt_now = datetime.now(JST)
-    dt_entry_start = datetime(  # エントリー開始時刻
+    dt_entry_start = datetime(
         year=2024,
         month=1,
         day=6,
         tzinfo=JST
     )
-    # エントリーカテゴリー取得
-    category = interaction.data["custom_id"].replace("button_entry_", "")
-
-    # interactionからlocaleを取得
-    locale = str(interaction.locale)
-    thread = await search_contact(member=interaction.user)
-
-    # 問い合わせスレッドがある場合はそこからlocaleを取得
-    if bool(thread):
-        locale = thread.name.split("_")[1]
-
-    # エントリー開始時刻確認
-    if dt_now < dt_entry_start:
-        await interaction.response.send_message(
-            "エントリー受付開始は1月6日です。",
-            ephemeral=True)
-        return
-
     # ビト森杯エントリー済みかどうか確認
     # ビト森杯はanyでキャンセル待ちも含む
     role_check = [
@@ -62,6 +45,24 @@ async def button_entry(interaction: Interaction):
             1171760161778581505  # エキシビション
         )
     ]
+    # エントリーカテゴリー取得
+    category = interaction.data["custom_id"].replace("button_entry_", "")
+
+    # localeを取得
+    locale = str(interaction.locale)
+
+    # 問い合わせスレッドがある場合はそこからlocaleを取得
+    thread = await search_contact(member=interaction.user)
+    if bool(thread):
+        locale = thread.name.split("_")[1]
+
+    # エントリー開始時刻確認
+    if dt_now < dt_entry_start:
+        await interaction.response.send_message(
+            "エントリー受付開始は1月6日です。",
+            ephemeral=True)
+        return
+
     # ビト森杯エントリー済み
     if role_check[0] and category == "bitomori":
         embed = Embed(
@@ -98,10 +99,13 @@ async def button_entry(interaction: Interaction):
     # 海外からのエントリー
     thread = await search_contact(member=interaction.user, create=True, locale=str(interaction.locale))
 
+    # 各種言語の文言
     available_langs = [
         "ko", "zh-TW", "zh-CN",
         "en-US", "en-GB", "es-ES", "pt-BR"
     ]
+
+    # localeが利用可能言語に含まれていない場合は英語にする
     if locale not in available_langs:
         locale = "en-US"
     langs = {
@@ -116,17 +120,22 @@ async def button_entry(interaction: Interaction):
     description = langs[locale] + \
         f"\nお手数ですが {thread.mention} までお問い合わせください。"
 
+    # 一旦エラー文言を送信
     embed = Embed(
         title="contact required: access from overseas",
         description=description,
         color=red
     )
     await interaction.followup.send(embed=embed, ephemeral=True)
+
+    # 問い合わせスレッドにリダイレクト
     await contact_start(client=interaction.client, member=interaction.user, entry_redirect=True)
 
 
 async def button_contact(interaction: Interaction):
     await interaction.response.defer(ephemeral=True)
+
+    # 問い合わせスレッドを取得or作成
     thread = await search_contact(member=interaction.user, create=True, locale=str(interaction.locale))
     embed = Embed(
         title="お問い合わせチャンネル作成",
@@ -134,6 +143,8 @@ async def button_contact(interaction: Interaction):
         color=0x00bfff
     )
     await interaction.followup.send(embed=embed, ephemeral=True)
+
+    # 問い合わせ対応開始
     await contact_start(client=interaction.client, member=interaction.user)
 
 
@@ -172,6 +183,7 @@ async def button_call_admin(interaction: Interaction):
     # しゃべってよし
     await contact.set_permissions(interaction.user, send_messages_in_threads=True)
 
+    # 要件を書くよう案内
     embed = Embed(
         title="このチャンネルにご用件をご記入ください",
         description="運営が対応します",
@@ -194,11 +206,15 @@ async def button_call_admin(interaction: Interaction):
         await bot_channel.send(f"{tari3210.mention}\nbutton_call_admin Error: 重複ロール付与\n\n{interaction.channel.jump_url}")
         return
 
-    if any(role_check):  # 何かしらエントリーしている
+    # 何かしらエントリーしている
+    if any(role_check):
+
         # DBから取得
         cell_id = await worksheet.find(f'{interaction.user.id}')  # ユーザーIDで検索
 
-        if bool(cell_id):  # DB登録あり
+        # DB登録あり
+        if bool(cell_id):
+
             # ユーザーIDの行の値を取得
             cell_values = await worksheet.row_values(cell_id.row)
             name = cell_values[2]
@@ -210,13 +226,16 @@ async def button_call_admin(interaction: Interaction):
             time = cell_values[8]
             replace_deadline = cell_values[10]
 
+            # エントリー情報詳細のembedを作成
             embed_entry_status = Embed(
                 title="エントリー情報詳細",
                 description=f"- 名前: {name}\n- 読み: {read}\n- ビト森杯出場可否: {status_bitomori}\
                     \n- OLEB参加状況: {status_exhibition}\n- デバイス: {device}\n- 備考: {note}\
                     \n- 受付時刻: {time}"
             )
-            if role_check[1]:  # キャンセル待ちの場合、情報を追記
+            # キャンセル待ちの場合、情報を追記
+            if role_check[1]:
+
                 # キャンセル待ちの順番最初の人を取得
                 cell_wait_first = await worksheet.find("キャンセル待ち", in_column=5)
 
@@ -234,11 +253,14 @@ async def button_call_admin(interaction: Interaction):
             # 通知
             await interaction.channel.send(embed=embed_entry_status)
 
-        else:  # DB登録なし
+        # DB登録なし
+        else:
             await bot_channel.send(f"{tari3210.mention}\nbutton_call_admin Error: DB登録なし\n\n{interaction.channel.jump_url}")
 
     # 何もエントリーしていない
     else:
+
+        # エントリー情報詳細のembedを作成
         embed = Embed(
             title="エントリー情報詳細",
             description=f"{interaction.user.display_name}さんはエントリーしていません。"
@@ -265,7 +287,8 @@ async def button_cancel(interaction: Interaction):
     emoji = ""
 
     # そもそもエントリーしてる？
-    if any(role_check) is False:  # どちらのロールも持っていない場合
+    # どちらのロールも持っていない場合
+    if any(role_check) is False:
         embed = Embed(
             title="エントリーキャンセル",
             description=f"Error: {interaction.user.display_name}さんはエントリーしていません。",
@@ -274,7 +297,10 @@ async def button_cancel(interaction: Interaction):
         await interaction.followup.send(embed=embed)
         return
 
-    if all(role_check):  # 両方にエントリーしている場合
+    # 両方にエントリーしている場合
+    if all(role_check):
+
+        # キャンセルするカテゴリーを選択
         embed = Embed(
             title="エントリーキャンセル",
             description="どちらのエントリーをキャンセルしますか？\n🏆 ビト森杯\
@@ -289,9 +315,19 @@ async def button_cancel(interaction: Interaction):
         def check(reaction, user):
             return user == interaction.user and reaction.emoji in ["🏆", "🆚", "❌"] and reaction.message == notice
 
-        reaction, _ = await interaction.client.wait_for('reaction_add', check=check)
+        try:
+            reaction, _ = await interaction.client.wait_for('reaction_add', check=check, timeout=60)
+
+        # 60秒で処理中止
+        except TimeoutError:
+            await notice.clear_reactions()
+            await notice.reply("Error: Timeout\nもう1度お試しください")
+            return
+
         await notice.delete(delay=1)
-        if reaction.emoji == "❌":  # ❌ならさよなら
+
+        # ❌ならさよなら
+        if reaction.emoji == "❌":
             return
         emoji = reaction.emoji
 
@@ -322,15 +358,21 @@ async def button_cancel(interaction: Interaction):
 
     try:
         reaction, _ = await interaction.client.wait_for('reaction_add', timeout=10, check=check)
-    except TimeoutError:  # 10秒で処理中止
+
+    # 10秒で処理中止
+    except TimeoutError:
         await notice.clear_reactions()
         await notice.reply("Error: Timeout\nもう1度お試しください")
         return
+
     await notice.clear_reactions()
-    if reaction.emoji == "❌":  # ❌ならさよなら
+
+    # ❌ならさよなら
+    if reaction.emoji == "❌":
         await notice.delete(delay=1)
         return
 
+    # cancel実行
     await entry_cancel(interaction.user, category)
 
 
@@ -362,6 +404,8 @@ async def button_submission_content(interaction: Interaction):
 
     # エントリーしていない
     if any(role_check) is False:
+
+        # エントリー情報詳細のembedを作成
         embed = Embed(
             title="エントリー状況照会",
             description=f"{interaction.user.display_name}さんはエントリーしていません。"
@@ -369,6 +413,7 @@ async def button_submission_content(interaction: Interaction):
         await interaction.followup.send(embed=embed)
         return
 
+    # 一旦取得中であることを通知
     embed = Embed(
         title="エントリー状況取得中...",
         description="しばらくお待ちください。\n※これには10秒ほどかかります。",
@@ -382,19 +427,30 @@ async def button_submission_content(interaction: Interaction):
     # DB登録なし
     if bool(cell_id) is False:
         embed = Embed(
-            title="Error: 情報取得失敗",
-            description="ご不便をおかけして申し訳ございません。\n後日もう一度お試しください。\
-                \n\n※運営に自動報告を行いました。数日以内に対処します。",
+            title="エントリー状況照会",
             color=red
         )
+        # とりあえずロールから確認
+        if role_check[0]:
+            embed.description += "ビト森杯エントリー済み\n"
+        elif role_check[1]:
+            embed.description += "ビト森杯キャンセル待ち登録済み\n"
+        if role_check[2]:
+            embed.description += "OLEBエントリー済み\n"
+
+        # 送信
         await interaction.followup.send(embed=embed)
+
+        # bot_channelにエラー通知
         await bot_channel.send(f"{tari3210.mention}\nbutton_submission_content Error: DB登録なし\n\n{interaction.channel.jump_url}")
         return
 
     # DB登録あり
     cell_values = await worksheet.row_values(cell_id.row)  # ユーザーIDの行の値を取得
 
-    if role_check[1]:  # キャンセル待ちの場合、何番目かを取得
+    # キャンセル待ちの場合、何番目かを取得
+    if role_check[1]:
+
         # キャンセル待ちの順番最初の人を取得
         cell_wait_first = await worksheet.find("キャンセル待ち", in_column=5)
 
@@ -402,6 +458,7 @@ async def button_submission_content(interaction: Interaction):
         cell_waitlist_position = cell_id.row - cell_wait_first.row + 1
         cell_values[4] += f" {len(role_reserve)}人中 {cell_waitlist_position}番目"
 
+    # エントリー情報詳細のembedを作成
     embed = Embed(
         title="エントリー状況照会",
         description=f"- 名前: {cell_values[2]}\n- 読み: {cell_values[3]}\n- ビト森杯出場可否: {cell_values[4]}\
@@ -425,12 +482,13 @@ async def button_accept_replace(interaction: Interaction):
     # Google spreadsheet worksheet読み込み
     worksheet = await get_worksheet('エントリー名簿')
 
+    # まず通知
     embed = Embed(
         title="繰り上げ出場手続き完了",
         description="手続きが完了しました。ビト森杯ご参加ありがとうございます。\n\n※エントリー状況照会ボタンで確認できるまで、10秒ほどかかります。",
         color=green
     )
-    await interaction.followup.send(embed=embed)  # 通知
+    await interaction.followup.send(embed=embed)
 
     # ロール付け替え
     await interaction.user.remove_roles(role_reserve)
@@ -449,7 +507,7 @@ async def button_accept_replace(interaction: Interaction):
         value=cell_time.value + " 繰り上げ: " +
         datetime.now(JST).strftime("%Y-%m-%d %H:%M:%S")
     )
-    # 通知
+    # bot_channelへ通知
     embed = Embed(
         title="繰り上げ出場手続き完了",
         description=interaction.channel.jump_url,
