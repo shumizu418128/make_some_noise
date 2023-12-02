@@ -38,7 +38,6 @@ async def on_ready():  # 起動時に動作する処理
     return
 
 
-# TODO OLEB実装
 @client.event
 async def on_interaction(interaction: Interaction):
     bot_channel = interaction.guild.get_channel(
