@@ -192,7 +192,7 @@ async def replacement(client: Client):
     # 繰り上げ出場手続き中の人の数を取得
     values_status = await worksheet.col_values(5)
     values_status = [
-        status for status in values_status if status == "繰り上げ出場手続き中"  # 繰り上げ出場手続き中の人を取得
+        status for status in values_status if status == "繰り上げ出場手続き中"
     ]
     # 繰り上げ手続き中の枠は確保されている
 
@@ -200,9 +200,9 @@ async def replacement(client: Client):
     entry_count = len(role.members) + len(values_status)
 
     # キャンセル待ちへの通知
-    for _ in range(16 - entry_count):  # entry_countが16人を下回り
+    for _ in range(16 - entry_count):
 
-        # かつキャンセル待ちがいる場合
+        # entry_countが16人を下回り、かつキャンセル待ちがいる場合
         if len(role_reserve.members) > 0:
 
             # キャンセル待ちの順番最初の人を取得
@@ -233,7 +233,7 @@ async def replacement(client: Client):
                 description=f"エントリーをキャンセルした方がいたため、{member_replace.display_name}さんは繰り上げ出場できます。\
                     繰り上げ出場するためには、手続きが必要です。\
                     \n\n```※他の出場希望者の機会確保のため、__72時間以内__の手続きをお願いしています。```\
-                    \n\n以下のどちらかのボタンを押してください。",
+                    \n\n**以下のどちらかのボタンを押してください。**",
                 color=yellow
             )
             view = await get_view(replace=True)
@@ -349,14 +349,15 @@ async def replacement_notice_24h(client: Client):
             description=f"ビト森杯エントリーをキャンセルした方がいたため、{member_replace.display_name}さんは繰り上げ出場できます。\
                 繰り上げ出場するためには、手続きが必要です。\
                 \n\n```※他の出場希望者の機会確保のため、__72時間以内__の手続きをお願いしています。```\
-                \n\n__72時間以内__に {thread.jump_url} にて手続きをお願いします。\n",
+                \n\n__72時間以内__に手続きをお願いします。",
             color=red
         )
         # viewを作成
         view = await get_view(replace=True)
 
         # 問い合わせthreadに送信
-        await thread.send(f"{member_replace.mention}\n# 明日21時締切", embed=embed, view=view)
+        await thread.send(f"{member_replace.mention}\n# 明日21時締切", embed=embed)
+        await thread.send("以下のどちらかのボタンを押してください。", view=view)
 
         # DMでも送信
         await member_replace.send(f"{member_replace.mention}\n# 明日21時締切", embed=embed)
