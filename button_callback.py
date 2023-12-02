@@ -250,7 +250,7 @@ async def button_call_admin(interaction: Interaction):
                 else:
                     embed_entry_status.description += "\n- 繰り上げ手続き締切: " + replace_deadline
 
-            # 通知
+            # ボタンを押したチャンネルへ通知
             await interaction.channel.send(embed=embed_entry_status)
 
         # DB登録なし
@@ -438,7 +438,7 @@ async def button_submission_content(interaction: Interaction):
         if role_check[2]:
             embed.description += "OLEBエントリー済み\n"
 
-        # 送信
+        # ロールの照合結果を送信
         await interaction.followup.send(embed=embed)
 
         # bot_channelにエラー通知
@@ -482,7 +482,7 @@ async def button_accept_replace(interaction: Interaction):
     # Google spreadsheet worksheet読み込み
     worksheet = await get_worksheet('エントリー名簿')
 
-    # まず通知
+    # まず手続き完了通知
     embed = Embed(
         title="繰り上げ出場手続き完了",
         description="手続きが完了しました。ビト森杯ご参加ありがとうございます。\n\n※エントリー状況照会ボタンで確認できるまで、10秒ほどかかります。",
@@ -496,8 +496,12 @@ async def button_accept_replace(interaction: Interaction):
 
     # DB更新
     cell_id = await worksheet.find(f'{interaction.user.id}')  # ユーザーIDで検索
-    await worksheet.update_cell(cell_id.row, 5, "出場")  # 出場可否を出場に変更
-    await worksheet.update_cell(cell_id.row, 11, "")  # 繰り上げ手続き締切を削除
+
+    # 出場可否を出場に変更
+    await worksheet.update_cell(cell_id.row, 5, "出場")
+
+    # 繰り上げ手続き締切を削除
+    await worksheet.update_cell(cell_id.row, 11, "")
 
     # 時間を追記
     cell_time = await worksheet.cell(row=cell_id.row, col=9)

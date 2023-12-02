@@ -158,7 +158,7 @@ async def replacement_expire(client: Client):
         member_replace = bot_channel.guild.get_member(int(cell_id.value))
         thread = await search_contact(member=member_replace)
 
-        # 通知
+        # キャンセル通知
         embed = Embed(
             title="ビト森杯 キャンセル通知",
             description="ビト森杯 繰り上げ出場手続きのお願いを送信しましたが、72時間以内に返答がなかったため、キャンセルとみなします。\
@@ -264,8 +264,11 @@ async def replacement(client: Client):
             dt_limit = dt_now + timedelta(days=3)  # 繰り上げ手続き締切
             limit = dt_limit.strftime("%m/%d")  # 月/日の形式に変換
 
-            cell_id = await worksheet.find(f'{member_replace.id}')  # ユーザーIDで検索
-            await worksheet.update_cell(cell_id.row, 11, limit)  # 繰り上げ手続き締切を設定
+            # ユーザーIDのセルを取得
+            cell_id = await worksheet.find(f'{member_replace.id}')
+
+            # 繰り上げ手続き締切を設定
+            await worksheet.update_cell(cell_id.row, 11, limit)
 
             # 出場可否を繰り上げ出場手続き中に変更
             await worksheet.update_cell(cell_id.row, 5, "繰り上げ出場手続き中")
@@ -286,7 +289,7 @@ async def entry_list_update(client: Client):
     # エントリー名簿を取得
     entry_list = [member.display_name for member in role.members]
 
-    # 送信
+    # ビト森杯botチャンネルへ送信
     embed = Embed(
         title="参加者一覧",
         description="\n".join(entry_list),
@@ -325,14 +328,19 @@ async def replacement_notice_24h(client: Client):
         member_replace = bot_channel.guild.get_member(int(cell_id.value))
         thread = await search_contact(member=member_replace)
 
-        # エントリー済みか確認
+        # 繰り上げ手続き済みか確認
         role_check = member_replace.get_role(
             1036149651847524393  # ビト森杯
         )
         # すでに繰り上げ手続きを完了している場合
         if role_check:
-            await bot_channel.send(f"{tari3210.mention}\n繰り上げ出場手続き完了者のDB未更新を確認\n{thread.jump_url}")
-            await worksheet.update_cell(cell.row, cell.col, "出場")  # 出場可否を出場に変更
+            await bot_channel.send(f"{tari3210.mention}\n解決済み: 繰り上げ出場手続き完了者のDB未更新を確認\n{thread.jump_url}")
+
+            # 繰り上げ手続き締切を空白に変更
+            await worksheet.update_cell(cell.row, cell.col, "")
+
+            # 出場可否を出場に変更
+            await worksheet.update_cell(cell.row, 5, "出場")
             continue
 
         # 通知embedを作成
@@ -347,8 +355,10 @@ async def replacement_notice_24h(client: Client):
         # viewを作成
         view = await get_view(replace=True)
 
-        # 送信
+        # 問い合わせthreadに送信
         await thread.send(f"{member_replace.mention}\n# 明日21時締切", embed=embed, view=view)
+
+        # DMでも送信
         await member_replace.send(f"{member_replace.mention}\n# 明日21時締切", embed=embed)
         await member_replace.send("### このDMは送信専用です。ここに何も入力しないでください。")
 
