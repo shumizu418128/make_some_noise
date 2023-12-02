@@ -113,7 +113,7 @@ async def button_entry(interaction: Interaction):
         "es-ES": f"Error: por favor contáctenos a través de {thread.mention}",
         "pt-BR": f"Erro: entre em contato conosco através de {thread.mention}"
     }
-    description = langs[str(interaction.locale)] + \
+    description = langs[locale] + \
         f"\nお手数ですが {thread.mention} までお問い合わせください。"
 
     embed = Embed(

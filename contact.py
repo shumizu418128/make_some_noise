@@ -90,12 +90,20 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
 
     # 海外アクセスの場合
     else:
+        # まず日本語での説明embedを作成
+        embed_ja = Embed(
+            description=f"{member.display_name}さんのDiscord言語設定が日本語ではなかったため、海外対応モードになっています。\
+                \n日本語対応をご希望の場合、このチャンネルに\n\n**日本語希望**\n\nとご記入ください。\n自動で日本語対応に切り替わります。"
+        )
+        embed_ja.set_footer(text=f"ISO 639-1 code: {locale}")
+        # この時点でのlocaleは実際の言語設定
+
         available_langs = [
             "ko", "zh-TW", "zh-CN",
             "en-US", "en-GB", "es-ES", "pt-BR"
         ]
         if locale not in available_langs:
-            locale = "en-US"
+            locale = "en-US"  # 未対応の言語設定の場合は英語として扱う
         lang_contact = {
             "en-US": "Please write your inquiry here",
             "en-GB": "Please write your inquiry here",
@@ -125,11 +133,6 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
                 description=lang_entry_redirect[locale],
                 color=blue
             )
-        embed_ja = Embed(
-            description=f"{member.display_name}さんのDiscord言語設定が日本語ではなかったため、海外対応モードになっています。\
-                \n日本語対応をご希望の場合、このチャンネルに\n\n**日本語希望**\n\nとご記入ください。\n自動で日本語対応に切り替わります。"
-        )
-        embed_ja.set_footer(text=f"ISO 639-1 code: {locale}")
 
         # 問い合わせスレッドにメンション付きで送信
         await thread.send(f"{member.mention}", embeds=[embed_overseas, embed_ja])
