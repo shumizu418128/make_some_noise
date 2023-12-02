@@ -143,6 +143,10 @@ async def on_message(message: Message):
     # s.から始まらない場合(コマンドではない場合)
     if not message.content.startswith("s."):
         await natural_language(message)
+        """if message.channel.id == 1035965200341401600:  # ビト森杯 お知らせ
+            view == await get_view(entry=True, contact=True)
+            await message.channel.send(view=view)
+        """
         return
 
     if message.content == "s.test":
