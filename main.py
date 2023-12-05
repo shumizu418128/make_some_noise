@@ -144,7 +144,7 @@ async def on_message(message: Message):
     if not message.content.startswith("s."):
         await natural_language(message)
         """if message.channel.id == 1035965200341401600:  # ビト森杯 お知らせ
-            view == await get_view(entry=True, contact=True)
+            view = await get_view(entry=True, contact=True)
             await message.channel.send(view=view)
         """
         return
@@ -167,6 +167,8 @@ async def on_message(message: Message):
         )
         view = await get_view(entry=True, contact=True)
         await announce.send("第3回ビト森杯・Online Loopstation Exhibition Battle", view=view)
+        await bot_notice_channel.send("第3回ビト森杯・Online Loopstation Exhibition Battle", view=view)
+        await contact.send("第3回ビト森杯・Online Loopstation Exhibition Battle", view=view)
         """
 
     # VS参加・退出
