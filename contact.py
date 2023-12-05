@@ -58,17 +58,18 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
     )
     locale = thread.name.split("_")[1]  # スレッド名からlocaleを取得
     role_check = [
-        member.get_role(
-            1036149651847524393  # ビト森杯
-        ),
-        member.get_role(
-            1172542396597289093  # キャンセル待ち ビト森杯
+        any(
+            member.get_role(
+                1036149651847524393  # ビト森杯
+            ),
+            member.get_role(
+                1172542396597289093  # キャンセル待ち ビト森杯
+            )
         ),
         member.get_role(
             1171760161778581505  # エキシビション
         )
     ]
-
     # 最初は喋るな
     await contact.set_permissions(member, send_messages_in_threads=False)
 
@@ -84,7 +85,8 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
             call_admin=True,
             submission_content=True,
             cancel=any(role_check),  # 何かにエントリーしているならキャンセルボタンを表示
-            entry=True
+            entry_bitomori=not role_check[0],  # ビト森杯にエントリーしていないならエントリーボタンを表示
+            entry_exhibition=not role_check[1]  # OLEBにエントリーしていないならエントリーボタンを表示
         )
         await thread.send(f"ここは {member.mention} さん専用のお問い合わせチャンネルです。", embed=embed, view=view)
         return

@@ -10,6 +10,8 @@ async def get_view(
     call_admin: bool = False,
     submission_content: bool = False,
     cancel: bool = False,
+    entry_bitomori: bool = False,
+    entry_exhibition: bool = False,
     entry: bool = False,
     replace: bool = False
 ):
@@ -67,10 +69,15 @@ async def get_view(
     if cancel:
         view.add_item(button_cancel)
 
-    # エントリー
-    if entry:
+    # ビト森杯エントリー
+    if entry_bitomori or entry:
         view.add_item(button_entry_bitomori)
+
+    # OLEBエントリー
+    if entry_exhibition or entry:
         view.add_item(button_entry_exhibition)
+
+    # entry = entry_bitomori and entry_exhibition
 
     # 繰り上げ出場
     button_accept_replace = Button(
