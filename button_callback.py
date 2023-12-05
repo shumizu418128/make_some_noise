@@ -105,7 +105,6 @@ async def button_entry(interaction: Interaction):
         "ko", "zh-TW", "zh-CN",
         "en-US", "en-GB", "es-ES", "pt-BR"
     ]
-
     # localeが利用可能言語に含まれていない場合は英語にする
     if locale not in available_langs:
         locale = "en-US"
@@ -179,6 +178,7 @@ async def button_call_admin(interaction: Interaction):
         f"{admin.mention}\n{interaction.user.display_name}さんからの問い合わせ",
         mention_author=False
     )
+    # エントリー状況照会
     embed = await get_submission_embed(interaction.user)
     await interaction.channel.send(embed=embed)
 

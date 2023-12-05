@@ -139,7 +139,6 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
             "es-ES": "Por favor, espere un momento, el moderador estará aquí pronto",
             "pt-BR": "Por favor, aguarde um momento, o moderador estará aqui em breve"
         }
-
         # 通常の問い合わせの場合
         embed_overseas = Embed(
             title="海外からのお問い合わせ contact from overseas",
@@ -259,6 +258,7 @@ async def get_submission_embed(member: Member):
 
     # DB登録なし
     else:
+
         # エントリーしていない場合
         if any(role_check) is False:
             embed_entry_status = Embed(
