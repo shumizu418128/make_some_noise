@@ -245,7 +245,6 @@ async def entry_cancel(member: Member, category: str):
     # キャンセル完了通知
     embed = Embed(
         title="エントリーキャンセル",
-        description="ビト森杯エントリーキャンセル完了しました。",
         color=green
     )
     embed.set_author(
@@ -253,6 +252,13 @@ async def entry_cancel(member: Member, category: str):
         icon_url=member.avatar.url
     )
     embed.timestamp = datetime.now(JST)
+
+    # キャンセル完了通知の内容を設定
+    if category == "bitomori":
+        embed.description = "ビト森杯エントリーをキャンセルしました。"
+    elif category == "exhibition":
+        embed.description = "Online Loopstation Exhibition Battleエントリーをキャンセルしました。"
+
     await thread.send(member.mention, embed=embed)
 
     # ロール削除
