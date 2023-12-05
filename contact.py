@@ -44,19 +44,15 @@ async def search_contact(member: Member, create: bool = False, locale: str = "ja
 
 # TODO: 動作テスト
 async def contact_start(client: Client, member: Member, entry_redirect: bool = False):
-
-    # 問い合わせスレッドを取得 リダイレクトならスレッド作成
-    thread = await search_contact(member, create=entry_redirect)
-    contact = thread.guild.get_channel(
+    contact = member.guild.get_channel(
         1035964918198960128  # 問い合わせ
     )
-    announce = thread.guild.get_channel(
+    announce = member.guild.get_channel(
         1035965200341401600  # ビト森杯お知らせ
     )
-    admin = thread.guild.get_role(
+    admin = member.guild.get_role(
         904368977092964352  # ビト森杯運営
     )
-    locale = thread.name.split("_")[1]  # スレッド名からlocaleを取得
     role_check = [
         any(
             member.get_role(
@@ -73,11 +69,24 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
     # 最初は喋るな
     await contact.set_permissions(member, send_messages_in_threads=False)
 
+    # 問い合わせスレッドを取得 リダイレクトならスレッド作成
+    thread = await search_contact(member, create=entry_redirect)
+
+    # スレッド名からlocaleを取得
+    locale = thread.name.split("_")[1]
+
     # 日本語アクセスの場合
     if locale == "ja":
+
+        # エントリー時の問い合わせリダイレクトの場合、申請内容を送信
+        if entry_redirect:
+            embed = await get_submission_embed(member)
+            await thread.send(f"ビト森杯ご参加ありがとうございます。\n現在の{member.display_name}さんのエントリー状況は以下の通りです。", embed=embed)
+
+        # 問い合わせの前に絵踏みさせる
         embed = Embed(
             title="お問い合わせの前に",
-            description=f"ビト森杯の情報は\n{announce.mention}\nに掲載されています。\
+            description=f"ビト森杯の情報は {announce.mention} に掲載されています。\
                 \n\nこれらの内容を必ずご確認ください。もし、ご質問がありましたら\n「ビト森杯運営に問い合わせ」ボタンを押してください。運営が対応します。",
             color=yellow
         )
@@ -195,3 +204,84 @@ async def get_worksheet(name: str):
     worksheet = await workbook.worksheet(name)
 
     return worksheet
+
+
+# TODO: 動作テスト
+async def get_submission_embed(member: Member):
+    bot_channel = member.guild.get_channel(
+        897784178958008322  # bot用チャット
+    )
+    tari3210 = member.guild.get_member(
+        412082841829113877
+    )
+    role_check = [
+        member.get_role(
+            1036149651847524393  # ビト森杯
+        ),
+        member.get_role(
+            1172542396597289093  # キャンセル待ち ビト森杯
+        ),
+        member.get_role(
+            1171760161778581505  # エキシビション
+        )
+    ]
+    # Google spreadsheet worksheet読み込み
+    worksheet = await get_worksheet("エントリー情報")
+
+    # 異常なロール付与の場合
+    if role_check[0] and role_check[1]:
+        await bot_channel.send(f"{tari3210.mention}\nError: 重複ロール付与\n\n{member.id} {member.display_name}")
+
+    # DBから取得
+    cell_id = await worksheet.find(f'{member.id}')  # ユーザーIDで検索
+
+    # DB登録あり
+    if bool(cell_id):
+
+        # ユーザーIDの行の値を取得
+        cell_values = await worksheet.row_values(cell_id.row)
+        name = cell_values[2]
+        read = cell_values[3]
+        status_bitomori = cell_values[4]
+        status_exhibition = cell_values[5]
+        device = cell_values[6]
+        note = cell_values[7]
+        time = cell_values[8]
+
+        # エントリー状況照会のembedを作成
+        embed_entry_status = Embed(
+            title="エントリー状況照会",
+            description=f"- 名前: {name}\n- 読み: {read}\n- ビト森杯出場可否: {status_bitomori}\
+                \n- OLEB参加状況: {status_exhibition}\n- デバイス: {device}\n- 備考: {note}\
+                \n- 受付時刻: {time}"
+        )
+        return embed_entry_status
+
+    # DB登録なし
+    else:
+        # エントリーしていない場合
+        if any(role_check) is False:
+            embed_entry_status = Embed(
+                title="エントリー状況照会",
+                description=f"{member.display_name}さんはエントリーしていません。"
+            )
+            return embed_entry_status
+
+        # エントリーしているのにDB登録がない場合（エラー）
+        else:
+
+            # bot用チャットにエラー通知
+            await bot_channel.send(f"{tari3210.mention}\nError: DB登録なし\n\n{member.id} {member.display_name}")
+
+            # とりあえずroleからエントリー状況を取得
+            embed_entry_status = Embed(
+                title="エントリー状況照会",
+            )
+            if role_check[0]:
+                embed_entry_status.description += "ビト森杯エントリー済み\n"
+            elif role_check[1]:
+                embed_entry_status.description += "ビト森杯キャンセル待ち登録済み\n"
+            if role_check[2]:
+                embed_entry_status.description += "OLEBエントリー済み"
+
+            return embed_entry_status

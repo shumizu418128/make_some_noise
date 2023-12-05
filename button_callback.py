@@ -2,7 +2,8 @@ from datetime import datetime, timedelta, timezone
 
 from discord import Embed, Interaction
 
-from contact import contact_start, get_worksheet, search_contact
+from contact import (contact_start, get_submission_embed, get_worksheet,
+                     search_contact)
 from entry import entry_cancel, modal_entry
 
 # NOTE: ビト森杯運営機能搭載ファイル
@@ -157,29 +158,6 @@ async def button_call_admin(interaction: Interaction):
     admin = interaction.user.get_role(
         904368977092964352  # ビト森杯運営
     )
-    bot_channel = interaction.guild.get_channel(
-        897784178958008322  # bot用チャット
-    )
-    tari3210 = interaction.guild.get_member(
-        412082841829113877
-    )
-    role_reserve = interaction.guild.get_role(
-        1172542396597289093  # キャンセル待ち ビト森杯
-    )
-    role_check = [
-        interaction.user.get_role(
-            1036149651847524393  # ビト森杯
-        ),
-        interaction.user.get_role(
-            1172542396597289093  # キャンセル待ち ビト森杯
-        ),
-        interaction.user.get_role(
-            1171760161778581505  # エキシビション
-        )
-    ]
-    # Google spreadsheet worksheet読み込み
-    worksheet = await get_worksheet('エントリー名簿')
-
     # しゃべってよし
     await contact.set_permissions(interaction.user, send_messages_in_threads=True)
 
@@ -201,71 +179,8 @@ async def button_call_admin(interaction: Interaction):
         f"{admin.mention}\n{interaction.user.display_name}さんからの問い合わせ",
         mention_author=False
     )
-    # ビト森杯のどちらのロールも持っている場合（異常なロール付与）
-    if role_check[0] and role_check[1]:
-        await bot_channel.send(f"{tari3210.mention}\nbutton_call_admin Error: 重複ロール付与\n\n{interaction.channel.jump_url}")
-        return
-
-    # 何かしらエントリーしている
-    if any(role_check):
-
-        # DBから取得
-        cell_id = await worksheet.find(f'{interaction.user.id}')  # ユーザーIDで検索
-
-        # DB登録あり
-        if bool(cell_id):
-
-            # ユーザーIDの行の値を取得
-            cell_values = await worksheet.row_values(cell_id.row)
-            name = cell_values[2]
-            read = cell_values[3]
-            status_bitomori = cell_values[4]
-            status_exhibition = cell_values[5]
-            device = cell_values[6]
-            note = cell_values[7]
-            time = cell_values[8]
-            replace_deadline = cell_values[10]
-
-            # エントリー情報詳細のembedを作成
-            embed_entry_status = Embed(
-                title="エントリー情報詳細",
-                description=f"- 名前: {name}\n- 読み: {read}\n- ビト森杯出場可否: {status_bitomori}\
-                    \n- OLEB参加状況: {status_exhibition}\n- デバイス: {device}\n- 備考: {note}\
-                    \n- 受付時刻: {time}"
-            )
-            # キャンセル待ちの場合、情報を追記
-            if role_check[1]:
-
-                # キャンセル待ちの順番最初の人を取得
-                cell_wait_first = await worksheet.find("キャンセル待ち", in_column=5)
-
-                # キャンセル待ちの順番を取得
-                cell_waitlist_position = cell_id.row - cell_wait_first.row + 1
-
-                # 繰り上げ手続き中でない場合、待ち人数を表示
-                if bool(replace_deadline) is False:
-                    embed_entry_status.description += f"\n- キャンセル待ち {len(role_reserve)}人中 {cell_waitlist_position}番目"
-
-                # 繰り上げ手続き中の場合、締切日を表示
-                else:
-                    embed_entry_status.description += "\n- 繰り上げ手続き締切: " + replace_deadline
-
-            # ボタンを押したチャンネルへ通知
-            await interaction.channel.send(embed=embed_entry_status)
-
-        # DB登録なし
-        else:
-            await bot_channel.send(f"{tari3210.mention}\nbutton_call_admin Error: DB登録なし\n\n{interaction.channel.jump_url}")
-
-    # 何もエントリーしていない
-    else:
-
-        # エントリー情報詳細のembedを作成
-        embed = Embed(
-            title="エントリー情報詳細",
-            description=f"{interaction.user.display_name}さんはエントリーしていません。"
-        )
-        await interaction.channel.send(embed=embed)
+    embed = await get_submission_embed(interaction.user)
+    await interaction.channel.send(embed=embed)
 
 
 # TODO: 動作テスト
@@ -376,94 +291,9 @@ async def button_cancel(interaction: Interaction):
     await entry_cancel(interaction.user, category)
 
 
-# TODO: 動作テスト
 async def button_submission_content(interaction: Interaction):
     await interaction.response.defer(ephemeral=True)
-    bot_channel = interaction.guild.get_channel(
-        897784178958008322  # bot用チャット
-    )
-    tari3210 = interaction.guild.get_member(
-        412082841829113877
-    )
-    role_reserve = interaction.guild.get_role(
-        1172542396597289093  # キャンセル待ち ビト森杯
-    )
-    role_check = [
-        interaction.user.get_role(
-            1036149651847524393  # ビト森杯
-        ),
-        interaction.user.get_role(
-            1172542396597289093  # キャンセル待ち ビト森杯
-        ),
-        interaction.user.get_role(
-            1171760161778581505  # エキシビション
-        )
-    ]
-    # Google spreadsheet worksheet読み込み
-    worksheet = await get_worksheet('エントリー名簿')
-
-    # エントリーしていない
-    if any(role_check) is False:
-
-        # エントリー情報詳細のembedを作成
-        embed = Embed(
-            title="エントリー状況照会",
-            description=f"{interaction.user.display_name}さんはエントリーしていません。"
-        )
-        await interaction.followup.send(embed=embed)
-        return
-
-    # 一旦取得中であることを通知
-    embed = Embed(
-        title="エントリー状況取得中...",
-        description="しばらくお待ちください。\n※これには10秒ほどかかります。",
-        color=blue
-    )
-    await interaction.followup.send(embed=embed)
-
-    # DBから取得
-    cell_id = await worksheet.find(f'{interaction.user.id}')  # ユーザーIDで検索
-
-    # DB登録なし
-    if bool(cell_id) is False:
-        embed = Embed(
-            title="エントリー状況照会",
-            color=red
-        )
-        # とりあえずロールから確認
-        if role_check[0]:
-            embed.description += "ビト森杯エントリー済み\n"
-        elif role_check[1]:
-            embed.description += "ビト森杯キャンセル待ち登録済み\n"
-        if role_check[2]:
-            embed.description += "OLEBエントリー済み\n"
-
-        # ロールの照合結果を送信
-        await interaction.followup.send(embed=embed)
-
-        # bot_channelにエラー通知
-        await bot_channel.send(f"{tari3210.mention}\nbutton_submission_content Error: DB登録なし\n\n{interaction.channel.jump_url}")
-        return
-
-    # DB登録あり
-    cell_values = await worksheet.row_values(cell_id.row)  # ユーザーIDの行の値を取得
-
-    # キャンセル待ちの場合、何番目かを取得
-    if role_check[1]:
-
-        # キャンセル待ちの順番最初の人を取得
-        cell_wait_first = await worksheet.find("キャンセル待ち", in_column=5)
-
-        # キャンセル待ちの順番を取得
-        cell_waitlist_position = cell_id.row - cell_wait_first.row + 1
-        cell_values[4] += f" {len(role_reserve)}人中 {cell_waitlist_position}番目"
-
-    # エントリー情報詳細のembedを作成
-    embed = Embed(
-        title="エントリー状況照会",
-        description=f"- 名前: {cell_values[2]}\n- 読み: {cell_values[3]}\n- ビト森杯出場可否: {cell_values[4]}\
-            \n- OLEB出場可否: {cell_values[5]}\n- デバイス: {cell_values[6]}\n- 備考: {cell_values[7]}\n- 受付時刻: {cell_values[8]}"
-    )
+    embed = await get_submission_embed(interaction.user)
     await interaction.channel.send(embed=embed)
 
 
