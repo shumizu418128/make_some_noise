@@ -84,7 +84,7 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
             call_admin=True,
             submission_content=True,
             cancel=any(role_check),  # 何かにエントリーしているならキャンセルボタンを表示
-            entry=not any(role_check)  # 何もエントリーしていないならエントリーボタンを表示
+            entry=True
         )
         await thread.send(f"ここは {member.mention} さん専用のお問い合わせチャンネルです。", embed=embed, view=view)
         return
