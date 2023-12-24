@@ -1,10 +1,11 @@
 from discord import ButtonStyle
 from discord.ui import Button, View
 
-
 # NOTE: ビト森杯運営機能搭載ファイル
 
 # trueになっているボタンを表示 (falseは非表示)
+
+
 async def get_view(
     contact: bool = False,
     call_admin: bool = False,
