@@ -205,8 +205,11 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
         for col, value in zip(range(3, 11), values):
             await worksheet.update_cell(row=row, col=col, value=value)
 
+        # memberインスタンスを再取得 (roleを更新するため)
+        member = interaction.guild.get_member(interaction.user.id)
+
         # 問い合わせへリダイレクト
-        await contact_start(client=interaction.client, member=interaction.user, entry_redirect=True)
+        await contact_start(client=interaction.client, member=member, entry_redirect=True)
 
 
 async def entry_cancel(member: Member, category: str):

@@ -89,7 +89,6 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
                 \n\nこれらの内容を必ずご確認ください。もし、ご質問がありましたら\n「ビト森杯運営に問い合わせ」ボタンを押してください。運営が対応します。",
             color=yellow
         )
-        # BUG: 片方のみエントリーの場合、キャンセルボタンが表示されない
         view = await get_view(
             call_admin=True,
             submission_content=True,
