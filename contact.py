@@ -246,9 +246,9 @@ async def get_submission_embed(member: Member):
         time = cell_values[8]
 
         if status_bitomori == "":
-            status_bitomori = "---"
+            status_bitomori = "❌"
         if status_exhibition == "":
-            status_exhibition = "---"
+            status_exhibition = "❌"
 
         # エントリー状況照会のembedを作成
         embed_entry_status = Embed(
