@@ -54,14 +54,14 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
         904368977092964352  # ビト森杯運営
     )
     role_check = [
-        any(
+        any([
             member.get_role(
                 1036149651847524393  # ビト森杯
             ),
             member.get_role(
                 1172542396597289093  # キャンセル待ち ビト森杯
             )
-        ),
+        ]),
         member.get_role(
             1171760161778581505  # エキシビション
         )
