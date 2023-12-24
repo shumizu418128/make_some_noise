@@ -199,7 +199,7 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
             ]
             for col, value in zip([5, 6, 8], values):
                 cell = await worksheet.cell(cell_id.row, col)
-                await worksheet.update_cell(cell_id.row, col, value  + cell.value)
+                await worksheet.update_cell(cell_id.row, col, value + cell.value)
 
             # 受付時刻のみ "上書き更新"
             await worksheet.update_cell(cell_id.row, 9, str(datetime.now(JST).strftime("%Y-%m-%d %H:%M:%S")))
