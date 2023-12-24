@@ -185,7 +185,9 @@ async def button_call_admin(interaction: Interaction):
 
 # TODO: 動作テスト
 async def button_cancel(interaction: Interaction):
-    await interaction.response.defer(ephemeral=True)
+
+    # 応答タイミングが状況に応じて違うので、ここで応答を済ませる
+    await interaction.response.send_message("処理中...", ephemeral=True)
     role_check = [
         any([
             interaction.user.get_role(
@@ -209,7 +211,7 @@ async def button_cancel(interaction: Interaction):
             description=f"Error: {interaction.user.display_name}さんはエントリーしていません。",
             color=red
         )
-        await interaction.followup.send(embed=embed)
+        await interaction.channel.send(embed=embed)
         return
 
     # 両方にエントリーしている場合
@@ -222,7 +224,7 @@ async def button_cancel(interaction: Interaction):
                 \n🆚 Online Loopstation Exhibition Battle\n❌ このメッセージを削除する",
             color=yellow
         )
-        notice = await interaction.followup.send(embed=embed)
+        notice = await interaction.channel.send(embed=embed)
         await notice.add_reaction("🏆")
         await notice.add_reaction("🆚")
         await notice.add_reaction("❌")
@@ -264,7 +266,7 @@ async def button_cancel(interaction: Interaction):
         name=interaction.user.display_name,
         icon_url=interaction.user.display_avatar.url
     )
-    notice = await interaction.followup.send(embed=embed)
+    notice = await interaction.channel.send(embed=embed)
     await notice.add_reaction("⭕")
     await notice.add_reaction("❌")
 
@@ -294,7 +296,7 @@ async def button_cancel(interaction: Interaction):
 async def button_submission_content(interaction: Interaction):
     await interaction.response.defer(ephemeral=True)
     embed = await get_submission_embed(interaction.user)
-    await interaction.channel.send(embed=embed)
+    await interaction.followup.send(embed=embed)
 
 
 # TODO: 動作テスト

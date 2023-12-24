@@ -142,7 +142,7 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
             )
             bitomori_entry_status = "キャンセル待ち"
 
-        # ビト森杯エントリー受付完了通知
+        # ビト森杯エントリー受付完了通知（キャンセル待ちなしで、正常にエントリー完了）
         elif category == "bitomori":
             await interaction.user.add_roles(role)
             embed = Embed(
