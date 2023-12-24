@@ -184,26 +184,49 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
         )
         await bot_channel.send(f"{interaction.user.id}", embed=embed)
 
-        # エントリー数を更新
-        num_entries = await worksheet.cell(row=3, col=1)
-        num_entries.value = int(num_entries.value) + 1
-        await worksheet.update_cell(row=3, col=1, value=num_entries.value)
+        # 以下、DB登録処理
+        # すでにDB登録がある場合、情報を追記する
+        cell_id = await worksheet.find(f'{interaction.user.id}')  # ユーザーIDで検索
 
-        # エントリー情報を書き込み
-        # BUG: 2回目のエントリーで新規行に作成される
-        row = int(num_entries.value) + 1
-        values = [
-            name,
-            read,
-            bitomori_entry_status,
-            exhibition_entry_status,
-            device,
-            note,
-            str(datetime.now(JST).strftime("%Y-%m-%d %H:%M:%S")),
-            str(interaction.user.id)
-        ]
-        for col, value in zip(range(3, 11), values):
-            await worksheet.update_cell(row=row, col=col, value=value)
+        # DB登録あり
+        if bool(cell_id):
+
+            # ビト森杯出場可否・OLEB参加状況・備考を "追記"
+            values = [
+                bitomori_entry_status,
+                exhibition_entry_status,
+                note
+            ]
+            for col, value in zip([5, 6, 8], values):
+                cell = await worksheet.cell(cell_id.row, col)
+                await worksheet.update_cell(cell_id.row, col, value + "   " + cell.value)
+
+            # 受付時刻のみ "上書き更新"
+            await worksheet.update_cell(cell_id.row, 9, str(datetime.now(JST).strftime("%Y-%m-%d %H:%M:%S")))
+
+        # DB登録なし
+        # 新規行を作成し、情報を書き込む
+        else:
+
+            # エントリー数を更新
+            num_entries = await worksheet.cell(row=3, col=1)
+            num_entries.value = int(num_entries.value) + 1
+            await worksheet.update_cell(row=3, col=1, value=num_entries.value)
+
+            # エントリー情報を書き込み
+            row = int(num_entries.value) + 1
+            values = [
+                name,
+                read,
+                bitomori_entry_status,
+                exhibition_entry_status,
+                device,
+                note,
+                str(datetime.now(JST).strftime("%Y-%m-%d %H:%M:%S")),
+                str(interaction.user.id)
+            ]
+            for col, value in zip(range(3, 11), values):
+                await worksheet.update_cell(row=row, col=col, value=value)
 
         # memberインスタンスを再取得 (roleを更新するため)
         member = interaction.guild.get_member(interaction.user.id)
