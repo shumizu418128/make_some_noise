@@ -182,6 +182,7 @@ async def button_call_admin(interaction: Interaction):
     await interaction.channel.send(embed=embed)
 
 
+# TODO: 動作テスト
 async def button_cancel(interaction: Interaction):
 
     # 応答タイミングが状況に応じて違うので、ここで応答を済ませる
