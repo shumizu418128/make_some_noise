@@ -287,6 +287,9 @@ async def entry_cancel(member: Member, category: str):
 
     await thread.send(member.mention, embed=embed)
 
+    # DBのセルを取得
+    cell_id = await worksheet.find(f'{member.id}')
+
     # ロール削除
     if role_check[0] and category == "bitomori":  # ビト森杯
         await member.remove_roles(role)
@@ -295,27 +298,55 @@ async def entry_cancel(member: Member, category: str):
     if role_check[2] and category == "exhibition":  # エキシビション
         await member.remove_roles(role_exhibition)
 
-    # DBのセルを取得
-    cell_id = await worksheet.find(f'{member.id}')
-
     # DB登録あり
     if bool(cell_id):
-        for i in range(3, 11):
-            await worksheet.update_cell(cell_id.row, i, '')
+
+        # ビト森杯出場可否・OLEB参加状況を削除
+        if category == "bitomori":
+            await worksheet.update_cell(cell_id.row, 5, '')
+
+            # キャンセル待ち繰り上げ手続き中の場合、その情報も削除
+            cell_list_deadline = await worksheet.cell(cell_id.row, 11)
+            if cell_list_deadline.value != "":
+                await worksheet.update_cell(cell_id.row, 11, '')
+
+        if category == "exhibition":
+            await worksheet.update_cell(cell_id.row, 6, '')
+
+        # 両方のエントリーをキャンセルした場合、DBの行を削除
+        # memberインスタンスを再取得 (roleを更新するため)
+        member = member.guild.get_member(member.id)
+
+        # role_checkを再取得
+        role_check = [
+            member.get_role(
+                1036149651847524393  # ビト森杯
+            ),
+            member.get_role(
+                1172542396597289093  # キャンセル待ち ビト森杯
+            ),
+            member.get_role(
+                1171760161778581505  # エキシビション
+            )
+        ]
+        # すべてのロールを持っていない場合
+        if any(role_check) is False:
+            for i in range(3, 12):
+                await worksheet.update_cell(cell_id.row, i, '')
+
+        # bot_channelへ通知
+        embed = Embed(
+            title=f"キャンセル実行 {category}",
+            description=thread.jump_url,
+            color=blue
+        )
+        embed.set_author(
+            name=member.display_name,
+            icon_url=member.avatar.url
+        )
+        await bot_channel.send(embed=embed)
 
     # DB登録なし
     else:
         await bot_channel.send(f"{tari3210.mention}\nError: DB登録なし\nキャンセル作業中止\n\n{thread.jump_url}")
         return
-
-    # bot_channelへ通知
-    embed = Embed(
-        title=f"キャンセル実行 {category}",
-        description=thread.jump_url,
-        color=blue
-    )
-    embed.set_author(
-        name=member.display_name,
-        icon_url=member.avatar.url
-    )
-    await bot_channel.send(embed=embed)
