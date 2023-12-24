@@ -185,8 +185,8 @@ async def button_call_admin(interaction: Interaction):
 async def button_cancel(interaction: Interaction):
 
     # 応答タイミングが状況に応じて違うので、ここで応答を済ませる
-    # TODO: このメッセージはすぐ消す
-    await interaction.response.send_message("処理中...", ephemeral=True)
+    await interaction.response.send_message("処理中...", delete_after=2)
+
     role_check = [
         any([
             interaction.user.get_role(
