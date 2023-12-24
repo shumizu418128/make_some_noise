@@ -225,7 +225,7 @@ async def get_submission_embed(member: Member):
         )
     ]
     # Google spreadsheet worksheet読み込み
-    worksheet = await get_worksheet("エントリー情報")
+    worksheet = await get_worksheet("エントリー名簿")
 
     # 異常なロール付与の場合
     if role_check[0] and role_check[1]:
