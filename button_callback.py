@@ -182,10 +182,10 @@ async def button_call_admin(interaction: Interaction):
     await interaction.channel.send(embed=embed)
 
 
-# TODO: 動作テスト
 async def button_cancel(interaction: Interaction):
 
     # 応答タイミングが状況に応じて違うので、ここで応答を済ませる
+    # TODO: このメッセージはすぐ消す
     await interaction.response.send_message("処理中...", ephemeral=True)
     role_check = [
         any([
@@ -256,6 +256,7 @@ async def button_cancel(interaction: Interaction):
         category_ja = "Online Loopstation Exhibition Battle"
 
     # キャンセル意思の最終確認
+    # BUG: ここでOLEBを選択してもビト森杯のキャンセルが実行される
     embed = Embed(
         title="エントリーキャンセル",
         description=f"{category_ja}エントリーをキャンセルしますか？\n⭕ `OK`\n❌ このメッセージを削除する",

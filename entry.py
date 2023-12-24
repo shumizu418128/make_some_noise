@@ -54,7 +54,7 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
             )
         )
 
-    # TODO: 動作テスト
+    # TODO: キャンセル待ち追加処理の動作テスト
     # モーダル提出後の処理
     async def on_submit(self, interaction: Interaction):
         await interaction.response.defer(ephemeral=True)
@@ -190,6 +190,7 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
         await worksheet.update_cell(row=3, col=1, value=num_entries.value)
 
         # エントリー情報を書き込み
+        # BUG: 2回目のエントリーで新規行に作成される
         row = int(num_entries.value) + 1
         values = [
             name,
@@ -208,7 +209,6 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
         await contact_start(client=interaction.client, member=interaction.user, entry_redirect=True)
 
 
-# TODO: 動作テスト
 async def entry_cancel(member: Member, category: str):
     bot_channel = member.guild.get_channel(
         897784178958008322  # bot用チャット

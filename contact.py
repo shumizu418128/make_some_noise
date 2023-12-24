@@ -42,7 +42,6 @@ async def search_contact(member: Member, create: bool = False, locale: str = "ja
     return thread
 
 
-# TODO: 動作テスト
 async def contact_start(client: Client, member: Member, entry_redirect: bool = False):
     contact = member.guild.get_channel(
         1035964918198960128  # 問い合わせ
@@ -90,6 +89,7 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
                 \n\nこれらの内容を必ずご確認ください。もし、ご質問がありましたら\n「ビト森杯運営に問い合わせ」ボタンを押してください。運営が対応します。",
             color=yellow
         )
+        # BUG: 片方のみエントリーの場合、キャンセルボタンが表示されない
         view = await get_view(
             call_admin=True,
             submission_content=True,
@@ -205,7 +205,8 @@ async def get_worksheet(name: str):
     return worksheet
 
 
-# TODO: 動作テスト
+# BUG: 無応答時間が長すぎる
+# TODO: 不参加のカテゴリーをわかりやすくする
 async def get_submission_embed(member: Member):
     bot_channel = member.guild.get_channel(
         897784178958008322  # bot用チャット
