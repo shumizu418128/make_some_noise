@@ -213,6 +213,14 @@ async def button_cancel(interaction: Interaction):
         await interaction.channel.send(embed=embed)
         return
 
+    # エントリーカテゴリー 日本語、英語表記定義
+    if role_check[0]:  # ビト森杯
+        category = "bitomori"
+        category_ja = "ビト森杯"
+    if role_check[1]:  # エキシビション
+        category = "exhibition"
+        category_ja = "Online Loopstation Exhibition Battle"
+
     # 両方にエントリーしている場合
     if all(role_check):
 
@@ -247,16 +255,15 @@ async def button_cancel(interaction: Interaction):
             return
         emoji = reaction.emoji
 
-    # エントリーカテゴリー 日本語、英語表記定義
-    if role_check[0] or emoji == "🏆":  # ビト森杯
-        category = "bitomori"
-        category_ja = "ビト森杯"
-    elif role_check[1] or emoji == "🆚":  # エキシビション
-        category = "exhibition"
-        category_ja = "Online Loopstation Exhibition Battle"
+        # エントリーカテゴリー 日本語、英語表記定義
+        if emoji == "🏆":  # ビト森杯
+            category = "bitomori"
+            category_ja = "ビト森杯"
+        if emoji == "🆚":  # エキシビション
+            category = "exhibition"
+            category_ja = "Online Loopstation Exhibition Battle"
 
     # キャンセル意思の最終確認
-    # BUG: ここでOLEBを選択してもビト森杯のキャンセルが実行される
     embed = Embed(
         title="エントリーキャンセル",
         description=f"{category_ja}エントリーをキャンセルしますか？\n⭕ `OK`\n❌ このメッセージを削除する",
