@@ -204,7 +204,6 @@ async def get_worksheet(name: str):
     return worksheet
 
 
-# TODO: 不参加のカテゴリーをわかりやすくする
 async def get_submission_embed(member: Member):
     bot_channel = member.guild.get_channel(
         897784178958008322  # bot用チャット
