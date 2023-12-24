@@ -60,7 +60,7 @@ async def button_entry(interaction: Interaction):
     # エントリー開始時刻確認
     if dt_now < dt_entry_start:
         await interaction.response.send_message(
-            "エントリー受付開始は1月6日です。",
+            "ビト森杯・Online Loopstation Exhibition Battle\nエントリー受付開始は1月6日です。",
             ephemeral=True)
         return
 
