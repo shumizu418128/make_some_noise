@@ -204,7 +204,6 @@ async def get_worksheet(name: str):
     return worksheet
 
 
-# BUG: 無応答時間が長すぎる
 # TODO: 不参加のカテゴリーをわかりやすくする
 async def get_submission_embed(member: Member):
     bot_channel = member.guild.get_channel(
@@ -247,12 +246,17 @@ async def get_submission_embed(member: Member):
         note = cell_values[7]
         time = cell_values[8]
 
+        if status_bitomori == "":
+            status_bitomori = "❌"
+        if status_exhibition == "":
+            status_exhibition = "❌"
+
         # エントリー状況照会のembedを作成
         embed_entry_status = Embed(
             title="エントリー状況照会",
-            description=f"- 名前: {name}\n- 読み: {read}\n- ビト森杯出場可否: {status_bitomori}\
-                \n- OLEB参加状況: {status_exhibition}\n- デバイス: {device}\n- 備考: {note}\
-                \n- 受付時刻: {time}"
+            description=f"- 名前: `{name}`\n- 読み: `{read}`\n- ビト森杯出場可否: `{status_bitomori}`\
+                \n- OLEB参加状況: `{status_exhibition}`\n- デバイス: `{device}`\n- 備考: `{note}`\
+                \n- 受付時刻: `{time}`"
         )
         return embed_entry_status
 

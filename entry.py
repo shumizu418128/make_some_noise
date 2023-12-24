@@ -164,8 +164,8 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
             )
             exhibition_entry_status = "参加"
 
-        submission = f"受付内容\n- 名前: {name}\
-            \n- よみがな: {read}\n- デバイス: {device}\n- 備考: {note}\n\n※エントリー状況照会ボタンで確認できるまで、10秒ほどかかります。"
+        submission = f"受付内容\n- 名前: `{name}`\
+            \n- よみがな: `{read}`\n- デバイス: `{device}`\n- 備考: `{note}`\n\n※エントリー状況照会ボタンで確認できるまで、10秒ほどかかります。"
         embed.description += submission
         await interaction.followup.send(embed=embed, ephemeral=True)
 
