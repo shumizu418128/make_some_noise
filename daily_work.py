@@ -22,7 +22,7 @@ col = 横 A, B, C, ...
 """
 
 
-# TODO: 動作テスト
+# TODO: OLEB出場者に対するメンテナンス処理の追加
 async def maintenance(client: Client):
     bot_channel = client.get_channel(
         897784178958008322  # bot用チャット
@@ -138,6 +138,9 @@ async def replacement_expire(client: Client):
     bot_channel = client.get_channel(
         897784178958008322  # bot用チャット
     )
+    tari3210 = bot_channel.guild.get_member(
+        412082841829113877
+    )
     # Google spreadsheet worksheet読み込み
     worksheet = await get_worksheet('エントリー名簿')
 
@@ -157,6 +160,21 @@ async def replacement_expire(client: Client):
         # 問い合わせスレッドを取得
         member_replace = bot_channel.guild.get_member(int(cell_id.value))
         thread = await search_contact(member=member_replace)
+
+        # 繰り上げ手続き済みか確認
+        role_check = member_replace.get_role(
+            1036149651847524393  # ビト森杯
+        )
+        # すでに繰り上げ手続きを完了している場合
+        if role_check:
+            await bot_channel.send(f"{tari3210.mention}\n解決済み: 繰り上げ出場手続き完了者のDB未更新を確認\n{thread.jump_url}")
+
+            # 繰り上げ手続き締切を空白に変更
+            await worksheet.update_cell(cell.row, cell.col, "")
+
+            # 出場可否を出場に変更
+            await worksheet.update_cell(cell.row, 5, "出場")
+            continue
 
         # キャンセル通知
         embed = Embed(
@@ -208,6 +226,10 @@ async def replacement(client: Client):
             # キャンセル待ちの順番最初の人を取得
             cell_waitlist_first = await worksheet.find("キャンセル待ち", in_column=5)
 
+            # いないなら終了
+            if bool(cell_waitlist_first) is False:
+                break
+
             # ユーザーID、memberを取得
             cell_id = await worksheet.cell(row=cell_waitlist_first.row, col=10)
             member_replace = bot_channel.guild.get_member(int(cell_id.value))
@@ -217,7 +239,7 @@ async def replacement(client: Client):
 
             # bot_channelへ通知
             embed = Embed(
-                title="繰り上げエントリー確認中",
+                title="繰り上げ出場通知を送信 (出場意思確認中)",
                 description=thread.jump_url,
                 color=blue
             )
@@ -255,7 +277,7 @@ async def replacement(client: Client):
             await member_replace.send(member_replace.mention, embed=embed)
             await member_replace.send("### このDMは送信専用です。ここに何も入力しないでください。")
 
-            # 海外からのエントリー
+            # 海外からのエントリーは運営対処が必要なので、運営へ通知
             locale = thread.name.split("_")[1]  # スレッド名からlocaleを取得
             if locale != "ja":
                 await thread.send(f"{admin.mention}\n繰り上げ出場手続き中：海外からのエントリー")
@@ -291,7 +313,7 @@ async def entry_list_update(client: Client):
 
     # ビト森杯botチャンネルへ送信
     embed = Embed(
-        title="参加者一覧",
+        title="現時点でのビト森杯参加者一覧",
         description="\n".join(entry_list),
         color=blue
     )
@@ -317,6 +339,10 @@ async def replacement_notice_24h(client: Client):
 
     # 繰り上げ締切が明日のセルを取得
     cell_list_deadline_tomorrow = await worksheet.findall(tomorrow, in_column=11)
+
+    # いないなら終了
+    if bool(cell_list_deadline_tomorrow) is False:
+        return
 
     # 1人ずつ通知する
     for cell in cell_list_deadline_tomorrow:
