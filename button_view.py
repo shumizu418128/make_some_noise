@@ -25,7 +25,7 @@ async def get_view(
         emoji="📝"
     )
     button_call_admin = Button(
-        label="ビト森杯運営に問い合わせ",
+        label="運営に問い合わせ",
         style=ButtonStyle.primary,
         custom_id="button_call_admin",
         emoji="📩"

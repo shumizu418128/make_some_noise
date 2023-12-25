@@ -85,8 +85,8 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
         # 問い合わせの前に絵踏みさせる
         embed = Embed(
             title="お問い合わせの前に",
-            description=f"ビト森杯の情報は {announce.mention} に掲載されています。\
-                \n\nこれらの内容を必ずご確認ください。もし、ご質問がありましたら\n「ビト森杯運営に問い合わせ」ボタンを押してください。運営が対応します。",
+            description=f"イベント情報は {announce.mention} に掲載されています。\
+                \n\nこれらの内容を必ずご確認ください。もし、ご質問がありましたら\n「運営に問い合わせ」ボタンを押してください。運営が対応します。",
             color=yellow
         )
         view = await get_view(
