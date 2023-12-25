@@ -22,7 +22,6 @@ col = 横 A, B, C, ...
 """
 
 
-# TODO: OLEB出場者に対するメンテナンス処理の追加
 async def maintenance(client: Client):
     bot_channel = client.get_channel(
         897784178958008322  # bot用チャット
@@ -232,7 +231,6 @@ async def replacement_expire(client: Client):
 
 
 # TODO: 動作テスト
-# BUG: キャンセル待ちの順番は、DBの並び順とは一致しない 順番管理方法を再検討
 # 繰り上げ手続きは毎日21時に実行
 async def replacement(client: Client):
     bot_channel = client.get_channel(
