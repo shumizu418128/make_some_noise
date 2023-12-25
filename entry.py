@@ -135,9 +135,11 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
         # エントリー数が上限に達している or キャンセル待ちリストに人がいる場合
         if any([len(role.members) >= 16, len(role_reserve.members) > 0]) and category == "bitomori":
             await interaction.user.add_roles(role_reserve)
+            wait = len(role_reserve.members) + 1
             embed = Embed(
                 title="キャンセル待ち登録",
-                description="参加者数が上限に達しているため、キャンセル待ちリストに登録しました。\n\n",
+                description=f"参加者数が上限に達しているため、キャンセル待ちリストに登録しました。\
+                \nキャンセル待ち順番: {wait}\n\n",
                 color=blue
             )
             bitomori_entry_status = "キャンセル待ち"
@@ -159,13 +161,14 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
             embed = Embed(
                 title="エントリー完了",
                 description="エントリー受付完了しました。\
-                    Online Loopstation Exhibition Battleご参加ありがとうございます。\n\n\n",
+                    Online Loopstation Exhibition Battleご参加ありがとうございます。\n\n",
                 color=green
             )
             exhibition_entry_status = "参加"
 
         submission = f"受付内容\n- 名前: `{name}`\
-            \n- よみがな: `{read}`\n- デバイス: `{device}`\n- 備考: `{note}`\n\n※エントリー状況照会ボタンで確認できるまで、10秒ほどかかります。"
+            \n- よみがな: `{read}`\n- デバイス: `{device}`\n- 備考: `{note}`\
+            \n\n※後ほど、{name}さん専用お問い合わせチャンネルを作成します。"
         embed.description += submission
         await interaction.followup.send(embed=embed, ephemeral=True)
 
@@ -184,55 +187,148 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
         )
         await bot_channel.send(f"{interaction.user.id}", embed=embed)
 
-        # 以下、DB登録処理
-        # すでにDB登録がある場合、情報を追記する
-        cell_id = await worksheet.find(f'{interaction.user.id}')  # ユーザーIDで検索
+        # DB新規登録
+        # エントリー数を更新
+        num_entries = await worksheet.cell(row=3, col=1)
+        num_entries.value = int(num_entries.value) + 1
+        await worksheet.update_cell(row=3, col=1, value=str(num_entries.value))
 
-        # DB登録あり
-        if bool(cell_id):
-
-            # ビト森杯出場可否・OLEB参加状況・備考を "追記"
-            values = [
-                bitomori_entry_status,
-                exhibition_entry_status,
-                note
-            ]
-            for col, value in zip([5, 6, 8], values):
-                cell = await worksheet.cell(cell_id.row, col)
-                await worksheet.update_cell(cell_id.row, col, value + cell.value)
-
-            # 受付時刻のみ "上書き更新"
-            await worksheet.update_cell(cell_id.row, 9, str(datetime.now(JST).strftime("%Y-%m-%d %H:%M:%S")))
-
-        # DB登録なし
-        # 新規行を作成し、情報を書き込む
-        else:
-
-            # エントリー数を更新
-            num_entries = await worksheet.cell(row=3, col=1)
-            num_entries.value = int(num_entries.value) + 1
-            await worksheet.update_cell(row=3, col=1, value=num_entries.value)
-
-            # エントリー情報を書き込み
-            row = int(num_entries.value) + 1
-            values = [
-                name,
-                read,
-                bitomori_entry_status,
-                exhibition_entry_status,
-                device,
-                note,
-                str(datetime.now(JST).strftime("%Y-%m-%d %H:%M:%S")),
-                str(interaction.user.id)
-            ]
-            for col, value in zip(range(3, 11), values):
-                await worksheet.update_cell(row=row, col=col, value=value)
+        # エントリー情報を書き込み
+        row = int(num_entries.value) + 1
+        values = [
+            name,
+            read,
+            bitomori_entry_status,
+            exhibition_entry_status,
+            device,
+            note,
+            str(datetime.now(JST).strftime("%Y-%m-%d %H:%M:%S")),
+            str(interaction.user.id)
+        ]
+        for col, value in zip(range(3, 11), values):
+            await worksheet.update_cell(row=row, col=col, value=value)
 
         # memberインスタンスを再取得 (roleを更新するため)
         member = interaction.guild.get_member(interaction.user.id)
 
         # 問い合わせへリダイレクト
         await contact_start(client=interaction.client, member=member, entry_redirect=True)
+        return
+
+
+# TODO: 動作テスト
+async def entry_2nd(interaction: Interaction, category: str):
+    role = interaction.guild.get_role(
+        1036149651847524393  # ビト森杯
+    )
+    role_reserve = interaction.guild.get_role(
+        1172542396597289093  # キャンセル待ち ビト森杯
+    )
+    role_exhibition = interaction.guild.get_role(
+        1171760161778581505  # エキシビション
+    )
+    bot_channel = interaction.guild.get_channel(
+        897784178958008322  # bot用チャット
+    )
+    bitomori_entry_status = ""
+    exhibition_entry_status = ""
+
+    # エントリー数が上限に達している or キャンセル待ちリストに人がいる場合
+    if any([len(role.members) >= 16, len(role_reserve.members) > 0]) and category == "bitomori":
+        await interaction.user.add_roles(role_reserve)
+        wait = len(role_reserve.members) + 1
+        embed = Embed(
+            title="キャンセル待ち登録",
+            description=f"参加者数が上限に達しているため、キャンセル待ちリストに登録しました。\
+                \nキャンセル待ち順番: {wait}\
+                \n\n※Online Loopstation Exhibition Battleにエントリーした際の情報をそのまま登録しました。",
+            color=blue
+        )
+        bitomori_entry_status = "キャンセル待ち"
+
+    # ビト森杯エントリー受付完了通知（キャンセル待ちなしで、正常にエントリー完了）
+    elif category == "bitomori":
+        await interaction.user.add_roles(role)
+        embed = Embed(
+            title="エントリー完了",
+            description="エントリー受付完了しました。ビト森杯ご参加ありがとうございます。\
+                \n\n※Online Loopstation Exhibition Battleにエントリーした際の情報をそのまま登録しました。",
+            color=green
+        )
+        bitomori_entry_status = "出場"
+
+    # エキシビションエントリー受付完了通知
+    elif category == "exhibition":
+        await interaction.user.add_roles(role_exhibition)
+        embed = Embed(
+            title="エントリー完了",
+            description="エントリー受付完了しました。\
+                Online Loopstation Exhibition Battle ご参加ありがとうございます。\
+                \n\n※ビト森杯にエントリーした際の情報をそのまま登録しました。",
+            color=green
+        )
+        exhibition_entry_status = "参加"
+
+    await interaction.followup.send(embed=embed, ephemeral=True)
+
+    # 一応bot_channelにも通知
+    embed = Embed(
+        title=f"modal_entry_{category}",
+        description="2回目のエントリーにつき、モーダル入力免除",
+        color=blue
+    )
+    embed.set_author(
+        name=interaction.user.display_name,
+        icon_url=interaction.user.avatar.url
+    )
+    await bot_channel.send(f"{interaction.user.id}", embed=embed)
+
+    # DB登録処理(一旦新規行に登録した後、もとの行を削除する)
+    # もとの行の位置を取得
+    worksheet = await get_worksheet('エントリー名簿')
+    cell_id = await worksheet.find(f'{interaction.user.id}')
+
+    # もとの行の値を取得
+    name = await worksheet.cell(cell_id.row, 3)
+    read = await worksheet.cell(cell_id.row, 4)
+    device = await worksheet.cell(cell_id.row, 7)
+    note = await worksheet.cell(cell_id.row, 8)
+    replace_deadline = await worksheet.cell(cell_id.row, 11)
+
+    # エキシビションのエントリーなら、ビト森杯出場可否を取得
+    if category == "exhibition":
+        bitomori_entry_status = await worksheet.cell(cell_id.row, 5)
+
+    # ビト森杯のエントリーなら、OLEB参加状況を取得
+    if category == "bitomori":
+        exhibition_entry_status = await worksheet.cell(cell_id.row, 6)
+
+    # DB新規登録
+    # エントリー数を更新
+    num_entries = await worksheet.cell(row=3, col=1)
+    num_entries.value = int(num_entries.value) + 1
+    await worksheet.update_cell(row=3, col=1, value=str(num_entries.value))
+
+    # エントリー情報を書き込み
+    row = int(num_entries.value) + 1
+    values = [
+        name,
+        read,
+        bitomori_entry_status,
+        exhibition_entry_status,
+        device,
+        note,
+        str(datetime.now(JST).strftime("%Y-%m-%d %H:%M:%S")),
+        str(interaction.user.id),
+        replace_deadline
+    ]
+    for col, value in zip(range(3, 12), values):
+        await worksheet.update_cell(row=row, col=col, value=value)
+
+    # もとの行を削除
+    for col, value in zip(range(3, 12), values):
+        await worksheet.update_cell(row=cell_id.row, col=col, value="")
+    return
 
 
 # TODO: 動作テスト

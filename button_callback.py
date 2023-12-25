@@ -4,7 +4,7 @@ from discord import Embed, Interaction
 
 from contact import (contact_start, get_submission_embed, get_worksheet,
                      search_contact)
-from entry import entry_cancel, modal_entry
+from entry import entry_2nd, entry_cancel, modal_entry
 
 # NOTE: ビト森杯運営機能搭載ファイル
 JST = timezone(timedelta(hours=9))
@@ -20,6 +20,7 @@ col = 横 A, B, C, ...
 """
 
 
+# TODO: 動作テスト
 # 両カテゴリーのエントリーを受け付ける
 async def button_entry(interaction: Interaction):
     # エントリー開始時刻を定義
@@ -83,18 +84,26 @@ async def button_entry(interaction: Interaction):
         await interaction.response.send_message(embed=embed, ephemeral=True)
         return
 
-    # 日本からのビト森杯エントリー
-    if locale == "ja" and category == "bitomori":
-        await interaction.response.send_modal(modal_entry(interaction.user.display_name, "bitomori"))
-        return
+    # 日本からのエントリー
+    if locale == "ja":
 
-    # 日本からのOLEBエントリー
-    if locale == "ja" and category == "exhibition":
-        await interaction.response.send_modal(modal_entry(interaction.user.display_name, "exhibition"))
-        return
+        # OLEB未エントリーかつ、ビト森杯エントリー手続き
+        if category == "bitomori" and not role_check[1]:
+            await interaction.response.send_modal(modal_entry(interaction.user.display_name, "bitomori"))
+            return
+
+        # ビト森杯未エントリーかつ、OLEBエントリー手続き
+        if category == "exhibition" and not role_check[0]:
+            await interaction.response.send_modal(modal_entry(interaction.user.display_name, "exhibition"))
+            return
 
     # 以下モーダル送信しないのでdeferをかける
     await interaction.response.defer(ephemeral=True)
+
+    # 日本からの、2回目のエントリーの場合
+    if locale == "ja":
+        await entry_2nd(interaction, category)
+        return
 
     # 海外からのエントリー
     thread = await search_contact(member=interaction.user, create=True, locale=str(interaction.locale))
