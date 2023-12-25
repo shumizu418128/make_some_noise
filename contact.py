@@ -80,7 +80,7 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
         # エントリー時の問い合わせリダイレクトの場合、申請内容を送信
         if entry_redirect:
             embed = await get_submission_embed(member)
-            await thread.send(f"ビト森杯ご参加ありがとうございます。\n現在の{member.display_name}さんのエントリー状況は以下の通りです。", embed=embed)
+            await thread.send(f"お申し込みいただき、誠にありがとうございます。\n現在の {member.mention} さんのエントリー状況は以下の通りです。", embed=embed)
 
         # 問い合わせの前に絵踏みさせる
         embed = Embed(
