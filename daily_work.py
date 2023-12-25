@@ -30,42 +30,57 @@ async def maintenance(client: Client):
     bot_notice_channel = client.get_channel(
         916608669221806100  # ビト森杯 進行bot
     )
-    # discordからの情報
     role_entry = bot_channel.guild.get_role(
         1036149651847524393  # ビト森杯
     )
     role_reserve = bot_channel.guild.get_role(
         1172542396597289093  # キャンセル待ち ビト森杯
     )
+    role_OLEB = bot_channel.guild.get_role(
+        1171760161778581505  # エキシビション
+    )
     tari3210 = bot_channel.guild.get_member(
         412082841829113877
     )
-    entry_names = [member.display_name for member in role_entry.members]
-    reserve_names = [member.display_name for member in role_reserve.members]
-    entry_ids = [member.id for member in role_entry.members]
-    reserve_ids = [member.id for member in role_reserve.members]
-
-    # Google spreadsheet worksheet読み込み
+    # エントリー名簿取得
     worksheet = await get_worksheet('エントリー名簿')
-    DB_names = await worksheet.col_values(3)
-    DB_ids = await worksheet.col_values(10)
+
+    # ビト森杯出場者の情報
+    role_entry_ids = [member.id for member in role_entry.members]
+    role_entry_names = [member.display_name for member in role_entry.members]
+    worksheet_entry = await get_worksheet('ビト森杯出場者一覧')
+    DB_entry_ids = await worksheet_entry.col_values(3)
+    DB_entry_names = await worksheet_entry.col_values(1)
+
+    # ビト森杯キャンセル待ちの情報
+    role_reserve_ids = [member.id for member in role_reserve.members]
+    role_reserve_names = [member.display_name for member in role_reserve.members]
+    worksheet_reserve = await get_worksheet('ビト森杯キャンセル待ち一覧')
+    DB_reserve_ids = await worksheet_reserve.col_values(3)
+    DB_reserve_names = await worksheet_reserve.col_values(1)
+
+    # OLEB出場者の情報
+    role_OLEB_ids = [member.id for member in role_OLEB.members]
+    role_OLEB_names = [member.display_name for member in role_OLEB.members]
+    worksheet_OLEB = await get_worksheet('OLEB出場者一覧')
+    DB_OLEB_ids = await worksheet_OLEB.col_values(3)
+    DB_OLEB_names = await worksheet_OLEB.col_values(1)
 
     errors = []
-
     notice = await bot_channel.send("DB定期メンテナンス中...")
 
     # ロール未付与(idベースで確認)
-    for id in set(DB_ids) - set(entry_ids) - set(reserve_ids):
+    no_role_ids = set(DB_entry_ids + DB_reserve_ids + DB_OLEB_ids) - set(role_entry_ids + role_reserve_ids + role_OLEB_ids)
+    for id in no_role_ids:
 
         # ロール未付与のユーザーIDを取得
         cell_id = await worksheet.find(id)
 
         # エントリー状況、memberを取得
-        cell_status = await worksheet.cell(row=cell_id.row, col=5)
         member = bot_channel.guild.get_member(int(id))
 
         # キャンセル待ちか、繰り上げ出場手続き中の場合
-        if cell_status.value in ["キャンセル待ち", "繰り上げ出場手続き中"]:
+        if id in DB_reserve_ids:
 
             # ロール付与
             await member.add_roles(role_reserve)
@@ -75,7 +90,7 @@ async def maintenance(client: Client):
                 f"- 解決済み：キャンセル待ちロール未付与 {member.display_name} {member.id}"
             )
         # 出場の場合
-        if cell_status.value == "出場":
+        if id in DB_entry_ids:
 
             # ロール付与
             await member.add_roles(role_entry)
@@ -84,27 +99,54 @@ async def maintenance(client: Client):
             errors.append(
                 f"- 解決済み：エントリーロール未付与 {member.display_name} {member.id}"
             )
+        # OLEB出場者の場合
+        if id in DB_OLEB_ids:
+
+            # ロール付与
+            await member.add_roles(role_OLEB)
+
+            # エラーを保存
+            errors.append(
+                f"- 解決済み：OLEBロール未付与 {member.display_name} {member.id}"
+            )
 
     # DB未登録(idベースで確認)
-    for id in set(entry_ids) + set(reserve_ids) - set(DB_ids):
+    no_DB_ids = set(role_entry_ids + role_reserve_ids + role_OLEB_ids) - set(DB_entry_ids + DB_reserve_ids + DB_OLEB_ids)
+    for id in no_DB_ids:
 
         # 該当者のmemberオブジェクトを取得
         member = bot_channel.guild.get_member(int(id))
 
+        # エントリー状況をroleから取得
+        role_check = [
+            member.get_role(
+                1036149651847524393  # ビト森杯
+            ),
+            member.get_role(
+                1172542396597289093  # キャンセル待ち ビト森杯
+            ),
+            member.get_role(
+                1171760161778581505  # エキシビション
+            )
+        ]
+        status = ""
+        for role, name in zip(role_check, ["ビト森杯 ", "キャンセル待ち ", "OLEB"]):
+            if role:
+                status += name
+
         # エラーを保存
-        errors.append(f"- DB未登録(エントリー時刻確認) {member.display_name} {member.id}")
+        errors.append(f"- DB未登録(エントリー時刻確認) {member.display_name} {member.id} {status}")
 
     # 名前が一致しているか確認
-    for name in set(DB_names) - set(entry_names + reserve_names):
+    for name in set(DB_entry_names + DB_reserve_names + DB_OLEB_names) - set(role_entry_names + role_reserve_names + role_OLEB_names):
 
         # 該当者のセルを取得
         cell_name = await worksheet.find(name)
 
         # 該当者のユーザーID、memberオブジェクトを取得
         cell_id = await worksheet.cell(row=cell_name.row, col=10)
-        member = bot_channel.guild.get_member(
-            int(cell_id.value)
-        )
+        member = bot_channel.guild.get_member(int(cell_id.value))
+
         # ユーザー名を変更
         member = await member.edit(nick=name)
 
@@ -394,7 +436,17 @@ async def replacement_notice_24h(client: Client):
 @tasks.loop(time=PM9)
 async def daily_work(client: Client):
     await maintenance(client)
-    await replacement_expire(client)
-    await replacement(client)
-    await entry_list_update(client)
-    await replacement_notice_24h(client)
+
+    dt_now = datetime.now(JST)
+    dt_day1 = datetime(
+        year=2024,
+        month=2,
+        day=17,
+        tzinfo=JST
+    )
+    # 繰り上げ出場手続きのお願い(2/16 21:00まで)
+    if dt_now < dt_day1:
+        await replacement_expire(client)
+        await replacement(client)
+        await entry_list_update(client)
+        await replacement_notice_24h(client)
