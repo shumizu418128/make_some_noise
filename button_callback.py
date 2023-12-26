@@ -249,8 +249,8 @@ async def button_cancel(interaction: Interaction):
 
         # 60秒で処理中止
         except TimeoutError:
-            await notice.clear_reactions()
-            await notice.reply("Error: Timeout\nもう1度お試しください")
+            await notice.delete()
+            await interaction.channel.send("Error: Timeout\nもう1度お試しください")
             return
 
         await notice.delete(delay=1)
