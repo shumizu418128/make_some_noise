@@ -1,4 +1,4 @@
-from datetime import timedelta, timezone
+from datetime import datetime, timedelta, timezone
 
 import gspread_asyncio
 from discord import Client, Embed, Member
@@ -250,9 +250,13 @@ async def get_submission_embed(member: Member):
         if status_exhibition == "":
             status_exhibition = "❌"
 
+        # 現在時刻を取得
+        dt_now = datetime.now(JST)
+        str_now = dt_now.strftime('%m/%d %H:%M 現在')
+
         # エントリー状況照会のembedを作成
         embed_entry_status = Embed(
-            title="エントリー状況照会",
+            title=f"エントリー状況照会 {str_now}",
             description=f"- 名前: `{name}`\n- 読み: `{read}`\n- ビト森杯出場可否: `{status_bitomori}`\
                 \n- OLEB参加状況: `{status_exhibition}`\n- デバイス: `{device}`\n- 備考: `{note}`\
                 \n- 受付時刻: `{time}`"
