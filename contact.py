@@ -244,6 +244,7 @@ async def get_submission_embed(member: Member):
         device = cell_values[6]
         note = cell_values[7]
         time = cell_values[8]
+        deadline = cell_values[10]
 
         if status_bitomori == "":
             status_bitomori = "❌"
@@ -261,6 +262,11 @@ async def get_submission_embed(member: Member):
                 \n- OLEB参加状況: `{status_exhibition}`\n- デバイス: `{device}`\n- 備考: `{note}`\
                 \n- 受付時刻: `{time}`"
         )
+
+        # 繰り上げ手続き中の場合
+        if deadline != "":
+            embed_entry_status.description += f"\n繰り上げ手続き締め切り: `{deadline} 21:00`"
+
         return embed_entry_status
 
     # DB登録なし
