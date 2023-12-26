@@ -272,7 +272,7 @@ async def entry_2nd(interaction: Interaction, category: str):
 
     # 一応bot_channelにも通知
     embed = Embed(
-        title=f"modal_entry_{category}",
+        title=f"button_entry_{category}",
         description="2回目のエントリーにつき、モーダル入力免除",
         color=blue
     )
