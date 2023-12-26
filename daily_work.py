@@ -64,6 +64,23 @@ async def maintenance(client: Client):
     DB_OLEB_ids = await worksheet_OLEB.col_values(3)
     DB_OLEB_names = await worksheet_OLEB.col_values(1)
 
+    # DBリストの最初の要素はヘッダーなので削除
+    DB_entry_ids.pop(0)
+    DB_entry_names.pop(0)
+    DB_reserve_ids.pop(0)
+    DB_reserve_names.pop(0)
+    DB_OLEB_ids.pop(0)
+    DB_OLEB_names.pop(0)
+
+    # DBリストからNoneを削除
+    DB_entry_ids = [id for id in DB_entry_ids if id != ""]
+    DB_entry_names = [name for name in DB_entry_names if name != ""]
+    DB_reserve_ids = [id for id in DB_reserve_ids if id != ""]
+    DB_reserve_names = [name for name in DB_reserve_names if name != ""]
+    DB_OLEB_ids = [id for id in DB_OLEB_ids if id != ""]
+    DB_OLEB_names = [name for name in DB_OLEB_names if name != ""]
+
+    # エラーを保存
     errors = []
     notice = await bot_notice_channel.send("DB定期メンテナンス中...")
 
@@ -71,13 +88,10 @@ async def maintenance(client: Client):
     no_role_ids = set(DB_entry_ids + DB_reserve_ids + DB_OLEB_ids) - set(role_entry_ids + role_reserve_ids + role_OLEB_ids)
     for id in no_role_ids:
 
-        # ロール未付与のユーザーIDを取得
-        cell_id = await worksheet.find(id)
-
-        # エントリー状況、memberを取得
+        # memberを取得
         member = bot_notice_channel.guild.get_member(int(id))
 
-        # キャンセル待ちか、繰り上げ出場手続き中の場合
+        # ビト森杯キャンセル待ちか、繰り上げ出場手続き中の場合
         if id in DB_reserve_ids:
 
             # ロール付与
@@ -87,7 +101,7 @@ async def maintenance(client: Client):
             errors.append(
                 f"- 解決済み：キャンセル待ちロール未付与 {member.display_name} {member.id}"
             )
-        # 出場の場合
+        # ビト森杯出場者の場合
         if id in DB_entry_ids:
 
             # ロール付与
@@ -110,6 +124,7 @@ async def maintenance(client: Client):
 
     # DB未登録(idベースで確認)
     no_DB_ids = set(role_entry_ids + role_reserve_ids + role_OLEB_ids) - set(DB_entry_ids + DB_reserve_ids + DB_OLEB_ids)
+
     for id in no_DB_ids:
 
         # 該当者のmemberオブジェクトを取得
@@ -164,6 +179,7 @@ async def maintenance(client: Client):
             color=red
         )
         await notice.reply(tari3210.mention, embed=embed)
+
     else:
         embed = Embed(
             title="DBメンテナンス結果",
