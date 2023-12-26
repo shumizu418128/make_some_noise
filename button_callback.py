@@ -315,7 +315,7 @@ async def button_submission_content(interaction: Interaction):
 
 # TODO: 動作テスト
 async def button_accept_replace(interaction: Interaction):
-    await interaction.response.defer(ephemeral=True, thinking=True)
+    await interaction.response.defer(thinking=True)
     role = interaction.guild.get_role(
         1036149651847524393  # ビト森杯
     )
