@@ -304,9 +304,6 @@ async def button_cancel(interaction: Interaction):
     # cancel実行
     await entry_cancel(interaction.user, category)
 
-    # 問い合わせボタン再表示
-    await contact_start(client=interaction.client, member=interaction.user)
-
 
 async def button_submission_content(interaction: Interaction):
     await interaction.response.defer(thinking=True)
