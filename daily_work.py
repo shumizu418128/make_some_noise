@@ -88,6 +88,7 @@ async def maintenance(client: Client):
     # ロール未付与(idベースで確認)
     no_role_ids = set(DB_entry_ids + DB_reserve_ids + DB_OLEB_ids) - \
         set(role_entry_ids + role_reserve_ids + role_OLEB_ids)
+
     for id in no_role_ids:
 
         # memberを取得

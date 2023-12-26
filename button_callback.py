@@ -62,7 +62,8 @@ async def button_entry(interaction: Interaction):
     if dt_now < dt_entry_start:
         await interaction.response.send_message(
             "ビト森杯・Online Loopstation Exhibition Battle\nエントリー受付開始は1月6日 21:00です。",
-            ephemeral=True)
+            ephemeral=True
+        )
         return
 
     # ビト森杯エントリー済み
@@ -232,16 +233,16 @@ async def button_cancel(interaction: Interaction):
         embed = Embed(
             title="エントリーキャンセル",
             description="どちらのエントリーをキャンセルしますか？\n🏆 ビト森杯\
-                \n🆚 Online Loopstation Exhibition Battle\n❌ このメッセージを削除する",
+                \n⚔️ Online Loopstation Exhibition Battle\n❌ このメッセージを削除する",
             color=yellow
         )
         notice = await interaction.channel.send(embed=embed)
         await notice.add_reaction("🏆")
-        await notice.add_reaction("🆚")
+        await notice.add_reaction("⚔️")
         await notice.add_reaction("❌")
 
         def check(reaction, user):
-            return user == interaction.user and reaction.emoji in ["🏆", "🆚", "❌"] and reaction.message == notice
+            return user == interaction.user and reaction.emoji in ["🏆", "⚔️", "❌"] and reaction.message == notice
 
         try:
             reaction, _ = await interaction.client.wait_for('reaction_add', check=check, timeout=60)
@@ -264,7 +265,8 @@ async def button_cancel(interaction: Interaction):
         if emoji == "🏆":  # ビト森杯
             category = "bitomori"
             category_ja = "ビト森杯"
-        if emoji == "🆚":  # エキシビション
+
+        if emoji == "⚔️":  # エキシビション
             category = "exhibition"
             category_ja = "Online Loopstation Exhibition Battle"
 
