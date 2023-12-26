@@ -20,7 +20,6 @@ col = 横 A, B, C, ...
 """
 
 
-# TODO: 動作テスト
 # 両カテゴリーのエントリーを受け付ける
 async def button_entry(interaction: Interaction):
 
