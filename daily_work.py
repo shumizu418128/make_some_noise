@@ -52,7 +52,8 @@ async def maintenance(client: Client):
 
     # ビト森杯キャンセル待ちの情報
     role_reserve_ids = [member.id for member in role_reserve.members]
-    role_reserve_names = [member.display_name for member in role_reserve.members]
+    role_reserve_names = [
+        member.display_name for member in role_reserve.members]
     worksheet_reserve = await get_worksheet('ビト森杯キャンセル待ち一覧')
     DB_reserve_ids = await worksheet_reserve.col_values(3)
     DB_reserve_names = await worksheet_reserve.col_values(1)
@@ -85,7 +86,8 @@ async def maintenance(client: Client):
     notice = await bot_notice_channel.send("DB定期メンテナンス中...")
 
     # ロール未付与(idベースで確認)
-    no_role_ids = set(DB_entry_ids + DB_reserve_ids + DB_OLEB_ids) - set(role_entry_ids + role_reserve_ids + role_OLEB_ids)
+    no_role_ids = set(DB_entry_ids + DB_reserve_ids + DB_OLEB_ids) - \
+        set(role_entry_ids + role_reserve_ids + role_OLEB_ids)
     for id in no_role_ids:
 
         # memberを取得
@@ -123,7 +125,8 @@ async def maintenance(client: Client):
             )
 
     # DB未登録(idベースで確認)
-    no_DB_ids = set(role_entry_ids + role_reserve_ids + role_OLEB_ids) - set(DB_entry_ids + DB_reserve_ids + DB_OLEB_ids)
+    no_DB_ids = set(role_entry_ids + role_reserve_ids + role_OLEB_ids) - \
+        set(DB_entry_ids + DB_reserve_ids + DB_OLEB_ids)
 
     for id in no_DB_ids:
 
@@ -148,7 +151,8 @@ async def maintenance(client: Client):
                 status += name
 
         # エラーを保存
-        errors.append(f"- DB未登録(エントリー時刻確認) {member.display_name} {member.id} {status}")
+        errors.append(
+            f"- DB未登録(エントリー時刻確認) {member.display_name} {member.id} {status}")
 
     # 名前が一致しているか確認
     for name in set(DB_entry_names + DB_reserve_names + DB_OLEB_names) - set(role_entry_names + role_reserve_names + role_OLEB_names):
