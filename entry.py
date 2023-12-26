@@ -335,7 +335,6 @@ async def entry_2nd(interaction: Interaction, category: str):
     return
 
 
-# TODO: 動作テスト
 async def entry_cancel(member: Member, category: str):
     bot_channel = member.guild.get_channel(
         897784178958008322  # bot用チャット
