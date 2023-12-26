@@ -407,9 +407,7 @@ async def entry_cancel(member: Member, category: str):
             await worksheet.update_cell(cell_id.row, 5, '')
 
             # キャンセル待ち繰り上げ手続き中の場合、その情報も削除
-            cell_list_deadline = await worksheet.cell(cell_id.row, 11)
-            if cell_list_deadline.value != "":
-                await worksheet.update_cell(cell_id.row, 11, '')
+            await worksheet.update_cell(cell_id.row, 11, '')
 
         if category == "exhibition":
             await worksheet.update_cell(cell_id.row, 6, '')
