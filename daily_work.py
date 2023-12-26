@@ -10,6 +10,7 @@ from entry import entry_cancel
 # NOTE: ビト森杯運営機能搭載ファイル
 JST = timezone(timedelta(hours=9))
 PM9 = time(21, 0, tzinfo=JST)
+AM9 = time(9, 0, tzinfo=JST)
 green = 0x00ff00
 yellow = 0xffff00
 red = 0xff0000
@@ -24,22 +25,19 @@ col = 横 A, B, C, ...
 
 # TODO: 動作テスト
 async def maintenance(client: Client):
-    bot_channel = client.get_channel(
-        897784178958008322  # bot用チャット
-    )
     bot_notice_channel = client.get_channel(
         916608669221806100  # ビト森杯 進行bot
     )
-    role_entry = bot_channel.guild.get_role(
+    role_entry = bot_notice_channel.guild.get_role(
         1036149651847524393  # ビト森杯
     )
-    role_reserve = bot_channel.guild.get_role(
+    role_reserve = bot_notice_channel.guild.get_role(
         1172542396597289093  # キャンセル待ち ビト森杯
     )
-    role_OLEB = bot_channel.guild.get_role(
+    role_OLEB = bot_notice_channel.guild.get_role(
         1171760161778581505  # エキシビション
     )
-    tari3210 = bot_channel.guild.get_member(
+    tari3210 = bot_notice_channel.guild.get_member(
         412082841829113877
     )
     # エントリー名簿取得
@@ -67,7 +65,7 @@ async def maintenance(client: Client):
     DB_OLEB_names = await worksheet_OLEB.col_values(1)
 
     errors = []
-    notice = await bot_channel.send("DB定期メンテナンス中...")
+    notice = await bot_notice_channel.send("DB定期メンテナンス中...")
 
     # ロール未付与(idベースで確認)
     no_role_ids = set(DB_entry_ids + DB_reserve_ids + DB_OLEB_ids) - set(role_entry_ids + role_reserve_ids + role_OLEB_ids)
@@ -77,7 +75,7 @@ async def maintenance(client: Client):
         cell_id = await worksheet.find(id)
 
         # エントリー状況、memberを取得
-        member = bot_channel.guild.get_member(int(id))
+        member = bot_notice_channel.guild.get_member(int(id))
 
         # キャンセル待ちか、繰り上げ出場手続き中の場合
         if id in DB_reserve_ids:
@@ -115,7 +113,7 @@ async def maintenance(client: Client):
     for id in no_DB_ids:
 
         # 該当者のmemberオブジェクトを取得
-        member = bot_channel.guild.get_member(int(id))
+        member = bot_notice_channel.guild.get_member(int(id))
 
         # エントリー状況をroleから取得
         role_check = [
@@ -145,7 +143,7 @@ async def maintenance(client: Client):
 
         # 該当者のユーザーID、memberオブジェクトを取得
         cell_id = await worksheet.cell(row=cell_name.row, col=10)
-        member = bot_channel.guild.get_member(int(cell_id.value))
+        member = bot_notice_channel.guild.get_member(int(cell_id.value))
 
         # ユーザー名を変更
         member = await member.edit(nick=name)
@@ -433,9 +431,7 @@ async def replacement_notice_24h(client: Client):
 
 
 @tasks.loop(time=PM9)
-async def daily_work(client: Client):
-    await maintenance(client)
-
+async def daily_work_PM9(client: Client):
     dt_now = datetime.now(JST)
     dt_day1 = datetime(
         year=2024,
@@ -447,5 +443,10 @@ async def daily_work(client: Client):
     if dt_now < dt_day1:
         await replacement_expire(client)
         await replacement(client)
-        await entry_list_update(client)
         await replacement_notice_24h(client)
+
+
+@tasks.loop(time=AM9)
+async def daily_work_AM9(client: Client):
+    await maintenance(client)
+    await entry_list_update(client)
