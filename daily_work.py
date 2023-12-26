@@ -22,6 +22,7 @@ col = 横 A, B, C, ...
 """
 
 
+# TODO: 動作テスト
 async def maintenance(client: Client):
     bot_channel = client.get_channel(
         897784178958008322  # bot用チャット
