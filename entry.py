@@ -54,7 +54,6 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
             )
         )
 
-    # TODO: 動作テスト
     # モーダル提出後の処理
     async def on_submit(self, interaction: Interaction):
         await interaction.response.defer(ephemeral=True)
@@ -231,7 +230,6 @@ async def entry_2nd(interaction: Interaction, category: str):
         897784178958008322  # bot用チャット
     )
     bitomori_entry_status = ""
-    exhibition_entry_status = ""
 
     # エントリー数が上限に達している or キャンセル待ちリストに人がいる場合
     if any([len(role.members) >= 16, len(role_reserve.members) > 0]) and category == "bitomori":
@@ -267,7 +265,6 @@ async def entry_2nd(interaction: Interaction, category: str):
                 \n\n※ビト森杯にエントリーした際の情報をそのまま登録しました。",
             color=green
         )
-        exhibition_entry_status = "参加"
 
     await interaction.followup.send(embed=embed, ephemeral=True)
 
@@ -283,14 +280,23 @@ async def entry_2nd(interaction: Interaction, category: str):
     )
     await bot_channel.send(f"{interaction.user.id}", embed=embed)
 
-    # DB登録処理(一旦新規行に登録した後、もとの行を削除する)
-    # もとの行の位置を取得
+    # DB登録処理
     worksheet = await get_worksheet('エントリー名簿')
     cell_id = await worksheet.find(f'{interaction.user.id}')
 
+    # OLEBへのエントリーなら、DBに "参加" と追記するだけ
+    if category == "exhibition":
+        await worksheet.update_cell(cell_id.row, 6, "参加")
+
+        # 一応受付時刻は更新する
+        await worksheet.update_cell(cell_id.row, 9, str(datetime.now(JST).strftime("%Y-%m-%d %H:%M:%S")))
+        return
+
+    # ビト森杯へのエントリーなら、一旦新規行に登録した後、もとの行を削除する
     # もとの行のセルを取得
     cell_name = await worksheet.cell(cell_id.row, 3)
     cell_read = await worksheet.cell(cell_id.row, 4)
+    cell_exhibition_entry_status = await worksheet.cell(cell_id.row, 6)
     cell_device = await worksheet.cell(cell_id.row, 7)
     cell_note = await worksheet.cell(cell_id.row, 8)
     cell_replace_deadline = await worksheet.cell(cell_id.row, 11)
@@ -301,16 +307,7 @@ async def entry_2nd(interaction: Interaction, category: str):
     device = cell_device.value
     note = cell_note.value
     replace_deadline = cell_replace_deadline.value
-
-    # エキシビションのエントリーなら、ビト森杯出場可否を取得
-    if category == "exhibition":
-        cell_bitomori_entry_status = await worksheet.cell(cell_id.row, 5)
-        bitomori_entry_status = cell_bitomori_entry_status.value
-
-    # ビト森杯のエントリーなら、OLEB参加状況を取得
-    if category == "bitomori":
-        cell_exhibition_entry_status = await worksheet.cell(cell_id.row, 6)
-        exhibition_entry_status = cell_exhibition_entry_status.value
+    exhibition_entry_status = cell_exhibition_entry_status.value
 
     # DB新規登録
     # エントリー数を更新
