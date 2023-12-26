@@ -292,6 +292,12 @@ async def entry_2nd(interaction: Interaction, category: str):
         await worksheet.update_cell(cell_id.row, 9, str(datetime.now(JST).strftime("%Y-%m-%d %H:%M:%S")))
         return
 
+    # DB新規登録
+    # エントリー数を更新
+    num_entries = await worksheet.cell(row=3, col=1)
+    num_entries.value = int(num_entries.value) + 1
+    await worksheet.update_cell(row=3, col=1, value=str(num_entries.value))
+
     # ビト森杯へのエントリーなら、一旦新規行に登録した後、もとの行を削除する
     # もとの行のセルを取得
     cell_name = await worksheet.cell(cell_id.row, 3)
@@ -306,12 +312,6 @@ async def entry_2nd(interaction: Interaction, category: str):
     device = cell_device.value
     note = cell_note.value
     replace_deadline = cell_replace_deadline.value
-
-    # DB新規登録
-    # エントリー数を更新
-    num_entries = await worksheet.cell(row=3, col=1)
-    num_entries.value = int(num_entries.value) + 1
-    await worksheet.update_cell(row=3, col=1, value=str(num_entries.value))
 
     # エントリー情報を書き込み
     row = int(num_entries.value) + 1
