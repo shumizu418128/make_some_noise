@@ -296,7 +296,6 @@ async def entry_2nd(interaction: Interaction, category: str):
     # もとの行のセルを取得
     cell_name = await worksheet.cell(cell_id.row, 3)
     cell_read = await worksheet.cell(cell_id.row, 4)
-    cell_exhibition_entry_status = await worksheet.cell(cell_id.row, 6)
     cell_device = await worksheet.cell(cell_id.row, 7)
     cell_note = await worksheet.cell(cell_id.row, 8)
     cell_replace_deadline = await worksheet.cell(cell_id.row, 11)
@@ -307,7 +306,6 @@ async def entry_2nd(interaction: Interaction, category: str):
     device = cell_device.value
     note = cell_note.value
     replace_deadline = cell_replace_deadline.value
-    exhibition_entry_status = cell_exhibition_entry_status.value
 
     # DB新規登録
     # エントリー数を更新
@@ -321,7 +319,7 @@ async def entry_2nd(interaction: Interaction, category: str):
         name,
         read,
         bitomori_entry_status,
-        exhibition_entry_status,
+        "参加",  # OLEB参加状況
         device,
         note,
         str(datetime.now(JST).strftime("%Y-%m-%d %H:%M:%S")),
