@@ -229,6 +229,10 @@ async def get_submission_embed(member: Member):
     if role_check[0] and role_check[1]:
         await bot_channel.send(f"{tari3210.mention}\nError: 重複ロール付与\n\n{member.id} {member.display_name}")
 
+    # 現在時刻を取得
+    dt_now = datetime.now(JST)
+    str_now = dt_now.strftime('%m/%d %H:%M 現在')
+
     # DBから取得
     cell_id = await worksheet.find(f'{member.id}')  # ユーザーIDで検索
 
@@ -251,10 +255,6 @@ async def get_submission_embed(member: Member):
         if status_exhibition == "":
             status_exhibition = "❌"
 
-        # 現在時刻を取得
-        dt_now = datetime.now(JST)
-        str_now = dt_now.strftime('%m/%d %H:%M 現在')
-
         # エントリー状況照会のembedを作成
         embed_entry_status = Embed(
             title=f"エントリー状況照会 {str_now}",
@@ -275,7 +275,7 @@ async def get_submission_embed(member: Member):
         # エントリーしていない場合
         if any(role_check) is False:
             embed_entry_status = Embed(
-                title="エントリー状況照会",
+                title=f"エントリー状況照会 {str_now}",
                 description=f"{member.display_name}さんはエントリーしていません。"
             )
             return embed_entry_status
@@ -288,7 +288,7 @@ async def get_submission_embed(member: Member):
 
             # とりあえずroleからエントリー状況を取得
             embed_entry_status = Embed(
-                title="エントリー状況照会",
+                title=f"エントリー状況照会 {str_now}",
             )
             if role_check[0]:
                 embed_entry_status.description += "ビト森杯エントリー済み\n"
