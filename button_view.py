@@ -52,7 +52,7 @@ async def get_view(
         style=ButtonStyle.green,
         label="OLEBエントリー",
         custom_id="button_entry_exhibition",
-        emoji="🆚"
+        emoji="⚔️"
     )
     # 問い合わせスレッド作成
     if contact:
