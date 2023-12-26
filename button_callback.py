@@ -23,12 +23,14 @@ col = 横 A, B, C, ...
 # TODO: 動作テスト
 # 両カテゴリーのエントリーを受け付ける
 async def button_entry(interaction: Interaction):
-    # エントリー開始時刻を定義
+
+    # エントリー開始時刻を定義 1月6日 21:00
     dt_now = datetime.now(JST)
     dt_entry_start = datetime(
         year=2024,
         month=1,
         day=6,
+        hour=21,
         tzinfo=JST
     )
     # ビト森杯エントリー済みかどうか確認
@@ -60,7 +62,7 @@ async def button_entry(interaction: Interaction):
     # エントリー開始時刻確認
     if dt_now < dt_entry_start:
         await interaction.response.send_message(
-            "ビト森杯・Online Loopstation Exhibition Battle\nエントリー受付開始は1月6日です。",
+            "ビト森杯・Online Loopstation Exhibition Battle\nエントリー受付開始は1月6日 21:00です。",
             ephemeral=True)
         return
 
@@ -87,14 +89,9 @@ async def button_entry(interaction: Interaction):
     # 日本からのエントリー
     if locale == "ja":
 
-        # OLEB未エントリーかつ、ビト森杯エントリー手続き
-        if category == "bitomori" and not role_check[1]:
-            await interaction.response.send_modal(modal_entry(interaction.user.display_name, "bitomori"))
-            return
-
-        # ビト森杯未エントリーかつ、OLEBエントリー手続き
-        if category == "exhibition" and not role_check[0]:
-            await interaction.response.send_modal(modal_entry(interaction.user.display_name, "exhibition"))
+        # 1回目のエントリーの場合
+        if not any(role_check):
+            await interaction.response.send_modal(modal_entry(interaction.user.display_name, category))
             return
 
     # 以下モーダル送信しないのでdeferをかける
@@ -125,8 +122,7 @@ async def button_entry(interaction: Interaction):
         "es-ES": f"Error: por favor contáctenos a través de {thread.mention}",
         "pt-BR": f"Erro: entre em contato conosco através de {thread.mention}"
     }
-    description = langs[locale] + \
-        f"\nお手数ですが {thread.mention} までお問い合わせください。"
+    description = langs[locale] + f"\nお手数ですが {thread.mention} までお問い合わせください。"
 
     # 一旦エラー文言を送信
     embed = Embed(
