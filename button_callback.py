@@ -368,4 +368,7 @@ async def button_accept_replace(interaction: Interaction):
         icon_url=interaction.user.avatar.url
     )
     await bot_channel.send(embed=embed)
+
+    # 問い合わせを用意
+    await contact_start(client=interaction.client, member=interaction.user, entry_redirect=True)
     return
