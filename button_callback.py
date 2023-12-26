@@ -153,7 +153,7 @@ async def button_contact(interaction: Interaction):
 
 
 async def button_call_admin(interaction: Interaction):
-    await interaction.response.defer(ephemeral=True, thinking=True)
+    await interaction.response.defer(thinking=True)
 
     contact = interaction.client.get_channel(
         1035964918198960128  # 問い合わせ
