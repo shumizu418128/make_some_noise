@@ -288,20 +288,29 @@ async def entry_2nd(interaction: Interaction, category: str):
     worksheet = await get_worksheet('エントリー名簿')
     cell_id = await worksheet.find(f'{interaction.user.id}')
 
-    # もとの行の値を取得
-    name = await worksheet.cell(cell_id.row, 3)
-    read = await worksheet.cell(cell_id.row, 4)
-    device = await worksheet.cell(cell_id.row, 7)
-    note = await worksheet.cell(cell_id.row, 8)
-    replace_deadline = await worksheet.cell(cell_id.row, 11)
+    # もとの行のセルを取得
+    cell_name = await worksheet.cell(cell_id.row, 3)
+    cell_read = await worksheet.cell(cell_id.row, 4)
+    cell_device = await worksheet.cell(cell_id.row, 7)
+    cell_note = await worksheet.cell(cell_id.row, 8)
+    cell_replace_deadline = await worksheet.cell(cell_id.row, 11)
+
+    # もとの行の内容を取得
+    name = cell_name.value
+    read = cell_read.value
+    device = cell_device.value
+    note = cell_note.value
+    replace_deadline = cell_replace_deadline.value
 
     # エキシビションのエントリーなら、ビト森杯出場可否を取得
     if category == "exhibition":
-        bitomori_entry_status = await worksheet.cell(cell_id.row, 5)
+        cell_bitomori_entry_status = await worksheet.cell(cell_id.row, 5)
+        bitomori_entry_status = cell_bitomori_entry_status.value
 
     # ビト森杯のエントリーなら、OLEB参加状況を取得
     if category == "bitomori":
-        exhibition_entry_status = await worksheet.cell(cell_id.row, 6)
+        cell_exhibition_entry_status = await worksheet.cell(cell_id.row, 6)
+        exhibition_entry_status = cell_exhibition_entry_status.value
 
     # DB新規登録
     # エントリー数を更新
