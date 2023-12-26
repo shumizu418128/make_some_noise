@@ -151,7 +151,6 @@ async def button_contact(interaction: Interaction):
     await contact_start(client=interaction.client, member=interaction.user)
 
 
-# TODO: 動作テスト
 async def button_call_admin(interaction: Interaction):
     await interaction.response.defer(ephemeral=True, thinking=True)
 
