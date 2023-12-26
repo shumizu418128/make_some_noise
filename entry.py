@@ -215,7 +215,6 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
         return
 
 
-# TODO: 動作テスト
 async def entry_2nd(interaction: Interaction, category: str):
     role = interaction.guild.get_role(
         1036149651847524393  # ビト森杯
@@ -239,7 +238,8 @@ async def entry_2nd(interaction: Interaction, category: str):
             title="キャンセル待ち登録",
             description=f"参加者数が上限に達しているため、キャンセル待ちリストに登録しました。\
                 \nキャンセル待ち順番: {wait}\
-                \n\n※Online Loopstation Exhibition Battleにエントリーした際の情報をそのまま登録しました。",
+                \n\n※Online Loopstation Exhibition Battleにエントリーした際の情報をそのまま登録しました。\
+                \nエントリー情報が反映されるまで、約20秒かかります。",
             color=blue
         )
         bitomori_entry_status = "キャンセル待ち"
@@ -250,7 +250,8 @@ async def entry_2nd(interaction: Interaction, category: str):
         embed = Embed(
             title="エントリー完了",
             description="エントリー受付完了しました。ビト森杯ご参加ありがとうございます。\
-                \n\n※Online Loopstation Exhibition Battleにエントリーした際の情報をそのまま登録しました。",
+                \n\n※Online Loopstation Exhibition Battleにエントリーした際の情報をそのまま登録しました。\
+                \nエントリー情報が反映されるまで、約20秒かかります。",
             color=green
         )
         bitomori_entry_status = "出場"
@@ -262,10 +263,10 @@ async def entry_2nd(interaction: Interaction, category: str):
             title="エントリー完了",
             description="エントリー受付完了しました。\
                 Online Loopstation Exhibition Battle ご参加ありがとうございます。\
-                \n\n※ビト森杯にエントリーした際の情報をそのまま登録しました。",
+                \n\n※ビト森杯にエントリーした際の情報をそのまま登録しました。\
+                \nエントリー情報が反映されるまで、約10秒かかります。",
             color=green
         )
-
     await interaction.followup.send(embed=embed, ephemeral=True)
 
     # 一応bot_channelにも通知
