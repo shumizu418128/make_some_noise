@@ -253,7 +253,8 @@ async def button_cancel(interaction: Interaction):
             await interaction.channel.send("Error: Timeout\nもう1度お試しください")
             return
 
-        await notice.delete(delay=1)
+        # リアクションを消す
+        await notice.clear_reactions()
 
         # ❌ならさよなら
         if reaction.emoji == "❌":
