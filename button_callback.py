@@ -94,7 +94,7 @@ async def button_entry(interaction: Interaction):
             return
 
     # 以下モーダル送信しないのでdeferをかける
-    await interaction.response.defer(ephemeral=True)
+    await interaction.response.defer(ephemeral=True, thinking=True)
 
     # 日本からの、2回目のエントリーの場合
     if locale == "ja":
@@ -136,7 +136,7 @@ async def button_entry(interaction: Interaction):
 
 
 async def button_contact(interaction: Interaction):
-    await interaction.response.defer(ephemeral=True)
+    await interaction.response.defer(ephemeral=True, thinking=True)
 
     # 問い合わせスレッドを取得or作成
     thread = await search_contact(member=interaction.user, create=True, locale=str(interaction.locale))
@@ -153,7 +153,8 @@ async def button_contact(interaction: Interaction):
 
 # TODO: 動作テスト
 async def button_call_admin(interaction: Interaction):
-    await interaction.response.defer(ephemeral=True)
+    await interaction.response.defer(ephemeral=True, thinking=True)
+
     contact = interaction.client.get_channel(
         1035964918198960128  # 問い合わせ
     )
@@ -313,7 +314,7 @@ async def button_submission_content(interaction: Interaction):
 
 # TODO: 動作テスト
 async def button_accept_replace(interaction: Interaction):
-    await interaction.response.defer(ephemeral=True)
+    await interaction.response.defer(ephemeral=True, thinking=True)
     role = interaction.guild.get_role(
         1036149651847524393  # ビト森杯
     )

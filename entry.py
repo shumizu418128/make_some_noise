@@ -56,7 +56,8 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
 
     # モーダル提出後の処理
     async def on_submit(self, interaction: Interaction):
-        await interaction.response.defer(ephemeral=True)
+        await interaction.response.defer(ephemeral=True, thinking=True)
+
         role = interaction.guild.get_role(
             1036149651847524393  # ビト森杯
         )
