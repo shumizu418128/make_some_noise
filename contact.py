@@ -253,9 +253,9 @@ async def get_submission_embed(member: Member):
         # エントリー状況照会のembedを作成
         embed_entry_status = Embed(
             title="エントリー状況照会",
-            description=f"- 名前: `{name}`\n- 読み: `{read}`\n- ビト森杯出場可否: `{status_bitomori}`\
-                \n- OLEB参加状況: `{status_exhibition}`\n- デバイス: `{device}`\n- 備考: `{note}`\
-                \n- 受付時刻: `{time}`"
+            description=f"- `名前:` {name}\n- `読み:` {read}\n- `ビト森杯出場可否:` {status_bitomori}\
+                \n- `OLEB参加状況:` {status_exhibition}\n- `デバイス:` {device}\n- `備考:` {note}\
+                \n- `受付時刻:` {time}"
         )
 
         # 繰り上げ手続き中の場合(cell_values[-1]が5文字以下の場合は繰り上げ手続き中)
