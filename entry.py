@@ -166,8 +166,8 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
             )
             exhibition_entry_status = "参加"
 
-        submission = f"受付内容\n- 名前: `{name}`\
-            \n- よみがな: `{read}`\n- デバイス: `{device}`\n- 備考: `{note}`\
+        submission = f"受付内容\n- `名前:` {name}\
+            \n- `よみがな:` {read}\n- `デバイス:` {device}\n- `備考:` {note}\
             \n\n※後ほど、{name}さん専用お問い合わせチャンネルを作成します。"
         embed.description += submission
         await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
