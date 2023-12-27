@@ -41,7 +41,7 @@ async def maintenance(client: Client):
         412082841829113877
     )
     notice = await bot_notice_channel.send("DB定期メンテナンス中...")
-    
+
     # エントリー名簿取得
     worksheet = await get_worksheet('エントリー名簿')
 
@@ -326,7 +326,7 @@ async def replacement(client: Client):
             title="繰り上げ出場通知",
             description=f"エントリーをキャンセルした方がいたため、{member_replace.display_name}さんは繰り上げ出場できます。\
                 繰り上げ出場するためには、手続きが必要です。\
-                \n\n```※他の出場希望者の機会確保のため、__72時間以内__の手続きをお願いしています。```\
+                \n\n```※他の出場希望者の機会確保のため、【72時間以内】の手続きをお願いしています。```\
                 \n\n**以下のどちらかのボタンを押してください。**",
             color=yellow
         )
@@ -339,8 +339,8 @@ async def replacement(client: Client):
             title="🙏ビト森杯 繰り上げ出場手続きのお願い🙏",
             description=f"ビト森杯エントリーをキャンセルした方がいたため、{member_replace.display_name}さんは繰り上げ出場できます。\
                 繰り上げ出場するためには、手続きが必要です。\
-                \n\n```※他の出場希望者の機会確保のため、__72時間以内__の手続きをお願いしています。```\
-                \n\n__72時間以内__に {thread.jump_url} にて手続きをお願いします。",
+                \n\n```※他の出場希望者の機会確保のため、【72時間以内】の手続きをお願いしています。```\
+                \n\n【72時間以内】に {thread.jump_url} にて手続きをお願いします。",
             color=yellow
         )
         embed.set_author(
@@ -441,8 +441,8 @@ async def replacement_notice_24h(client: Client):
             title="🙏ビト森杯 繰り上げ出場手続きのお願い🙏",
             description=f"ビト森杯エントリーをキャンセルした方がいたため、{member_replace.display_name}さんは繰り上げ出場できます。\
                 繰り上げ出場するためには、手続きが必要です。\
-                \n\n```※他の出場希望者の機会確保のため、__72時間以内__の手続きをお願いしています。```\
-                \n\n__72時間以内__に手続きをお願いします。",
+                \n\n```※他の出場希望者の機会確保のため、【72時間以内】の手続きをお願いしています。```\
+                \n\n【72時間以内】に手続きをお願いします。",
             color=red
         )
         embed.timestamp = datetime.now(JST)
