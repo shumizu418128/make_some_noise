@@ -259,9 +259,6 @@ async def replacement(client: Client):
     role = bot_channel.guild.get_role(
         1036149651847524393  # ビト森杯
     )
-    role_reserve = bot_channel.guild.get_role(
-        1172542396597289093  # キャンセル待ち ビト森杯
-    )
     admin = bot_channel.guild.get_role(
         904368977092964352  # ビト森杯運営
     )
@@ -278,83 +275,80 @@ async def replacement(client: Client):
     # エントリー済み + 繰り上げ出場確認中 = 現在のエントリー数とする
     entry_count = len(role.members) + len(values_status)
 
-    # キャンセル待ちへの通知
+    # キャンセル待ちへの通知(不足人数分for文を回す)
     for _ in range(16 - entry_count):
 
-        # entry_countが16人を下回り、かつキャンセル待ちがいる場合
-        if len(role_reserve.members) > 0:
+        # キャンセル待ちの順番最初の人を取得
+        cell_waitlist_first = await worksheet.find("キャンセル待ち", in_column=5)
 
-            # キャンセル待ちの順番最初の人を取得
-            cell_waitlist_first = await worksheet.find("キャンセル待ち", in_column=5)
+        # いないなら終了
+        if bool(cell_waitlist_first) is False:
+            break
 
-            # いないなら終了
-            if bool(cell_waitlist_first) is False:
-                break
+        # ユーザーID、memberを取得
+        cell_id = await worksheet.cell(row=cell_waitlist_first.row, col=10)
+        member_replace = bot_channel.guild.get_member(int(cell_id.value))
 
-            # ユーザーID、memberを取得
-            cell_id = await worksheet.cell(row=cell_waitlist_first.row, col=10)
-            member_replace = bot_channel.guild.get_member(int(cell_id.value))
+        # 問い合わせスレッドを取得
+        thread = await search_contact(member=member_replace)
 
-            # 問い合わせスレッドを取得
-            thread = await search_contact(member=member_replace)
+        # bot_channelへ通知
+        embed = Embed(
+            title="繰り上げ出場通知を送信 (出場意思確認中)",
+            description=thread.jump_url,
+            color=blue
+        )
+        embed.set_author(
+            name=member_replace.display_name,
+            icon_url=member_replace.avatar.url
+        )
+        await bot_channel.send(embed=embed)
 
-            # bot_channelへ通知
-            embed = Embed(
-                title="繰り上げ出場通知を送信 (出場意思確認中)",
-                description=thread.jump_url,
-                color=blue
-            )
-            embed.set_author(
-                name=member_replace.display_name,
-                icon_url=member_replace.avatar.url
-            )
-            await bot_channel.send(embed=embed)
+        # 本人の問い合わせthreadへ通知
+        embed = Embed(
+            title="繰り上げ出場通知",
+            description=f"エントリーをキャンセルした方がいたため、{member_replace.display_name}さんは繰り上げ出場できます。\
+                繰り上げ出場するためには、手続きが必要です。\
+                \n\n```※他の出場希望者の機会確保のため、__72時間以内__の手続きをお願いしています。```\
+                \n\n**以下のどちらかのボタンを押してください。**",
+            color=yellow
+        )
+        view = await get_view(replace=True)
+        await thread.send(member_replace.mention, embed=embed, view=view)
 
-            # 本人の問い合わせthreadへ通知
-            embed = Embed(
-                title="繰り上げ出場通知",
-                description=f"エントリーをキャンセルした方がいたため、{member_replace.display_name}さんは繰り上げ出場できます。\
-                    繰り上げ出場するためには、手続きが必要です。\
-                    \n\n```※他の出場希望者の機会確保のため、__72時間以内__の手続きをお願いしています。```\
-                    \n\n**以下のどちらかのボタンを押してください。**",
-                color=yellow
-            )
-            view = await get_view(replace=True)
-            await thread.send(member_replace.mention, embed=embed, view=view)
+        # 繰り上げ通知のみ、DMでも送信
+        embed = Embed(
+            title="🙏ビト森杯 繰り上げ出場手続きのお願い🙏",
+            description=f"ビト森杯エントリーをキャンセルした方がいたため、{member_replace.display_name}さんは繰り上げ出場できます。\
+                繰り上げ出場するためには、手続きが必要です。\
+                \n\n```※他の出場希望者の機会確保のため、__72時間以内__の手続きをお願いしています。```\
+                \n\n__72時間以内__に {thread.jump_url} にて手続きをお願いします。",
+            color=yellow
+        )
+        embed.set_author(
+            name="あつまれ！ビートボックスの森",
+            icon_url=bot_channel.guild.icon.url
+        )
+        await member_replace.send(member_replace.mention, embed=embed)
+        await member_replace.send("### このDMは送信専用です。ここに何も入力しないでください。")
 
-            # 繰り上げ通知のみ、DMでも送信
-            embed = Embed(
-                title="🙏ビト森杯 繰り上げ出場手続きのお願い🙏",
-                description=f"ビト森杯エントリーをキャンセルした方がいたため、{member_replace.display_name}さんは繰り上げ出場できます。\
-                    繰り上げ出場するためには、手続きが必要です。\
-                    \n\n```※他の出場希望者の機会確保のため、__72時間以内__の手続きをお願いしています。```\
-                    \n\n__72時間以内__に {thread.jump_url} にて手続きをお願いします。",
-                color=yellow
-            )
-            embed.set_author(
-                name="あつまれ！ビートボックスの森",
-                icon_url=bot_channel.guild.icon.url
-            )
-            await member_replace.send(member_replace.mention, embed=embed)
-            await member_replace.send("### このDMは送信専用です。ここに何も入力しないでください。")
+        # 海外からのエントリーは運営対処が必要なので、運営へ通知
+        locale = thread.name.split("_")[1]  # スレッド名からlocaleを取得
+        if locale != "ja":
+            await thread.send(f"{admin.mention}\n繰り上げ出場手続き中：海外からのエントリー")
 
-            # 海外からのエントリーは運営対処が必要なので、運営へ通知
-            locale = thread.name.split("_")[1]  # スレッド名からlocaleを取得
-            if locale != "ja":
-                await thread.send(f"{admin.mention}\n繰り上げ出場手続き中：海外からのエントリー")
+        dt_now = datetime.now(JST)
+        dt_limit = dt_now + timedelta(days=3)  # 繰り上げ手続き締切
+        limit = dt_limit.strftime("%m/%d")  # 月/日の形式に変換
 
-            dt_now = datetime.now(JST)
-            dt_limit = dt_now + timedelta(days=3)  # 繰り上げ手続き締切
-            limit = dt_limit.strftime("%m/%d")  # 月/日の形式に変換
+        # ユーザーIDのセルを取得
+        cell_id = await worksheet.find(f'{member_replace.id}')
 
-            # ユーザーIDのセルを取得
-            cell_id = await worksheet.find(f'{member_replace.id}')
+        # 繰り上げ手続き締切を設定
+        await worksheet.update_cell(cell_id.row, 11, limit)
 
-            # 繰り上げ手続き締切を設定
-            await worksheet.update_cell(cell_id.row, 11, limit)
-
-            # 出場可否を繰り上げ出場手続き中に変更
-            await worksheet.update_cell(cell_id.row, 5, "繰り上げ出場手続き中")
+        # 出場可否を繰り上げ出場手続き中に変更
+        await worksheet.update_cell(cell_id.row, 5, "繰り上げ出場手続き中")
 
 
 # TODO: 動作テスト

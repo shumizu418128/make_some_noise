@@ -114,15 +114,15 @@ async def button_entry(interaction: Interaction):
     if locale not in available_langs:
         locale = "en-US"
     langs = {
-        "en-US": f"Error: please contact us via {thread.mention}",
-        "en-GB": f"Error: please contact us via {thread.mention}",
-        "zh-TW": f"錯誤：請點一下 {thread.mention} 聯係我們",
-        "zh-CN": f"错误：请点击 {thread.mention} 联系我们 ※此服务器仅以日英交流",
-        "ko": f"문의는 {thread.mention} 로 보내주세요",
-        "es-ES": f"Error: por favor contáctenos a través de {thread.mention}",
-        "pt-BR": f"Erro: entre em contato conosco através de {thread.mention}"
+        "en-US": f"Error: please contact us via {thread.jump_url}",
+        "en-GB": f"Error: please contact us via {thread.jump_url}",
+        "zh-TW": f"錯誤：請點一下 {thread.jump_url} 聯係我們",
+        "zh-CN": f"错误：请点击 {thread.jump_url} 联系我们 ※此服务器仅以日英交流",
+        "ko": f"문의는 {thread.jump_url} 로 보내주세요",
+        "es-ES": f"Error: por favor contáctenos a través de {thread.jump_url}",
+        "pt-BR": f"Erro: entre em contato conosco através de {thread.jump_url}"
     }
-    description = langs[locale] + f"\nお手数ですが {thread.mention} までお問い合わせください。"
+    description = langs[locale] + f"\nお手数ですが {thread.jump_url} までお問い合わせください。"
 
     # 一旦エラー文言を送信
     embed = Embed(
