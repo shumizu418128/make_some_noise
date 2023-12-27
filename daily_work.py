@@ -25,7 +25,7 @@ col = 横 A, B, C, ...
 
 async def maintenance(client: Client):
     bot_notice_channel = client.get_channel(
-        916608669221806100  # ビト森杯 進行bot
+        1035946838487994449  # ビト森杯 進行bot
     )
     role_entry = bot_notice_channel.guild.get_role(
         1036149651847524393  # ビト森杯
@@ -208,7 +208,6 @@ async def maintenance(client: Client):
         await notice.reply(embed=embed)
 
 
-# TODO: 動作テスト
 async def replacement_expire(client: Client):
     bot_channel = client.get_channel(
         897784178958008322  # bot用チャット
@@ -365,10 +364,9 @@ async def replacement(client: Client):
         await worksheet.update_cell(cell_id.row, 5, "繰り上げ出場手続き中")
 
 
-# TODO: 動作テスト
 async def entry_list_update(client: Client):
     bot_notice_channel = client.get_channel(
-        916608669221806100  # ビト森杯 進行bot
+        1035946838487994449  # ビト森杯 進行bot
     )
     role = bot_notice_channel.guild.get_role(
         1036149651847524393  # ビト森杯
@@ -386,7 +384,6 @@ async def entry_list_update(client: Client):
     await bot_notice_channel.send(embed=embed)
 
 
-# TODO: 動作テスト
 # 24時間前に繰り上げ出場手続きのお願いを再度送信
 async def replacement_notice_24h(client: Client):
     bot_channel = client.get_channel(

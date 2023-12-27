@@ -167,7 +167,7 @@ async def on_message(message: Message):
             1035965200341401600  # ビト森杯 お知らせ
         )
         bot_notice_channel = client.get_channel(
-            916608669221806100  # ビト森杯 進行bot
+            1035946838487994449  # ビト森杯 進行bot
         )
         contact = client.get_channel(
             1035964918198960128  # 問い合わせ
