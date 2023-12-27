@@ -40,6 +40,8 @@ async def maintenance(client: Client):
     tari3210 = bot_notice_channel.guild.get_member(
         412082841829113877
     )
+    notice = await bot_notice_channel.send("DB定期メンテナンス中...")
+    
     # エントリー名簿取得
     worksheet = await get_worksheet('エントリー名簿')
 
@@ -73,20 +75,28 @@ async def maintenance(client: Client):
     DB_OLEB_ids.pop(0)
     DB_OLEB_names.pop(0)
 
-    # DBリストからNoneと#N/Aを削除
-    DB_entry_ids = [id for id in DB_entry_ids if id != "" and id != "#N/A"]
+    # DBリストからNoneと#N/Aを削除、IDはintに変換
+    DB_entry_ids = [
+        int(id) for id in DB_entry_ids if id != "" and id != "#N/A"
+    ]
     DB_entry_names = [
-        name for name in DB_entry_names if name != "" and name != "#N/A"]
-    DB_reserve_ids = [id for id in DB_reserve_ids if id != "" and id != "#N/A"]
+        name for name in DB_entry_names if name != "" and name != "#N/A"
+    ]
+    DB_reserve_ids = [
+        int(id) for id in DB_reserve_ids if id != "" and id != "#N/A"
+    ]
     DB_reserve_names = [
-        name for name in DB_reserve_names if name != "" and name != "#N/A"]
-    DB_OLEB_ids = [id for id in DB_OLEB_ids if id != "" and id != "#N/A"]
+        name for name in DB_reserve_names if name != "" and name != "#N/A"
+    ]
+    DB_OLEB_ids = [
+        int(id) for id in DB_OLEB_ids if id != "" and id != "#N/A"
+    ]
     DB_OLEB_names = [
-        name for name in DB_OLEB_names if name != "" and name != "#N/A"]
+        name for name in DB_OLEB_names if name != "" and name != "#N/A"
+    ]
 
     # エラーを保存
     errors = []
-    notice = await bot_notice_channel.send("DB定期メンテナンス中...")
 
     # ロール未付与(idベースで確認)
     no_role_ids = set(DB_entry_ids + DB_reserve_ids + DB_OLEB_ids) - \
@@ -95,7 +105,7 @@ async def maintenance(client: Client):
     for id in no_role_ids:
 
         # memberを取得
-        member = bot_notice_channel.guild.get_member(int(id))
+        member = bot_notice_channel.guild.get_member(id)
 
         # ビト森杯キャンセル待ちか、繰り上げ出場手続き中の場合
         if id in DB_reserve_ids:
@@ -135,7 +145,7 @@ async def maintenance(client: Client):
     for id in no_DB_ids:
 
         # 該当者のmemberオブジェクトを取得
-        member = bot_notice_channel.guild.get_member(int(id))
+        member = bot_notice_channel.guild.get_member(id)
 
         # エントリー状況をroleから取得
         role_check = [
