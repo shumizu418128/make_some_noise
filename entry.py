@@ -381,7 +381,6 @@ async def entry_cancel(member: Member, category: str):
         name=member.display_name,
         icon_url=member.avatar.url
     )
-    embed.timestamp = datetime.now(JST)
 
     # キャンセル完了通知の内容を設定
     if category == "bitomori":

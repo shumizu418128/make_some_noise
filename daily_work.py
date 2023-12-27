@@ -183,6 +183,7 @@ async def maintenance(client: Client):
             description="\n".join(errors),
             color=red
         )
+        embed.timestamp = datetime.now(JST)
         await notice.reply(tari3210.mention, embed=embed)
 
     else:
@@ -191,6 +192,7 @@ async def maintenance(client: Client):
             description="エラーはありませんでした。",
             color=green
         )
+        embed.timestamp = datetime.now(JST)
         await notice.reply(embed=embed)
 
 
@@ -244,6 +246,7 @@ async def replacement_expire(client: Client):
                 \n\n※エントリー手続きを行えば、再度キャンセル待ち登録は可能ですが、キャンセル待ちの最後尾に追加されます。",
             color=red
         )
+        embed.timestamp = datetime.now(JST)
         await thread.send(embed=embed)
         await member_replace.send(embed=embed)
         await member_replace.send("### このDMは送信専用です。ここに何も入力しないでください。")
@@ -302,6 +305,7 @@ async def replacement(client: Client):
             name=member_replace.display_name,
             icon_url=member_replace.avatar.url
         )
+        embed.timestamp = datetime.now(JST)
         await bot_channel.send(embed=embed)
 
         # 本人の問い合わせthreadへ通知
@@ -313,6 +317,7 @@ async def replacement(client: Client):
                 \n\n**以下のどちらかのボタンを押してください。**",
             color=yellow
         )
+        embed.timestamp = datetime.now(JST)
         view = await get_view(replace=True)
         await thread.send(member_replace.mention, embed=embed, view=view)
 
@@ -329,6 +334,7 @@ async def replacement(client: Client):
             name="あつまれ！ビートボックスの森",
             icon_url=bot_channel.guild.icon.url
         )
+        embed.timestamp = datetime.now(JST)
         await member_replace.send(member_replace.mention, embed=embed)
         await member_replace.send("### このDMは送信専用です。ここに何も入力しないでください。")
 
@@ -356,10 +362,6 @@ async def entry_list_update(client: Client):
     role = bot_notice_channel.guild.get_role(
         1036149651847524393  # ビト森杯
     )
-
-    # 今日の日付をdatetimeで取得
-    dt_now = datetime.now(JST)
-
     # エントリー名簿を取得
     entry_list = [member.display_name for member in role.members]
 
@@ -369,7 +371,7 @@ async def entry_list_update(client: Client):
         description="\n".join(entry_list),
         color=blue
     )
-    embed.timestamp = dt_now
+    embed.timestamp = datetime.now(JST)
     await bot_notice_channel.send(embed=embed)
 
 
@@ -430,6 +432,8 @@ async def replacement_notice_24h(client: Client):
                 \n\n__72時間以内__に手続きをお願いします。",
             color=red
         )
+        embed.timestamp = datetime.now(JST)
+
         # viewを作成
         view = await get_view(replace=True)
 
