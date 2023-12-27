@@ -341,9 +341,6 @@ async def replacement(client: Client):
         dt_limit = dt_now + timedelta(days=3)  # 繰り上げ手続き締切
         limit = dt_limit.strftime("%m/%d")  # 月/日の形式に変換
 
-        # ユーザーIDのセルを取得
-        cell_id = await worksheet.find(f'{member_replace.id}')
-
         # 繰り上げ手続き締切を設定
         await worksheet.update_cell(cell_id.row, 11, limit)
 
