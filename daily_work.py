@@ -75,11 +75,14 @@ async def maintenance(client: Client):
 
     # DBリストからNoneと#N/Aを削除
     DB_entry_ids = [id for id in DB_entry_ids if id != "" and id != "#N/A"]
-    DB_entry_names = [name for name in DB_entry_names if name != "" and name != "#N/A"]
+    DB_entry_names = [
+        name for name in DB_entry_names if name != "" and name != "#N/A"]
     DB_reserve_ids = [id for id in DB_reserve_ids if id != "" and id != "#N/A"]
-    DB_reserve_names = [name for name in DB_reserve_names if name != "" and name != "#N/A"]
+    DB_reserve_names = [
+        name for name in DB_reserve_names if name != "" and name != "#N/A"]
     DB_OLEB_ids = [id for id in DB_OLEB_ids if id != "" and id != "#N/A"]
-    DB_OLEB_names = [name for name in DB_OLEB_names if name != "" and name != "#N/A"]
+    DB_OLEB_names = [
+        name for name in DB_OLEB_names if name != "" and name != "#N/A"]
 
     # エラーを保存
     errors = []
