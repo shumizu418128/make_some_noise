@@ -18,6 +18,8 @@ from keep_alive import keep_alive
 from natural_language import natural_language
 from search_next_event import search_next_event
 
+# TODO エントリー開始時、有効化
+# from button_view import get_view
 # from daily_work import daily_work_AM9, daily_work_PM9
 
 # NOTE: ビト森杯運営機能搭載ファイル
@@ -132,7 +134,7 @@ async def on_member_join(member: Member):
         await channel.send(next_event.url)
 
     # TODO エントリー開始時、有効化
-    """view = await get_view_contact(entry=True, contact=True)
+    """view = await get_view(entry=True, contact=True)
     await channel.send("第3回ビト森杯・Online Loopstation Exhibition Battle", view=view)"""
 
 
