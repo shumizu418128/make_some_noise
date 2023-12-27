@@ -95,7 +95,7 @@ async def button_entry(interaction: Interaction):
             return
 
     # 以下モーダル送信しないのでdeferをかける
-    await interaction.response.defer(interaction.user.mention, ephemeral=True, thinking=True)
+    await interaction.response.defer(ephemeral=True, thinking=True)
 
     # 日本からの、2回目のエントリーの場合
     if locale == "ja":
