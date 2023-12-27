@@ -229,10 +229,6 @@ async def get_submission_embed(member: Member):
     if role_check[0] and role_check[1]:
         await bot_channel.send(f"{tari3210.mention}\nError: 重複ロール付与\n\n{member.id} {member.display_name}")
 
-    # 現在時刻を取得
-    dt_now = datetime.now(JST)
-    str_now = dt_now.strftime('%m/%d %H:%M 現在')
-
     # DBから取得
     cell_id = await worksheet.find(f'{member.id}')  # ユーザーIDで検索
 
@@ -256,7 +252,7 @@ async def get_submission_embed(member: Member):
 
         # エントリー状況照会のembedを作成
         embed_entry_status = Embed(
-            title=f"エントリー状況照会 {str_now}",
+            title="エントリー状況照会",
             description=f"- 名前: `{name}`\n- 読み: `{read}`\n- ビト森杯出場可否: `{status_bitomori}`\
                 \n- OLEB参加状況: `{status_exhibition}`\n- デバイス: `{device}`\n- 備考: `{note}`\
                 \n- 受付時刻: `{time}`"
@@ -267,18 +263,15 @@ async def get_submission_embed(member: Member):
             deadline = cell_values[-1]
             embed_entry_status.description += f"\n\n繰り上げ手続き締め切り: `{deadline} 21:00`"
 
-        return embed_entry_status
-
     # DB登録なし
     else:
 
         # エントリーしていない場合
         if any(role_check) is False:
             embed_entry_status = Embed(
-                title=f"エントリー状況照会 {str_now}",
+                title="エントリー状況照会",
                 description=f"{member.display_name}さんはエントリーしていません。"
             )
-            return embed_entry_status
 
         # エントリーしているのにDB登録がない場合（エラー）
         else:
@@ -288,7 +281,7 @@ async def get_submission_embed(member: Member):
 
             # とりあえずroleからエントリー状況を取得
             embed_entry_status = Embed(
-                title=f"エントリー状況照会 {str_now}",
+                title="エントリー状況照会",
             )
             if role_check[0]:
                 embed_entry_status.description += "ビト森杯エントリー済み\n"
@@ -297,4 +290,5 @@ async def get_submission_embed(member: Member):
             if role_check[2]:
                 embed_entry_status.description += "OLEBエントリー済み"
 
-            return embed_entry_status
+    embed_entry_status.timestamp = datetime.now(JST)
+    return embed_entry_status

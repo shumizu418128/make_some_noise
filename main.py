@@ -48,6 +48,10 @@ async def on_interaction(interaction: Interaction):
     )
     custom_id = interaction.data["custom_id"]
 
+    # ボタンのカスタムIDに_がない場合、custom_id未設定のためreturn
+    if "_" not in custom_id:
+        return
+
     # interaction通知
     embed = Embed(
         title=custom_id,
