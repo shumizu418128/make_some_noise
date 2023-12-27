@@ -109,7 +109,7 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
                     \n\n入力したよみがな：{read}",
                 color=red
             )
-            await interaction.followup.send(embed=embed, ephemeral=True)
+            await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
             return
 
         # ビト森杯エントリー済み
@@ -119,7 +119,7 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
                 description="ビト森杯\nすでにエントリー済みです。",
                 color=red
             )
-            await interaction.followup.send(embed=embed, ephemeral=True)
+            await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
             return
 
         # エキシビションエントリー済み
@@ -129,7 +129,7 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
                 description="Online Loopstation Exhibition Battle\nすでにエントリー済みです。",
                 color=red
             )
-            await interaction.followup.send(embed=embed, ephemeral=True)
+            await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
             return
 
         # エントリー数が上限に達している or キャンセル待ちリストに人がいる場合
@@ -170,7 +170,7 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
             \n- よみがな: `{read}`\n- デバイス: `{device}`\n- 備考: `{note}`\
             \n\n※後ほど、{name}さん専用お問い合わせチャンネルを作成します。"
         embed.description += submission
-        await interaction.followup.send(embed=embed, ephemeral=True)
+        await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
 
         # ニックネームを更新
         await interaction.user.edit(nick=name)
@@ -217,6 +217,8 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
 
 
 async def entry_2nd(interaction: Interaction, category: str):
+    # button_entryにおいてdefer使用済み
+
     role = interaction.guild.get_role(
         1036149651847524393  # ビト森杯
     )
@@ -268,7 +270,7 @@ async def entry_2nd(interaction: Interaction, category: str):
                 \nエントリー情報が反映されるまで、約10秒かかります。",
             color=green
         )
-    await interaction.followup.send(embed=embed, ephemeral=True)
+    await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
 
     # 一応bot_channelにも通知
     embed = Embed(

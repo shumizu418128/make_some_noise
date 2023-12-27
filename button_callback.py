@@ -61,7 +61,7 @@ async def button_entry(interaction: Interaction):
     # エントリー開始時刻確認
     if dt_now < dt_entry_start:
         await interaction.response.send_message(
-            "ビト森杯・Online Loopstation Exhibition Battle\nエントリー受付開始は1月6日 21:00です。",
+            f"{interaction.user.mention}\nビト森杯・Online Loopstation Exhibition Battle\nエントリー受付開始は1月6日 21:00です。",
             ephemeral=True
         )
         return
@@ -73,7 +73,7 @@ async def button_entry(interaction: Interaction):
             description="ビト森杯\nすでにエントリー済みです。",
             color=red
         )
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+        await interaction.response.send_message(interaction.user.mention, embed=embed, ephemeral=True)
         return
 
     # エキシビションエントリー済み
@@ -83,7 +83,7 @@ async def button_entry(interaction: Interaction):
             description="Online Loopstation Exhibition Battle\nすでにエントリー済みです。",
             color=red
         )
-        await interaction.response.send_message(embed=embed, ephemeral=True)
+        await interaction.response.send_message(interaction.user.mention, embed=embed, ephemeral=True)
         return
 
     # 日本からのエントリー
@@ -95,7 +95,7 @@ async def button_entry(interaction: Interaction):
             return
 
     # 以下モーダル送信しないのでdeferをかける
-    await interaction.response.defer(ephemeral=True, thinking=True)
+    await interaction.response.defer(interaction.user.mention, ephemeral=True, thinking=True)
 
     # 日本からの、2回目のエントリーの場合
     if locale == "ja":
@@ -130,7 +130,7 @@ async def button_entry(interaction: Interaction):
         description=description,
         color=red
     )
-    await interaction.followup.send(embed=embed, ephemeral=True)
+    await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
 
     # 問い合わせスレッドにリダイレクト
     await contact_start(client=interaction.client, member=interaction.user, entry_redirect=True)
@@ -146,7 +146,7 @@ async def button_contact(interaction: Interaction):
         description=f"{thread.jump_url} までお問い合わせください。",
         color=0x00bfff
     )
-    await interaction.followup.send(embed=embed, ephemeral=True)
+    await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
 
     # 問い合わせ対応開始
     await contact_start(client=interaction.client, member=interaction.user)
