@@ -265,7 +265,7 @@ async def get_submission_embed(member: Member):
         # 繰り上げ手続き中の場合(cell_values[-1]が5文字以下の場合は繰り上げ手続き中)
         if len(cell_values[-1]) <= 5:
             deadline = cell_values[-1]
-            embed_entry_status.description += f"\n繰り上げ手続き締め切り: `{deadline} 21:00`"
+            embed_entry_status.description += f"\n\n繰り上げ手続き締め切り: `{deadline} 21:00`"
 
         return embed_entry_status
 
