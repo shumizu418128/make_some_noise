@@ -23,7 +23,6 @@ col = 横 A, B, C, ...
 """
 
 
-# TODO: 動作テスト
 async def maintenance(client: Client):
     bot_notice_channel = client.get_channel(
         916608669221806100  # ビト森杯 進行bot
@@ -263,10 +262,9 @@ async def replacement_expire(client: Client):
         await thread.send(embed=embed)
         await member_replace.send(embed=embed)
         await member_replace.send("### このDMは送信専用です。ここに何も入力しないでください。")
-        await entry_cancel(member_replace)
+        await entry_cancel(member_replace, "bitomori")
 
 
-# TODO: 動作テスト
 # 繰り上げ手続きは毎日21時に実行
 async def replacement(client: Client):
     bot_channel = client.get_channel(

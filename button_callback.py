@@ -313,7 +313,6 @@ async def button_submission_content(interaction: Interaction):
     await interaction.followup.send(embed=embed)
 
 
-# TODO: 動作テスト
 async def button_accept_replace(interaction: Interaction):
     await interaction.response.defer(thinking=True)
     role = interaction.guild.get_role(
