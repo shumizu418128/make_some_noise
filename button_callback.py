@@ -325,8 +325,32 @@ async def button_accept_replace(interaction: Interaction):
     bot_channel = interaction.guild.get_channel(
         897784178958008322  # bot用チャット
     )
+    tari3210 = interaction.guild.get_member(
+        412082841829113877  # tari3210
+    )
     # Google spreadsheet worksheet読み込み
     worksheet = await get_worksheet('エントリー名簿')
+
+    # DBからユーザーIDで検索
+    cell_id = await worksheet.find(f'{interaction.user.id}')
+
+    # 繰り上げ手続き締切が設定されているか確認
+    cell_deadline = await worksheet.cell(row=cell_id.row, col=11)
+
+    # 締切が設定されていない場合、エラー通知
+    if cell_deadline.value == "":
+        embed = Embed(
+            title="Error",
+            description="繰り上げ出場手続き締切未設定",
+            color=red
+        )
+        await bot_channel.send(tari3210.mention, embed=embed)
+        embed = Embed(
+            title="Error",
+            description="運営が対処します。しばらくお待ちください。\n対処には数日かかる場合があります。",
+            color=red
+        )
+        return
 
     # まず手続き完了通知
     embed = Embed(
@@ -339,9 +363,6 @@ async def button_accept_replace(interaction: Interaction):
     # ロール付け替え
     await interaction.user.remove_roles(role_reserve)
     await interaction.user.add_roles(role)
-
-    # DB更新
-    cell_id = await worksheet.find(f'{interaction.user.id}')  # ユーザーIDで検索
 
     # 出場可否を出場に変更
     await worksheet.update_cell(cell_id.row, 5, "出場")
