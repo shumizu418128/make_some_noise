@@ -40,7 +40,7 @@ async def get_view(
         label="エントリーキャンセル",
         style=ButtonStyle.red,
         custom_id="button_cancel",
-        emoji="❌"
+        emoji="😭"
     )
     button_entry_bitomori = Button(
         style=ButtonStyle.green,
