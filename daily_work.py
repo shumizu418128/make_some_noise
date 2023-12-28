@@ -320,7 +320,7 @@ async def replacement(client: Client):
 
         # 本人の問い合わせthreadへ通知
         embed = Embed(
-            title="繰り上げ出場通知",
+            title="繰り上げ出場手続きのお願い",
             description=f"エントリーをキャンセルした方がいたため、{member_replace.display_name}さんは繰り上げ出場できます。\
                 繰り上げ出場するためには、手続きが必要です。\
                 \n\n```※他の出場希望者の機会確保のため、【72時間以内】の手続きをお願いしています。```\
