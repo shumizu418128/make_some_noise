@@ -327,6 +327,9 @@ async def button_accept_replace(interaction: Interaction):
     tari3210 = interaction.guild.get_member(
         412082841829113877  # tari3210
     )
+    contact = interaction.guild.get_channel(
+        1035964918198960128  # 問い合わせ
+    )
     # Google spreadsheet worksheet読み込み
     worksheet = await get_worksheet('エントリー名簿')
 
@@ -349,6 +352,8 @@ async def button_accept_replace(interaction: Interaction):
             description="運営が対処します。しばらくお待ちください。\n対処には数日かかる場合があります。",
             color=red
         )
+        # しゃべってよし
+        await contact.set_permissions(interaction.user, send_messages_in_threads=True)
         return
 
     # まず手続き完了通知
