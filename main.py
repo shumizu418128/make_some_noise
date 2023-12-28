@@ -163,8 +163,11 @@ async def on_message(message: Message):
     # TODO エントリー開始時、有効化
     """if message.content == "s.loop":
         await message.delete(delay=1)
-        announce = client.get_channel(
+        announce_bitomori = client.get_channel(
             1035965200341401600  # ビト森杯 お知らせ
+        )
+        announce = client.get_channel(
+            885462548055461898  # お知らせ
         )
         bot_notice_channel = client.get_channel(
             1035946838487994449  # ビト森杯 進行bot
@@ -174,6 +177,7 @@ async def on_message(message: Message):
         )
         view = await get_view(entry=True, contact=True)
         await announce.send("第3回ビト森杯・Online Loopstation Exhibition Battle", view=view)
+        await announce_bitomori.send("第3回ビト森杯・Online Loopstation Exhibition Battle", view=view)
         await bot_notice_channel.send("第3回ビト森杯・Online Loopstation Exhibition Battle", view=view)
         await contact.send("第3回ビト森杯・Online Loopstation Exhibition Battle", view=view)
         """
