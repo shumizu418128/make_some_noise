@@ -10,6 +10,7 @@ from discord.errors import ClientException
 
 from advertise import advertise
 from battle_stadium import battle, start
+from button_admin_callback import button_admin_cancel, button_admin_create_thread, button_admin_entry, button_admin_submission_content
 from button_callback import (button_accept_replace, button_call_admin,
                              button_cancel, button_contact, button_entry,
                              button_submission_content)
@@ -63,6 +64,30 @@ async def on_interaction(interaction: Interaction):
         icon_url=interaction.user.display_avatar.url
     )
     await bot_channel.send(f"{interaction.user.id}", embed=embed)
+
+    ##############################
+    # 運営専用ボタン
+    ##############################
+
+    role_check = interaction.user.get_role(904368977092964352)  # ビト森杯運営
+    if bool(role_check):
+
+        # ビト森杯エントリー
+        if "entry" in custom_id:
+            await button_admin_entry(interaction)
+
+        # キャンセル
+        if "cancel" in custom_id:
+            await button_admin_cancel(interaction)
+
+        # エントリー状況照会
+        if "submission_content" in custom_id:
+            await button_admin_submission_content(interaction)
+
+        # 問い合わせスレッド作成
+        if custom_id == "button_admin_create_thread":
+            await button_admin_create_thread(interaction)
+        return
 
     ##############################
     # 参加者が押すボタン
