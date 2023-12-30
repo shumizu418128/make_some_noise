@@ -10,7 +10,10 @@ from discord.errors import ClientException
 
 from advertise import advertise
 from battle_stadium import battle, start
-from button_admin_callback import button_admin_cancel, button_admin_create_thread, button_admin_entry, button_admin_submission_content
+from button_admin_callback import (button_admin_cancel,
+                                   button_admin_create_thread,
+                                   button_admin_entry,
+                                   button_admin_submission_content)
 from button_callback import (button_accept_replace, button_call_admin,
                              button_cancel, button_contact, button_entry,
                              button_submission_content)
@@ -63,6 +66,16 @@ async def on_interaction(interaction: Interaction):
         name=interaction.user.display_name,
         icon_url=interaction.user.display_avatar.url
     )
+    # モーダルの場合、提出内容を表示
+    if custom_id.startswith("modal"):
+        values_list = [
+            f"- `{sub_component['custom_id']}:` {sub_component['value']}"
+            for component in interaction.data['components']
+            for sub_component in component['components']
+        ]
+        values = "\n".join(values_list)
+        embed.add_field(name="提出内容", value=values)
+
     await bot_channel.send(f"{interaction.user.id}", embed=embed)
 
     ##############################

@@ -33,7 +33,7 @@ async def button_admin_entry(interaction: Interaction):
         897784178958008322  # bot用チャット
     )
     category = interaction.data["custom_id"].replace(
-        "button_admin_entry_", "")  # "bitomori" or "exhibition"
+        "button_admin_entry_", "").replace("button_entry_", "")  # "bitomori" or "exhibition"
 
     # エントリーの対象者を取得
     # thread内なら名前から、それ以外なら入力させる

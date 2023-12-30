@@ -25,34 +25,30 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
     def __init__(self, display_name: str, category: str):
         super().__init__(title="エントリー受付", custom_id=f"modal_entry_{category}")
 
-        self.add_item(
-            TextInput(
-                label="あなたの名前",
-                placeholder="名前",
-                default=display_name
-            )
-        )
-        self.add_item(
-            TextInput(
-                label="あなたの名前の「よみがな」",
-                placeholder="よみがな"
-            )
-        )
-        self.add_item(
-            TextInput(
-                label="使用するデバイス（すべて記入）",
-                placeholder="使用するデバイス",
-                style=TextStyle.long
-            )
-        )
-        self.add_item(
-            TextInput(
-                label="備考（任意回答）",
-                placeholder="連絡事項など",
-                style=TextStyle.long,
-                required=False
-            )
-        )
+        self.add_item(TextInput(
+            label="あなたの名前",
+            placeholder="名前",
+            default=display_name,
+            custom_id="name"
+        ))
+        self.add_item(TextInput(
+            label="あなたの名前の「よみがな」",
+            placeholder="よみがな",
+            custom_id="read"
+        ))
+        self.add_item(TextInput(
+            label="使用するデバイス（すべて記入）",
+            placeholder="使用するデバイス",
+            style=TextStyle.long,
+            custom_id="device"
+        ))
+        self.add_item(TextInput(
+            label="備考（任意回答）",
+            placeholder="連絡事項など",
+            style=TextStyle.long,
+            required=False,
+            custom_id="note"
+        ))
 
     # モーダル提出後の処理
     async def on_submit(self, interaction: Interaction):
@@ -66,9 +62,6 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
         )
         role_exhibition = interaction.guild.get_role(
             1171760161778581505  # エキシビション
-        )
-        bot_channel = interaction.guild.get_channel(
-            897784178958008322  # bot用チャット
         )
         # ビト森杯エントリー済みかどうか確認
         # ビト森杯はanyでキャンセル待ちも含む
@@ -174,18 +167,6 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
 
         # ニックネームを更新
         await interaction.user.edit(nick=name)
-
-        # 一応bot_channelにも通知
-        embed = Embed(
-            title=f"modal_entry_{category}",
-            description=submission,
-            color=blue
-        )
-        embed.set_author(
-            name=interaction.user.display_name,
-            icon_url=interaction.user.avatar.url
-        )
-        await bot_channel.send(f"{interaction.user.id}", embed=embed)
 
         # DB新規登録
         # エントリー数を更新
