@@ -5,11 +5,12 @@ from datetime import time, timedelta, timezone  # , datetime
 from discord import Client, File  # , Embed
 from discord.ext import tasks
 
+# from battle_stadium import start
+from search_next_event import search_next_event
+
 # TODO エントリー開始時、有効化
 # from button_view import get_view
 
-# from battle_stadium import start
-from search_next_event import search_next_event
 
 # NOTE: ビト森杯運営機能搭載ファイル
 JST = timezone(timedelta(hours=9))
