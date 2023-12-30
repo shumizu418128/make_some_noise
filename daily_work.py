@@ -463,10 +463,10 @@ async def daily_work_PM9(client: Client):
     dt_day1 = datetime(
         year=2024,
         month=2,
-        day=16,
+        day=17,
         tzinfo=JST
     )
-    # 繰り上げ出場手続きのお願い(2/15 21:00まで)
+    # 繰り上げ出場手続きのお願い(2/16 21:00まで)
     if dt_now < dt_day1:
         await replacement_expire(client)
         await replacement(client)
