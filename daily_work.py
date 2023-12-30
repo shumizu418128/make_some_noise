@@ -168,7 +168,10 @@ async def maintenance(client: Client):
             f"- DB未登録(エントリー時刻確認) {member.display_name} {member.id} {status}")
 
     # 名前が一致しているか確認
-    for name in set(DB_entry_names + DB_reserve_names + DB_OLEB_names) - set(role_entry_names + role_reserve_names + role_OLEB_names):
+    wrong_names = set(DB_entry_names + DB_reserve_names + DB_OLEB_names) - \
+        set(role_entry_names + role_reserve_names + role_OLEB_names)
+
+    for name in wrong_names:
 
         # 該当者のセルを取得
         cell_name = await worksheet.find(name)

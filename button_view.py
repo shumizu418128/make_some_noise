@@ -14,7 +14,8 @@ async def get_view(
     entry_bitomori: bool = False,
     entry_exhibition: bool = False,
     entry: bool = False,
-    replace: bool = False
+    replace: bool = False,
+    admin: bool = False
 ):
     view = View(timeout=None)
 
@@ -91,4 +92,43 @@ async def get_view(
         view.add_item(button_accept_replace)
         view.add_item(button_cancel)
         view.add_item(button_call_admin)
+
+    # 運営用ボタン
+    button_admin_entry_bitomori = Button(
+        style=ButtonStyle.green,
+        label="ビト森杯エントリー",
+        custom_id="button_admin_entry_bitomori",
+        emoji="👑"
+    )
+    button_admin_entry_exhibition = Button(
+        style=ButtonStyle.green,
+        label="OLEBエントリー",
+        custom_id="button_admin_entry_exhibition",
+        emoji="👑"
+    )
+    button_admin_cancel = Button(
+        style=ButtonStyle.red,
+        label="キャンセル",
+        custom_id="button_admin_cancel",
+        emoji="👑"
+    )
+    button_admin_create_thread = Button(
+        style=ButtonStyle.green,
+        label="問い合わせチャンネル作成",
+        custom_id="button_admin_create_thread",
+        emoji="👑"
+    )
+    button_admin_submission_content = Button(
+        style=ButtonStyle.gray,
+        label="エントリー状況照会",
+        custom_id="button_admin_submission_content",
+        emoji="👑"
+    )
+    if admin:
+        view.add_item(button_admin_entry_bitomori)
+        view.add_item(button_admin_entry_exhibition)
+        view.add_item(button_admin_cancel)
+        view.add_item(button_admin_create_thread)
+        view.add_item(button_admin_submission_content)
+
     return view
