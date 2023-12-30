@@ -135,7 +135,7 @@ async def button_admin_entry(interaction: Interaction):
     if bool(cell_id):
 
         # 本登録できた旨を通知
-        await interaction.channel.send(f"エントリー処理完了: {member.display_name}さん")
+        await interaction.channel.send(f"{interaction.user.mention}\nエントリー処理完了: {member.display_name}さん")
 
         # 備考取得
         cell_note = await worksheet.cell(row=cell_id.row, col=8)
@@ -177,6 +177,9 @@ async def button_admin_entry(interaction: Interaction):
     # DB登録なしの場合、新規登録
     else:
 
+        # ボタンを押した人に通知
+        await interaction.channel.send(f"{interaction.user.mention}\n仮登録完了\n{member.display_name}さん")
+
         # エントリー数を更新
         num_entries = await worksheet.cell(row=3, col=1)
         num_entries.value = int(num_entries.value) + 1
@@ -201,9 +204,6 @@ async def button_admin_entry(interaction: Interaction):
         # 受付時刻、IDを書き込み
         await worksheet.update_cell(row=row, col=9, value=str(datetime.now(JST).strftime("%Y-%m-%d %H:%M:%S")))
         await worksheet.update_cell(row=row, col=10, value=str(member.id))
-
-        # ボタンを押した人に通知
-        await interaction.channel.send(f"仮登録完了\n{member.display_name}さん")
 
         # 対象者に通知
         await thread.send(
@@ -301,7 +301,7 @@ async def button_admin_cancel(interaction: Interaction):
             name=member.display_name,
             icon_url=member.display_avatar.url
         )
-        notice = await interaction.channel.send(embed=embed)
+        notice = await interaction.channel.send(interaction.user.mention, embed=embed)
         await notice.add_reaction("🏆")
         await notice.add_reaction("⚔️")
         await notice.add_reaction("❌")
@@ -345,7 +345,7 @@ async def button_admin_cancel(interaction: Interaction):
         name=member.display_name,
         icon_url=member.display_avatar.url
     )
-    notice = await interaction.channel.send(embed=embed)
+    notice = await interaction.channel.send(interaction.user.mention, embed=embed)
     await notice.add_reaction("⭕")
     await notice.add_reaction("❌")
 
@@ -407,6 +407,8 @@ async def button_admin_create_thread(interaction: Interaction):
     )
     await interaction.channel.send(embed=embed)
 
+    await contact_start(interaction.client, member)
+
 
 async def button_admin_submission_content(interaction: Interaction):
 
@@ -442,4 +444,4 @@ async def button_admin_submission_content(interaction: Interaction):
         return
 
     embed = await get_submission_embed(member)
-    await interaction.channel.send(embed=embed)
+    await interaction.channel.send(interaction.user.mention, embed=embed)
