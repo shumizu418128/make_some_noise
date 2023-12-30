@@ -1,15 +1,15 @@
 import random
-from asyncio import sleep
-from datetime import datetime, time, timedelta, timezone
+# from asyncio import sleep
+from datetime import time, timedelta, timezone  # , datetime
 
-from discord import Client, Embed, File
+from discord import Client, File  # , Embed
 from discord.ext import tasks
-
-from battle_stadium import start
-from search_next_event import search_next_event
 
 # TODO エントリー開始時、有効化
 # from button_view import get_view
+
+# from battle_stadium import start
+from search_next_event import search_next_event
 
 # NOTE: ビト森杯運営機能搭載ファイル
 JST = timezone(timedelta(hours=9))
@@ -19,16 +19,28 @@ PM9 = time(21, 0, tzinfo=JST)
 @tasks.loop(time=PM9)
 async def advertise(client: Client):
     channel = client.get_channel(864475338340171791)  # 全体チャット
+
+    # TODO エントリー開始時、有効化
+    """view = await get_view(entry=True, contact=True)
+    await channel.send("第3回ビト森杯・Online Loopstation Exhibition Battle", view=view)"""
+
     # 次のイベント
     next_event = await search_next_event(channel.guild.scheduled_events)
-    if bool(next_event) and next_event.name == "BATTLE STADIUM":  # バトスタの場合
+    await channel.send(next_event.url)  # 次のイベントのURL送信
+
+    # バトスタの場合
+    if bool(next_event) and next_event.name == "BATTLE STADIUM":
+
         # gif
         await channel.send(file=File(f"battle_stadium_{random.randint(1, 3)}.gif"))
-    await channel.send(next_event.url)  # 次のイベントのURL送信
-    dt_now = datetime.now(JST)  # 現在時刻
 
+    ##############################
+    # 以下無期限凍結
+    ##############################
+    """
     # バトスタ開始まで35分以内の場合
     if next_event.name == "BATTLE STADIUM" and next_event.start_time - dt_now < timedelta(minutes=35):
+        dt_now = datetime.now(JST)  # 現在時刻
         minute = 60
         await sleep(29 * minute)  # 29分待機
         embed = Embed(title="BATTLE STADIUM 開始ボタン",
@@ -52,7 +64,5 @@ async def advertise(client: Client):
         if reaction.emoji == "❌":  # ❌ならさよなら
             await battle_stadium_start.delete()
         await start(client)
-
-    # TODO エントリー開始時、有効化
-    """view = await get_view(entry=True, contact=True)
-    await channel.send("第3回ビト森杯・Online Loopstation Exhibition Battle", view=view)"""
+    """
+    return
