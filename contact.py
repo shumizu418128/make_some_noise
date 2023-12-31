@@ -5,6 +5,7 @@ from discord import Client, Embed, File, Member
 from oauth2client.service_account import ServiceAccountCredentials
 
 from button_view import get_view
+from debug_log import debug_log
 
 # NOTE: ビト森杯運営機能搭載ファイル
 green = 0x00ff00
@@ -211,12 +212,6 @@ async def get_worksheet(name: str):
 
 
 async def get_submission_embed(member: Member):
-    bot_channel = member.guild.get_channel(
-        897784178958008322  # bot用チャット
-    )
-    tari3210 = member.guild.get_member(
-        412082841829113877
-    )
     role_check = [
         member.get_role(
             1036149651847524393  # ビト森杯
@@ -233,17 +228,14 @@ async def get_submission_embed(member: Member):
 
     # 異常なロール付与の場合
     if role_check[0] and role_check[1]:
-        thread = await search_contact(member)
-        embed = Embed(
-            title="Error: get_submission_embed",
-            description=f"ビト森杯・キャンセル待ち 重複ロール付与\n{member.mention}\n{thread.jump_url}",
-            color=red
+
+        # bot用チャットにエラー通知
+        await debug_log(
+            function_name="get_submission_embed",
+            description="Error: ビト森杯・キャンセル待ち 重複ロール付与",
+            color=red,
+            member=member
         )
-        embed.set_author(
-            name=member.display_name,
-            icon_url=member.avatar.url
-        )
-        await bot_channel.send(f"{tari3210.mention}\n{member.id}", embed=embed)
 
     # DBから取得
     cell_id = await worksheet.find(f'{member.id}')  # ユーザーIDで検索
@@ -297,7 +289,7 @@ async def get_submission_embed(member: Member):
                 title="エントリー状況照会",
             )
             # strにまとめる
-            description = ""
+            description = "Error: DB登録なし\n"
             if role_check[0]:
                 description += "ビト森杯エントリー済み\n"
             elif role_check[1]:
@@ -307,17 +299,12 @@ async def get_submission_embed(member: Member):
             embed_entry_status.description = description
 
             # bot用チャットにエラー通知
-            thread = await search_contact(member)
-            embed = Embed(
-                title="Error: get_submission_embed",
-                description=f"DB登録なし\n\n{description}\n\n{member.mention}\n{thread.jump_url}",
-                color=red
+            await debug_log(
+                function_name="get_submission_embed",
+                description=description,
+                color=red,
+                member=member
             )
-            embed.set_author(
-                name=member.display_name,
-                icon_url=member.avatar.url
-            )
-            await bot_channel.send(f"{tari3210.mention}\n{member.id}", embed=embed)
 
     embed_entry_status.timestamp = datetime.now(JST)
     return embed_entry_status

@@ -5,6 +5,7 @@ from discord import Embed, Interaction, Member, TextStyle
 from discord.ui import Modal, TextInput
 
 from contact import contact_start, get_worksheet, search_contact
+from debug_log import debug_log
 
 # NOTE: ビト森杯運営機能搭載ファイル
 re_hiragana = re.compile(r'^[ぁ-ゞ　 ー]+$')
@@ -209,9 +210,6 @@ async def entry_2nd(interaction: Interaction, category: str):
     role_exhibition = interaction.guild.get_role(
         1171760161778581505  # エキシビション
     )
-    bot_channel = interaction.guild.get_channel(
-        897784178958008322  # bot用チャット
-    )
     bitomori_entry_status = ""
 
     # エントリー数が上限に達している or キャンセル待ちリストに人がいる場合
@@ -253,18 +251,13 @@ async def entry_2nd(interaction: Interaction, category: str):
         )
     await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
 
-    # 一応bot_channelにも通知
-    thread = await search_contact(member=interaction.user)
-    embed = Embed(
-        title=f"button_entry_{category}",
-        description=f"2回目のエントリーにつき、モーダル入力免除\n{interaction.user.mention}\n{thread.jump_url}",
-        color=blue
+    # bot用チャットへ通知
+    await debug_log(
+        function_name="entry_2nd",
+        description=f"エントリー完了 {category}",
+        color=blue,
+        member=interaction.user
     )
-    embed.set_author(
-        name=interaction.user.display_name,
-        icon_url=interaction.user.avatar.url
-    )
-    await bot_channel.send(f"{interaction.user.id}", embed=embed)
 
     # DB登録処理
     worksheet = await get_worksheet('エントリー名簿')
@@ -322,12 +315,6 @@ async def entry_2nd(interaction: Interaction, category: str):
 
 
 async def entry_cancel(member: Member, category: str):
-    bot_channel = member.guild.get_channel(
-        897784178958008322  # bot用チャット
-    )
-    tari3210 = member.guild.get_member(
-        412082841829113877
-    )
     role = member.guild.get_role(
         1036149651847524393  # ビト森杯
     )
@@ -417,28 +404,21 @@ async def entry_cancel(member: Member, category: str):
             for i in range(3, 12):
                 await worksheet.update_cell(cell_id.row, i, '')
 
-        # bot_channelへ通知
-        embed = Embed(
-            title="entry_cancel",
-            description=f"キャンセル実行 {category}\n{member.mention}\n{thread.jump_url}",
-            color=blue
+        # bot用チャットへ通知
+        await debug_log(
+            function_name="entry_cancel",
+            description=f"エントリーキャンセル {category}",
+            color=yellow,
+            member=member
         )
-        embed.set_author(
-            name=member.display_name,
-            icon_url=member.avatar.url
-        )
-        await bot_channel.send(f"{member.id}", embed=embed)
-
     # DB登録なし
     else:
-        embed = Embed(
-            title="entry_cancel",
-            description=f"キャンセル中止 DB登録なし {category}\n{member.mention}\n{thread.jump_url}",
-            color=red
+
+        # bot用チャットへ通知
+        await debug_log(
+            function_name="entry_cancel",
+            description=f"Error: エントリーキャンセル作業中止 DB登録なし {category} ",
+            color=red,
+            member=member
         )
-        embed.set_author(
-            name=member.display_name,
-            icon_url=member.avatar.url
-        )
-        await bot_channel.send(f"{member.id}", embed=embed)
         return

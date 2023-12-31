@@ -5,6 +5,7 @@ from discord import ChannelType, Embed, Interaction
 
 from contact import (contact_start, get_submission_embed, get_worksheet,
                      search_contact)
+from debug_log import debug_log
 from entry import entry_cancel
 
 # NOTE: ビト森杯運営機能搭載ファイル
@@ -28,9 +29,6 @@ async def button_admin_entry(interaction: Interaction):
     )
     role_exhibition = interaction.guild.get_role(
         1171760161778581505  # エキシビション
-    )
-    bot_channel = interaction.guild.get_channel(
-        897784178958008322  # bot用チャット
     )
     category = interaction.data["custom_id"].replace(
         "button_admin_entry_", "").replace("button_entry_", "")  # "bitomori" or "exhibition"
@@ -162,17 +160,13 @@ async def button_admin_entry(interaction: Interaction):
         await thread.send(f"運営側で {member.mention} さんに対し、エントリー処理を行いました。")
         await contact_start(interaction.client, member, entry_redirect=True)
 
-        # 一応bot_channelにも通知
-        embed = Embed(
-            title=f"button_admin_entry_{category}",
-            description=f"正常にエントリー完了\n{member.mention}\n{thread.jump_url}",
-            color=blue
+        # bot用チャットに通知
+        await debug_log(
+            function_name=f"button_admin_entry_{category}",
+            description="エントリー処理完了",
+            color=blue,
+            member=member
         )
-        embed.set_author(
-            name=member.display_name,
-            icon_url=member.avatar.url
-        )
-        await bot_channel.send(f"{member.id}", embed=embed)
 
     # DB登録なしの場合、新規登録
     else:
@@ -210,17 +204,13 @@ async def button_admin_entry(interaction: Interaction):
             f"{member.mention} さんのエントリー仮登録を行いました。\
             \n後ほど運営より、エントリーに必要な情報をお伺いします。しばらくお待ちください。"
         )
-        # 一応bot_channelにも通知
-        embed = Embed(
-            title=f"button_admin_entry_{category}",
-            description=f"仮登録\n{member.mention}\n{thread.jump_url}",
-            color=yellow
+        # bot用チャットに通知
+        await debug_log(
+            function_name=f"button_admin_entry_{category}",
+            description="仮登録完了\n[よみがな・デバイス・備考 要記入](https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0)",
+            color=blue,
+            member=member
         )
-        embed.set_author(
-            name=member.display_name,
-            icon_url=member.avatar.url
-        )
-        await bot_channel.send(f"{member.id}", embed=embed)
 
 
 async def button_admin_cancel(interaction: Interaction):

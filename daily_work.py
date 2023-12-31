@@ -5,6 +5,7 @@ from discord.ext import tasks
 
 from button_view import get_view
 from contact import get_worksheet, search_contact
+from debug_log import debug_log
 from entry import entry_cancel
 
 # NOTE: ビト森杯運営機能搭載ファイル
@@ -215,9 +216,6 @@ async def replacement_expire(client: Client):
     bot_channel = client.get_channel(
         897784178958008322  # bot用チャット
     )
-    tari3210 = bot_channel.guild.get_member(
-        412082841829113877
-    )
     # Google spreadsheet worksheet読み込み
     worksheet = await get_worksheet('エントリー名簿')
 
@@ -244,16 +242,12 @@ async def replacement_expire(client: Client):
         )
         # すでに繰り上げ手続きを完了している場合
         if role_check:
-            embed = Embed(
-                title="replacement_expire",
-                description=f"解決済み: 繰り上げ出場手続き完了者のDB未更新を確認\n{member_replace.mention}\n{thread.jump_url}",
-                color=blue
+            await debug_log(
+                function_name="replacement_expire",
+                description="解決済み: 繰り上げ出場手続き完了者のDB未更新を確認",
+                color=blue,
+                member=member_replace
             )
-            embed.set_author(
-                name=member_replace.display_name,
-                icon_url=member_replace.avatar.url
-            )
-            await bot_channel.send(f"{tari3210.mention}\n{member_replace.id}", embed=embed)
 
             # 繰り上げ手続き締切を空白に変更
             await worksheet.update_cell(cell.row, cell.col, "")
@@ -317,18 +311,13 @@ async def replacement(client: Client):
         # 問い合わせスレッドを取得
         thread = await search_contact(member=member_replace)
 
-        # bot_channelへ通知
-        embed = Embed(
-            title="replacement",
-            description=f"繰り上げ出場通知を送信 (出場意思確認中)\n{member_replace.mention}\n{thread.jump_url}",
-            color=blue
+        # bot用チャットへ通知
+        await debug_log(
+            function_name="replacement",
+            description="繰り上げ出場手続きのお願いを送信",
+            color=blue,
+            member=member_replace
         )
-        embed.set_author(
-            name=member_replace.display_name,
-            icon_url=member_replace.avatar.url
-        )
-        embed.timestamp = datetime.now(JST)
-        await bot_channel.send(f"{member_replace.id}", embed=embed)
 
         # 本人の問い合わせthreadへ通知
         embed = Embed(
@@ -401,9 +390,6 @@ async def replacement_notice_24h(client: Client):
     bot_channel = client.get_channel(
         897784178958008322  # bot用チャット
     )
-    tari3210 = bot_channel.guild.get_member(
-        412082841829113877
-    )
     # Google spreadsheet worksheet読み込み
     worksheet = await get_worksheet('エントリー名簿')
 
@@ -434,17 +420,12 @@ async def replacement_notice_24h(client: Client):
         )
         # すでに繰り上げ手続きを完了している場合
         if role_check:
-            embed = Embed(
-                title="replacement_expire",
-                description=f"解決済み: 繰り上げ出場手続き完了者のDB未更新を確認\n{member_replace.mention}\n{thread.jump_url}",
-                color=blue
+            await debug_log(
+                function_name="replacement_notice_24h",
+                description="解決済み: 繰り上げ出場手続き完了者のDB未更新を確認",
+                color=blue,
+                member=member_replace
             )
-            embed.set_author(
-                name=member_replace.display_name,
-                icon_url=member_replace.avatar.url
-            )
-            await bot_channel.send(f"{tari3210.mention}\n{member_replace.id}", embed=embed)
-
             # 繰り上げ手続き締切を空白に変更
             await worksheet.update_cell(cell.row, cell.col, "")
 

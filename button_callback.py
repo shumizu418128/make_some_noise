@@ -4,6 +4,7 @@ from discord import Embed, Interaction
 
 from contact import (contact_start, get_submission_embed, get_worksheet,
                      search_contact)
+from debug_log import debug_log
 from entry import entry_2nd, entry_cancel, modal_entry
 
 # NOTE: ビト森杯運営機能搭載ファイル
@@ -321,12 +322,6 @@ async def button_accept_replace(interaction: Interaction):
     role_reserve = interaction.guild.get_role(
         1172542396597289093  # キャンセル待ち ビト森杯
     )
-    bot_channel = interaction.guild.get_channel(
-        897784178958008322  # bot用チャット
-    )
-    tari3210 = interaction.guild.get_member(
-        412082841829113877  # tari3210
-    )
     contact = interaction.guild.get_channel(
         1035964918198960128  # 問い合わせ
     )
@@ -343,23 +338,19 @@ async def button_accept_replace(interaction: Interaction):
     # 締切が設定されていない場合 or DBに名前がない場合、エラー通知
     if cell_deadline.value == "" or bool(cell_id) is False:
 
-        # bot_channelへ通知
-        embed = Embed(
-            title="Error: button_accept_replace",
-            color=red
-        )
-        embed.set_author(
-            name=interaction.user.display_name,
-            icon_url=interaction.user.avatar.url
-        )
         # エラー内容
         if bool(cell_id) is False:
-            embed.description += f"DB ID検索エラー\n{interaction.user.mention}\n{interaction.channel.jump_url}"
+            description = "Error: DB検索結果なし"
         elif cell_deadline.value == "":
-            embed.description += f"DB 繰り上げ手続き締切無し\n{interaction.user.mention}\n{interaction.channel.jump_url}"
+            description = "Error: DB繰り上げ手続き締め切りなし"
 
-        await bot_channel.send(f"{tari3210.mention}\n{interaction.user.id}", embed=embed)
-
+        # bot用チャットへ通知
+        await debug_log(
+            function_name="button_accept_replace",
+            description=description,
+            color=red,
+            member=interaction.user
+        )
         # 該当者へ通知
         embed = Embed(
             title="Error",
@@ -396,18 +387,13 @@ async def button_accept_replace(interaction: Interaction):
         value=cell_time.value + " 繰り上げ: " +
         datetime.now(JST).strftime("%Y-%m-%d %H:%M:%S")
     )
-    # bot_channelへ通知
-    embed = Embed(
-        title="button_accept_replace",
-        description=f"繰り上げ出場手続き完了\n{interaction.user.mention}\n{interaction.channel.jump_url}",
-        color=blue
+    # bot用チャットへ通知
+    await debug_log(
+        function_name="button_accept_replace",
+        description="繰り上げ出場手続き完了",
+        color=blue,
+        member=interaction.user
     )
-    embed.set_author(
-        name=interaction.user.display_name,
-        icon_url=interaction.user.avatar.url
-    )
-    await bot_channel.send(embed=embed)
-
     # 問い合わせを用意
     await contact_start(client=interaction.client, member=interaction.user, entry_redirect=True)
     return

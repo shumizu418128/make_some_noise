@@ -18,6 +18,7 @@ from button_callback import (button_accept_replace, button_call_admin,
                              button_cancel, button_contact, button_entry,
                              button_submission_content)
 from button_view import get_view
+from contact import search_contact
 from gbb_countdown import gbb_countdown
 from keep_alive import keep_alive
 from natural_language import natural_language
@@ -66,6 +67,13 @@ async def on_interaction(interaction: Interaction):
         name=interaction.user.display_name,
         icon_url=interaction.user.display_avatar.url
     )
+    embed.timestamp = datetime.now(JST)
+
+    # 問い合わせスレッドがあり、かつ該当interactionと別チャンネルなら、descriptionに追加
+    thread = await search_contact(interaction.user)
+    if bool(thread) and interaction.message.channel.id != thread.id:
+        embed.description += f"\n\nthread: {thread.jump_url}"
+
     # モーダルの場合、提出内容を表示
     if custom_id.startswith("modal"):
         values_list = [
