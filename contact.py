@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta, timezone
 
 import gspread_asyncio
-from discord import Client, Embed, Member
+from discord import Client, Embed, File, Member
 from oauth2client.service_account import ServiceAccountCredentials
 
 from button_view import get_view
@@ -53,14 +53,12 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
         904368977092964352  # ビト森杯運営
     )
     role_check = [
-        any([
-            member.get_role(
-                1036149651847524393  # ビト森杯
-            ),
-            member.get_role(
-                1172542396597289093  # キャンセル待ち ビト森杯
-            )
-        ]),
+        member.get_role(
+            1036149651847524393  # ビト森杯
+        ),
+        member.get_role(
+            1172542396597289093  # キャンセル待ち ビト森杯
+        ),
         member.get_role(
             1171760161778581505  # エキシビション
         )
@@ -93,10 +91,18 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
             call_admin=True,
             submission_content=True,
             cancel=any(role_check),  # 何かにエントリーしているならキャンセルボタンを表示
-            entry_bitomori=not role_check[0],  # ビト森杯にエントリーしていないならエントリーボタンを表示
-            entry_exhibition=not role_check[1]  # OLEBにエントリーしていないならエントリーボタンを表示
+            entry_bitomori=not any([role_check[0], role_check[1]]),  # ビト森杯にエントリーしていないならエントリーボタンを表示
+            entry_exhibition=not role_check[2]  # OLEBにエントリーしていないならエントリーボタンを表示
         )
         await thread.send(f"ここは {member.mention} さん専用のお問い合わせチャンネルです。", embed=embed, view=view)
+
+        # キャンセル待ちの場合、説明画像を送信
+        if role_check[1]:
+            await thread.send(
+                f"### ビト森杯 キャンセル待ちについて\
+                \n{member.display_name}さんはビト森杯キャンセル待ちリストに登録されています。",
+                file=File("replace.jpg")
+            )
         return
 
     # 海外アクセスの場合
