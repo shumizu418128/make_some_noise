@@ -254,9 +254,10 @@ async def entry_2nd(interaction: Interaction, category: str):
     await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
 
     # 一応bot_channelにも通知
+    thread = await search_contact(member=interaction.user)
     embed = Embed(
         title=f"button_entry_{category}",
-        description="2回目のエントリーにつき、モーダル入力免除",
+        description=f"2回目のエントリーにつき、モーダル入力免除\n{interaction.user.mention}\n{thread.jump_url}",
         color=blue
     )
     embed.set_author(
@@ -418,17 +419,26 @@ async def entry_cancel(member: Member, category: str):
 
         # bot_channelへ通知
         embed = Embed(
-            title=f"キャンセル実行 {category}",
-            description=thread.jump_url,
+            title="entry_cancel",
+            description=f"キャンセル実行 {category}\n{member.mention}\n{thread.jump_url}",
             color=blue
         )
         embed.set_author(
             name=member.display_name,
             icon_url=member.avatar.url
         )
-        await bot_channel.send(embed=embed)
+        await bot_channel.send(f"{member.id}", embed=embed)
 
     # DB登録なし
     else:
-        await bot_channel.send(f"{tari3210.mention}\nError: DB登録なし\nキャンセル作業中止\n\n{thread.jump_url}")
+        embed = Embed(
+            title="entry_cancel",
+            description=f"キャンセル中止 DB登録なし {category}\n{member.mention}\n{thread.jump_url}",
+            color=red
+        )
+        embed.set_author(
+            name=member.display_name,
+            icon_url=member.avatar.url
+        )
+        await bot_channel.send(f"{member.id}", embed=embed)
         return

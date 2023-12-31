@@ -335,18 +335,32 @@ async def button_accept_replace(interaction: Interaction):
 
     # DBからユーザーIDで検索
     cell_id = await worksheet.find(f'{interaction.user.id}')
+    if bool(cell_id):
 
-    # 繰り上げ手続き締切が設定されているか確認
-    cell_deadline = await worksheet.cell(row=cell_id.row, col=11)
+        # 繰り上げ手続き締切が設定されているか確認
+        cell_deadline = await worksheet.cell(row=cell_id.row, col=11)
 
-    # 締切が設定されていない場合、エラー通知
-    if cell_deadline.value == "":
+    # 締切が設定されていない場合 or DBに名前がない場合、エラー通知
+    if cell_deadline.value == "" or bool(cell_id) is False:
+
+        # bot_channelへ通知
         embed = Embed(
-            title="Error",
-            description="繰り上げ出場手続き締切未設定",
+            title="Error: button_accept_replace",
             color=red
         )
-        await bot_channel.send(tari3210.mention, embed=embed)
+        embed.set_author(
+            name=interaction.user.display_name,
+            icon_url=interaction.user.avatar.url
+        )
+        # エラー内容
+        if bool(cell_id) is False:
+            embed.description += f"DB ID検索エラー\n{interaction.user.mention}\n{interaction.channel.jump_url}"
+        elif cell_deadline.value == "":
+            embed.description += f"DB 繰り上げ手続き締切無し\n{interaction.user.mention}\n{interaction.channel.jump_url}"
+
+        await bot_channel.send(f"{tari3210.mention}\n{interaction.user.id}", embed=embed)
+
+        # 該当者へ通知
         embed = Embed(
             title="Error",
             description="運営が対処します。しばらくお待ちください。\n対処には数日かかる場合があります。",
@@ -384,9 +398,9 @@ async def button_accept_replace(interaction: Interaction):
     )
     # bot_channelへ通知
     embed = Embed(
-        title="繰り上げ出場手続き完了",
-        description=interaction.channel.jump_url,
-        color=green
+        title="button_accept_replace",
+        description=f"繰り上げ出場手続き完了\n{interaction.user.mention}\n{interaction.channel.jump_url}",
+        color=blue
     )
     embed.set_author(
         name=interaction.user.display_name,

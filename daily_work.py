@@ -244,7 +244,16 @@ async def replacement_expire(client: Client):
         )
         # すでに繰り上げ手続きを完了している場合
         if role_check:
-            await bot_channel.send(f"{tari3210.mention}\n解決済み: 繰り上げ出場手続き完了者のDB未更新を確認\n{thread.jump_url}")
+            embed = Embed(
+                title="replacement_expire",
+                description=f"解決済み: 繰り上げ出場手続き完了者のDB未更新を確認\n{member_replace.mention}\n{thread.jump_url}",
+                color=blue
+            )
+            embed.set_author(
+                name=member_replace.display_name,
+                icon_url=member_replace.avatar.url
+            )
+            await bot_channel.send(f"{tari3210.mention}\n{member_replace.id}", embed=embed)
 
             # 繰り上げ手続き締切を空白に変更
             await worksheet.update_cell(cell.row, cell.col, "")
@@ -310,8 +319,8 @@ async def replacement(client: Client):
 
         # bot_channelへ通知
         embed = Embed(
-            title="繰り上げ出場通知を送信 (出場意思確認中)",
-            description=thread.jump_url,
+            title="replacement",
+            description=f"繰り上げ出場通知を送信 (出場意思確認中)\n{member_replace.mention}\n{thread.jump_url}",
             color=blue
         )
         embed.set_author(
@@ -319,7 +328,7 @@ async def replacement(client: Client):
             icon_url=member_replace.avatar.url
         )
         embed.timestamp = datetime.now(JST)
-        await bot_channel.send(embed=embed)
+        await bot_channel.send(f"{member_replace.id}", embed=embed)
 
         # 本人の問い合わせthreadへ通知
         embed = Embed(
@@ -425,7 +434,16 @@ async def replacement_notice_24h(client: Client):
         )
         # すでに繰り上げ手続きを完了している場合
         if role_check:
-            await bot_channel.send(f"{tari3210.mention}\n解決済み: 繰り上げ出場手続き完了者のDB未更新を確認\n{thread.jump_url}")
+            embed = Embed(
+                title="replacement_expire",
+                description=f"解決済み: 繰り上げ出場手続き完了者のDB未更新を確認\n{member_replace.mention}\n{thread.jump_url}",
+                color=blue
+            )
+            embed.set_author(
+                name=member_replace.display_name,
+                icon_url=member_replace.avatar.url
+            )
+            await bot_channel.send(f"{tari3210.mention}\n{member_replace.id}", embed=embed)
 
             # 繰り上げ手続き締切を空白に変更
             await worksheet.update_cell(cell.row, cell.col, "")

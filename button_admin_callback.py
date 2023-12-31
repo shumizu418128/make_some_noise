@@ -165,7 +165,7 @@ async def button_admin_entry(interaction: Interaction):
         # 一応bot_channelにも通知
         embed = Embed(
             title=f"button_admin_entry_{category}",
-            description=f"正常にエントリー完了\n{thread.jump_url}",
+            description=f"正常にエントリー完了\n{member.mention}\n{thread.jump_url}",
             color=blue
         )
         embed.set_author(
@@ -213,8 +213,8 @@ async def button_admin_entry(interaction: Interaction):
         # 一応bot_channelにも通知
         embed = Embed(
             title=f"button_admin_entry_{category}",
-            description=f"仮登録\n{thread.jump_url}",
-            color=blue
+            description=f"仮登録\n{member.mention}\n{thread.jump_url}",
+            color=yellow
         )
         embed.set_author(
             name=member.display_name,

@@ -233,7 +233,17 @@ async def get_submission_embed(member: Member):
 
     # 異常なロール付与の場合
     if role_check[0] and role_check[1]:
-        await bot_channel.send(f"{tari3210.mention}\nError: 重複ロール付与\n\n{member.id} {member.display_name}")
+        thread = await search_contact(member)
+        embed = Embed(
+            title="Error: get_submission_embed",
+            description=f"ビト森杯・キャンセル待ち 重複ロール付与\n{member.mention}\n{thread.jump_url}",
+            color=red
+        )
+        embed.set_author(
+            name=member.display_name,
+            icon_url=member.avatar.url
+        )
+        await bot_channel.send(f"{tari3210.mention}\n{member.id}", embed=embed)
 
     # DBから取得
     cell_id = await worksheet.find(f'{member.id}')  # ユーザーIDで検索
@@ -282,19 +292,32 @@ async def get_submission_embed(member: Member):
         # エントリーしているのにDB登録がない場合（エラー）
         else:
 
-            # bot用チャットにエラー通知
-            await bot_channel.send(f"{tari3210.mention}\nError: DB登録なし\n\n{member.id} {member.display_name}")
-
             # とりあえずroleからエントリー状況を取得
             embed_entry_status = Embed(
                 title="エントリー状況照会",
             )
+            # strにまとめる
+            description = ""
             if role_check[0]:
-                embed_entry_status.description += "ビト森杯エントリー済み\n"
+                description += "ビト森杯エントリー済み\n"
             elif role_check[1]:
-                embed_entry_status.description += "ビト森杯キャンセル待ち登録済み\n"
+                description += "ビト森杯キャンセル待ち登録済み\n"
             if role_check[2]:
-                embed_entry_status.description += "OLEBエントリー済み"
+                description += "OLEBエントリー済み"
+            embed_entry_status.description = description
+
+            # bot用チャットにエラー通知
+            thread = await search_contact(member)
+            embed = Embed(
+                title="Error: get_submission_embed",
+                description=f"DB登録なし\n\n{description}\n\n{member.mention}\n{thread.jump_url}",
+                color=red
+            )
+            embed.set_author(
+                name=member.display_name,
+                icon_url=member.avatar.url
+            )
+            await bot_channel.send(f"{tari3210.mention}\n{member.id}", embed=embed)
 
     embed_entry_status.timestamp = datetime.now(JST)
     return embed_entry_status
