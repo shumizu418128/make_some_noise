@@ -32,8 +32,8 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
             custom_id="name"
         ))
         self.add_item(TextInput(
-            label="あなたの名前の「よみがな」",
-            placeholder="よみがな",
+            label="あなたの名前の「よみがな」（ひらがな）",
+            placeholder="よみがな（ひらがな）",
             custom_id="read"
         ))
         self.add_item(TextInput(
