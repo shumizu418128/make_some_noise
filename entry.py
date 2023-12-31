@@ -4,8 +4,7 @@ from datetime import datetime, timedelta, timezone
 from discord import Embed, Interaction, Member, TextStyle
 from discord.ui import Modal, TextInput
 
-from contact import contact_start, get_worksheet, search_contact
-from debug_log import debug_log
+from contact import contact_start, debug_log, get_worksheet, search_contact
 
 # NOTE: ビト森杯運営機能搭載ファイル
 re_hiragana = re.compile(r'^[ぁ-ゞ　 ー]+$')

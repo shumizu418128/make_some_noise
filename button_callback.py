@@ -2,9 +2,8 @@ from datetime import datetime, timedelta, timezone
 
 from discord import Embed, Interaction
 
-from contact import (contact_start, get_submission_embed, get_worksheet,
+from contact import (contact_start, debug_log, get_submission_embed, get_worksheet,
                      search_contact)
-from debug_log import debug_log
 from entry import entry_2nd, entry_cancel, modal_entry
 
 # NOTE: ビト森杯運営機能搭載ファイル

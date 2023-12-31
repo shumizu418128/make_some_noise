@@ -4,8 +4,7 @@ from discord import Client, Embed
 from discord.ext import tasks
 
 from button_view import get_view
-from contact import get_worksheet, search_contact
-from debug_log import debug_log
+from contact import debug_log, get_worksheet, search_contact
 from entry import entry_cancel
 
 # NOTE: ビト森杯運営機能搭載ファイル
