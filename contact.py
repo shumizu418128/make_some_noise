@@ -52,6 +52,9 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
     admin = member.guild.get_role(
         904368977092964352  # ビト森杯運営
     )
+    tari3210 = member.guild.get_member(
+        412082841829113877
+    )
     role_check = [
         member.get_role(
             1036149651847524393  # ビト森杯
@@ -87,6 +90,8 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
                 \n\nこれらの内容を必ずご確認ください。もし、ご質問がありましたら\n「運営に問い合わせ」ボタンを押してください。運営が対応します。",
             color=yellow
         )
+        embed.set_footer(text=f"Make Some Noise! 開発者: {tari3210.display_name}", icon_url={tari3210.avatar.url})
+
         view = await get_view(
             call_admin=True,
             submission_content=True,

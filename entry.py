@@ -63,6 +63,9 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
         role_exhibition = interaction.guild.get_role(
             1171760161778581505  # エキシビション
         )
+        tari3210 = interaction.guild.get_member(
+            412082841829113877
+        )
         # ビト森杯エントリー済みかどうか確認
         # ビト森杯はanyでキャンセル待ちも含む
         role_check = [
@@ -158,6 +161,8 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
                 color=green
             )
             exhibition_entry_status = "参加"
+
+        embed.set_footer(text=f"Make Some Noise! 開発者: {tari3210.display_name}", icon_url={tari3210.avatar.url})
 
         submission = f"受付内容\n- `名前:` {name}\
             \n- `よみがな:` {read}\n- `デバイス:` {device}\n- `備考:` {note}\
