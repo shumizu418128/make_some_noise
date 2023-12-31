@@ -207,7 +207,7 @@ async def button_admin_entry(interaction: Interaction):
         # bot用チャットに通知
         await debug_log(
             function_name=f"button_admin_entry_{category}",
-            description="仮登録完了\n[よみがな・デバイス・備考 要記入](https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0)",
+            description="仮登録完了\nよみがな・デバイス・備考 要記入",
             color=blue,
             member=member
         )
