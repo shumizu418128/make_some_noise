@@ -17,13 +17,13 @@ from button_admin_callback import (button_admin_cancel,
 from button_callback import (button_accept_replace, button_call_admin,
                              button_cancel, button_contact, button_entry,
                              button_submission_content)
+from button_view import get_view
 from gbb_countdown import gbb_countdown
 from keep_alive import keep_alive
 from natural_language import natural_language
 from search_next_event import search_next_event
 
 # TODO エントリー開始時、有効化
-# from button_view import get_view
 # from daily_work import daily_work_AM9, daily_work_PM9
 
 # NOTE: ビト森杯運営機能搭載ファイル
@@ -188,18 +188,16 @@ async def on_message(message: Message):
     # s.から始まらない場合(コマンドではない場合)
     if not message.content.startswith("s."):
         await natural_language(message)
-        """if message.channel.id == 1035965200341401600:  # ビト森杯 お知らせ
+        if message.channel.id == 1035965200341401600:  # ビト森杯 お知らせ
             view = await get_view(entry=True, contact=True)
             await message.channel.send(view=view)
-        """
         return
 
     if message.content == "s.test":
         await message.channel.send(f"{str(client.user)}\n{discord.__version__}")
         return
 
-    # TODO エントリー開始時、有効化
-    """if message.content == "s.loop":
+    if message.content == "s.loop":
         await message.delete(delay=1)
         announce_bitomori = client.get_channel(
             1035965200341401600  # ビト森杯 お知らせ
@@ -218,7 +216,12 @@ async def on_message(message: Message):
         await announce_bitomori.send("第3回ビト森杯・Online Loopstation Exhibition Battle", view=view)
         await bot_notice_channel.send("第3回ビト森杯・Online Loopstation Exhibition Battle", view=view)
         await contact.send("第3回ビト森杯・Online Loopstation Exhibition Battle", view=view)
-        """
+
+    if message.content == "s.admin":
+        await message.delete(delay=1)
+        view = await get_view(admin=True)
+        await message.channel.send(f"{message.author.mention}\n運営専用ボタン ※1分後に削除されます", view=view, delete_after=60)
+        return
 
     # VS参加・退出
     if message.content == "s.join":
