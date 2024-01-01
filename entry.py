@@ -265,7 +265,6 @@ async def entry_2nd(interaction: Interaction, category: str):
         color=blue,
         member=interaction.user
     )
-
     # DB登録処理
     worksheet = await get_worksheet('エントリー名簿')
     cell_id = await worksheet.find(f'{interaction.user.id}')
@@ -406,7 +405,7 @@ async def entry_cancel(member: Member, category: str):
                 1171760161778581505  # エキシビション
             )
         ]
-        # すべてのロールを持っていない場合
+        # すべてのロールを持っていない場合、DBの行を削除
         if any(role_check) is False:
             for i in range(3, 12):
                 await worksheet.update_cell(cell_id.row, i, '')
@@ -414,7 +413,7 @@ async def entry_cancel(member: Member, category: str):
         # bot用チャットへ通知
         await debug_log(
             function_name="entry_cancel",
-            description=f"エントリーキャンセル {category}",
+            description=f"キャンセル完了 {category}",
             color=yellow,
             member=member
         )

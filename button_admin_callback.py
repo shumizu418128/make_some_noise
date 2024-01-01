@@ -166,7 +166,6 @@ async def button_admin_entry(interaction: Interaction):
             color=blue,
             member=member
         )
-
     # DB登録なしの場合、新規登録
     else:
 
@@ -207,7 +206,7 @@ async def button_admin_entry(interaction: Interaction):
         await debug_log(
             function_name=f"button_admin_entry_{category}",
             description="仮登録完了\nよみがな・デバイス・備考 要記入",
-            color=blue,
+            color=yellow,
             member=member
         )
 

@@ -243,7 +243,6 @@ async def get_submission_embed(member: Member):
             color=red,
             member=member
         )
-
     # DBから取得
     cell_id = await worksheet.find(f'{member.id}')  # ユーザーIDで検索
 
@@ -291,10 +290,6 @@ async def get_submission_embed(member: Member):
         # エントリーしているのにDB登録がない場合（エラー）
         else:
 
-            # とりあえずroleからエントリー状況を取得
-            embed_entry_status = Embed(
-                title="エントリー状況照会",
-            )
             # strにまとめる
             description = "Error: DB登録なし\n"
             if role_check[0]:
@@ -303,7 +298,6 @@ async def get_submission_embed(member: Member):
                 description += "ビト森杯キャンセル待ち登録済み\n"
             if role_check[2]:
                 description += "OLEBエントリー済み"
-            embed_entry_status.description = description
 
             # bot用チャットにエラー通知
             await debug_log(
@@ -312,6 +306,11 @@ async def get_submission_embed(member: Member):
                 color=red,
                 member=member
             )
+            # とりあえずroleからエントリー状況を取得
+            embed_entry_status = Embed(
+                title="エントリー状況照会",
+            )
+            embed_entry_status.description = description
 
     embed_entry_status.timestamp = datetime.now(JST)
     return embed_entry_status

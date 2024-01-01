@@ -247,7 +247,6 @@ async def replacement_expire(client: Client):
                 color=blue,
                 member=member_replace
             )
-
             # 繰り上げ手続き締切を空白に変更
             await worksheet.update_cell(cell.row, cell.col, "")
 
@@ -317,7 +316,6 @@ async def replacement(client: Client):
             color=blue,
             member=member_replace
         )
-
         # 本人の問い合わせthreadへ通知
         embed = Embed(
             title="繰り上げ出場手続きのお願い",
