@@ -162,12 +162,15 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
             )
             exhibition_entry_status = "参加"
 
-        embed.set_footer(text=f"Make Some Noise! 開発者: {tari3210.display_name}", icon_url=tari3210.avatar.url)
-
+        embed.set_footer(
+            text=f"Make Some Noise! 開発者: {tari3210.display_name}",
+            icon_url=tari3210.avatar.url
+        )
         submission = f"受付内容\n- `名前:` {name}\
             \n- `よみがな:` {read}\n- `デバイス:` {device}\n- `備考:` {note}\
             \n\n※後ほど、{name}さん専用お問い合わせチャンネルを作成します。"
         embed.description += submission
+
         await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
 
         # ニックネームを更新
