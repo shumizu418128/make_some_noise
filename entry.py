@@ -200,6 +200,13 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
         # memberインスタンスを再取得 (roleを更新するため)
         member = interaction.guild.get_member(interaction.user.id)
 
+        # bot用チャットへ通知
+        await debug_log(
+            function_name="modal_entry",
+            description=f"エントリー完了 {category}",
+            color=blue,
+            member=member
+        )
         # 問い合わせへリダイレクト
         await contact_start(client=interaction.client, member=member, entry_redirect=True)
         return
