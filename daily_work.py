@@ -209,6 +209,7 @@ async def maintenance(client: Client):
         )
         embed.timestamp = datetime.now(JST)
         await notice.reply(embed=embed)
+    return
 
 
 async def replacement_expire(client: Client):
@@ -266,6 +267,7 @@ async def replacement_expire(client: Client):
         await member_replace.send(embed=embed)
         await member_replace.send("### このDMは送信専用です。ここに何も入力しないでください。")
         await entry_cancel(member_replace, "bitomori")
+    return
 
 
 # 繰り上げ手続きは毎日21時に実行
@@ -309,13 +311,6 @@ async def replacement(client: Client):
         # 問い合わせスレッドを取得
         thread = await search_contact(member=member_replace)
 
-        # bot用チャットへ通知
-        await debug_log(
-            function_name="replacement",
-            description="繰り上げ出場手続きのお願いを送信",
-            color=blue,
-            member=member_replace
-        )
         # 本人の問い合わせthreadへ通知
         embed = Embed(
             title="繰り上げ出場手続きのお願い",
@@ -361,6 +356,15 @@ async def replacement(client: Client):
         # 出場可否を繰り上げ出場手続き中に変更
         await worksheet.update_cell(cell_id.row, 5, "繰り上げ出場手続き中")
 
+        # bot用チャットへ通知
+        await debug_log(
+            function_name="replacement",
+            description="繰り上げ出場手続きのお願いを送信",
+            color=blue,
+            member=member_replace
+        )
+    return
+
 
 async def entry_list_update(client: Client):
     bot_notice_channel = client.get_channel(
@@ -380,6 +384,7 @@ async def entry_list_update(client: Client):
     )
     embed.timestamp = datetime.now(JST)
     await bot_notice_channel.send(embed=embed)
+    return
 
 
 # 24時間前に繰り上げ出場手続きのお願いを再度送信
@@ -451,6 +456,7 @@ async def replacement_notice_24h(client: Client):
         # DMでも送信
         await member_replace.send(f"{member_replace.mention}\n# 明日21時締切", embed=embed)
         await member_replace.send("### このDMは送信専用です。ここに何も入力しないでください。")
+    return
 
 
 @tasks.loop(time=PM9)

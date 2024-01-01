@@ -134,6 +134,7 @@ async def button_entry(interaction: Interaction):
 
     # 問い合わせスレッドにリダイレクト
     await contact_start(client=interaction.client, member=interaction.user, entry_redirect=True)
+    return
 
 
 async def button_contact(interaction: Interaction):
@@ -150,6 +151,7 @@ async def button_contact(interaction: Interaction):
 
     # 問い合わせ対応開始
     await contact_start(client=interaction.client, member=interaction.user)
+    return
 
 
 async def button_call_admin(interaction: Interaction):
@@ -185,6 +187,7 @@ async def button_call_admin(interaction: Interaction):
     # エントリー状況照会
     embed = await get_submission_embed(interaction.user)
     await interaction.channel.send(embed=embed)
+    return
 
 
 async def button_cancel(interaction: Interaction):
@@ -305,12 +308,14 @@ async def button_cancel(interaction: Interaction):
 
     # cancel実行
     await entry_cancel(interaction.user, category)
+    return
 
 
 async def button_submission_content(interaction: Interaction):
     await interaction.response.defer(thinking=True)
     embed = await get_submission_embed(interaction.user)
     await interaction.followup.send(embed=embed)
+    return
 
 
 async def button_accept_replace(interaction: Interaction):

@@ -265,13 +265,6 @@ async def entry_2nd(interaction: Interaction, category: str):
         )
     await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
 
-    # bot用チャットへ通知
-    await debug_log(
-        function_name="entry_2nd",
-        description=f"エントリー完了 {category}",
-        color=blue,
-        member=interaction.user
-    )
     # DB登録処理
     worksheet = await get_worksheet('エントリー名簿')
     cell_id = await worksheet.find(f'{interaction.user.id}')
@@ -324,6 +317,14 @@ async def entry_2nd(interaction: Interaction, category: str):
     # もとの行を削除
     for col, value in zip(range(3, 12), values):
         await worksheet.update_cell(row=cell_id.row, col=col, value="")
+
+    # bot用チャットへ通知
+    await debug_log(
+        function_name="entry_2nd",
+        description=f"エントリー完了 {category}",
+        color=blue,
+        member=interaction.user
+    )
     return
 
 
@@ -423,6 +424,8 @@ async def entry_cancel(member: Member, category: str):
             color=yellow,
             member=member
         )
+        return
+
     # DB登録なし
     else:
 

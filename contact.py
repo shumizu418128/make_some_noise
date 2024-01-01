@@ -342,3 +342,4 @@ async def debug_log(function_name: str, description: str, color: int, member: Me
         await bot_channel.send(f"{tari3210.mention}\n{member.id}", embed=embed)
     else:
         await bot_channel.send(f"{member.id}", embed=embed)
+    return

@@ -166,6 +166,8 @@ async def button_admin_entry(interaction: Interaction):
             color=blue,
             member=member
         )
+        return
+
     # DB登録なしの場合、新規登録
     else:
 
@@ -209,6 +211,7 @@ async def button_admin_entry(interaction: Interaction):
             color=yellow,
             member=member
         )
+        return
 
 
 async def button_admin_cancel(interaction: Interaction):
@@ -396,6 +399,7 @@ async def button_admin_create_thread(interaction: Interaction):
     await interaction.channel.send(embed=embed)
 
     await contact_start(interaction.client, member)
+    return
 
 
 async def button_admin_submission_content(interaction: Interaction):
@@ -433,3 +437,4 @@ async def button_admin_submission_content(interaction: Interaction):
 
     embed = await get_submission_embed(member)
     await interaction.channel.send(interaction.user.mention, embed=embed)
+    return
