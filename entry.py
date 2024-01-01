@@ -349,14 +349,13 @@ async def entry_cancel(member: Member, category: str):
 
     # キャンセル完了通知
     embed = Embed(
-        title="エントリーキャンセル",
+        title="キャンセル完了",
         color=green
     )
     embed.set_author(
         name=member.display_name,
         icon_url=member.avatar.url
     )
-
     # キャンセル完了通知の内容を設定
     if category == "bitomori":
         embed.description = "ビト森杯エントリーをキャンセルしました。"

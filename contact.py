@@ -118,7 +118,8 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
         # まず日本語での説明embedを作成
         embed_ja = Embed(
             description=f"{member.display_name}さんのDiscord言語設定が日本語ではなかったため、海外対応モードになっています。\
-                \n日本語対応をご希望の場合、このチャンネルに\n\n**日本語希望**\n\nとご記入ください。\n自動で日本語対応に切り替わります。"
+                \n日本語対応をご希望の場合、このチャンネルに\n\n**日本語希望**\n\nとご記入ください。\n自動で日本語対応に切り替わります。",
+            color=yellow
         )
         embed_ja.set_footer(text=f"ISO 639-1 code: {locale}")
         # この時点でのlocaleは実際の言語設定
@@ -156,14 +157,14 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
         embed_overseas = Embed(
             title="海外からのお問い合わせ contact from overseas",
             description=lang_contact[locale],
-            color=blue
+            color=yellow
         )
         # 海外エントリー時の問い合わせリダイレクトの場合
         if entry_redirect:
             embed_overseas = Embed(
                 title="海外からのエントリー entry from overseas",
                 description=lang_entry_redirect[locale],
-                color=blue
+                color=yellow
             )
         # 問い合わせスレッドにメンション付きで送信
         await thread.send(f"{member.mention}", embeds=[embed_overseas, embed_ja])
@@ -269,9 +270,9 @@ async def get_submission_embed(member: Member):
             title="エントリー状況照会",
             description=f"- `名前:` {name}\n- `読み:` {read}\n- `ビト森杯出場可否:` {status_bitomori}\
                 \n- `OLEB参加状況:` {status_exhibition}\n- `デバイス:` {device}\n- `備考:` {note}\
-                \n- `受付時刻:` {time}"
+                \n- `受付時刻:` {time}",
+            color=blue
         )
-
         # 繰り上げ手続き中の場合(cell_values[-1]が5文字以下の場合は繰り上げ手続き中)
         if len(cell_values[-1]) <= 5:
             deadline = cell_values[-1]
@@ -284,9 +285,9 @@ async def get_submission_embed(member: Member):
         if any(role_check) is False:
             embed_entry_status = Embed(
                 title="エントリー状況照会",
-                description=f"{member.display_name}さんはエントリーしていません。"
+                description=f"{member.display_name}さんはエントリーしていません。",
+                color=blue
             )
-
         # エントリーしているのにDB登録がない場合（エラー）
         else:
 
@@ -309,6 +310,7 @@ async def get_submission_embed(member: Member):
             # とりあえずroleからエントリー状況を取得
             embed_entry_status = Embed(
                 title="エントリー状況照会",
+                color=blue
             )
             embed_entry_status.description = description
 

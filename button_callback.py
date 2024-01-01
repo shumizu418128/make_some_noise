@@ -144,7 +144,7 @@ async def button_contact(interaction: Interaction):
     embed = Embed(
         title="お問い合わせチャンネル作成",
         description=f"{thread.jump_url} までお問い合わせください。",
-        color=0x00bfff
+        color=blue
     )
     await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
 
@@ -168,7 +168,7 @@ async def button_call_admin(interaction: Interaction):
     embed = Embed(
         title="このチャンネルにご用件をご記入ください",
         description="運営が対応します",
-        color=blue
+        color=yellow
     )
     await interaction.followup.send(interaction.user.mention, embed=embed)
     await interaction.channel.send("↓↓↓ このチャットにご記入ください ↓↓↓")
