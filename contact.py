@@ -338,7 +338,7 @@ async def debug_log(function_name: str, description: str, color: int, member: Me
     )
     embed.timestamp = datetime.now(JST)
 
-    if color == 0xff0000:
+    if color == red:
         await bot_channel.send(f"{tari3210.mention}\n{member.id}", embed=embed)
     else:
         await bot_channel.send(f"{member.id}", embed=embed)
