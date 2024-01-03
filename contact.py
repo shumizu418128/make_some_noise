@@ -1,3 +1,6 @@
+from google.oauth2.service_account import Credentials
+import os
+import json
 from datetime import datetime, timedelta, timezone
 
 import gspread_asyncio
@@ -204,11 +207,14 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
 
 
 def get_credits():
-    return ServiceAccountCredentials.from_json_keyfile_name(
-        "makesomenoise-4cb78ac4f8b5.json",
-        ['https://spreadsheets.google.com/feeds',
-         'https://www.googleapis.com/auth/drive',
-         'https://www.googleapis.com/auth/spreadsheets'])
+    credentials_json = os.environ.get('GOOGLE_CREDENTIALS')  # 環境変数から認証情報を取得
+    credentials_dict = json.loads(credentials_json)  # JSON文字列を辞書に変換
+
+    return Credentials.from_service_account_info(
+        credentials_dict,
+        scopes=['https://spreadsheets.google.com/feeds',
+                'https://www.googleapis.com/auth/drive',
+                'https://www.googleapis.com/auth/spreadsheets'])
 
 
 async def get_worksheet(name: str):
