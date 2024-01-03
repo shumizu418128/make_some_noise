@@ -193,6 +193,7 @@ async def on_message(message: Message):
     # バトスタ対戦表、バトスタチャット
     if message.author.bot or message.content.startswith("l.") or message.channel.id in [930767329137143839, 930839018671837184]:
         return
+
     # s.から始まらない場合(コマンドではない場合)
     if not message.content.startswith("s."):
         await natural_language(message)
@@ -235,6 +236,34 @@ async def on_message(message: Message):
         await message.delete(delay=1)
         view = await get_view(entry=True, contact=True)
         await message.channel.send(view=view)
+        return
+
+    if message.content == "s.oleb":
+        await message.delete(delay=1)
+        role_exhibition = message.guild.get_role(
+            1171760161778581505  # エキシビション
+        )
+        oleb_member_names = [
+            member.display_name for member in role_exhibition.members
+        ]
+        if len(oleb_member_names) < 2:
+            await message.channel.send("参加者数が不足しています。")
+            return
+
+        random.shuffle(oleb_member_names)
+        embed = Embed(
+            title="Online Loopstation Exhibition Battle 対戦表",
+            description="対戦表"
+        )
+        for i in range(0, len(oleb_member_names), 2):
+            embed.add_field(
+                name=f"{i//2+1}回戦",
+                value=f"{oleb_member_names[i]} vs {oleb_member_names[i+1]}"
+            )
+        if len(oleb_member_names) % 2 == 1:
+            embed.description += f"\n\n参加者{len(oleb_member_names)}名\nbye: {oleb_member_names[-1]}"
+
+        await message.channel.send(embed=embed)
         return
 
     # VS参加・退出
