@@ -11,39 +11,57 @@ class BitomoriInfoSelect(Select):
         options = [
             SelectOption(
                 label="開催日・配信",
-                value="title"
+                description="ビト森杯・Online Loopstation Exhibition Battleの開催日時と配信",
+                value="title",
+                emoji="📅"
             ),
             SelectOption(
                 label="賞金",
-                value="prize"
+                description="ビト森杯の賞金",
+                value="prize",
+                emoji="💰"
             ),
             SelectOption(
                 label="ビト森杯ルール",
-                value="rule_bitomori"
+                description="ビト森杯のルール・参加条件",
+                value="rule_bitomori",
+                emoji="📜"
             ),
             SelectOption(
                 label="OLEBルール",
-                value="rule_exhibition"
+                description="Online Loopstation Exhibition Battleのルール・参加条件",
+                value="rule_exhibition",
+                emoji="📜"
             ),
             SelectOption(
-                label="2ndデバイスについて",
-                value="2nd_device"
+                label="ビト森杯2ndデバイスルール",
+                description="ビト森杯の2ndデバイスルール (Online Loopstation Exhibition Battleは無制限)",
+                value="2nd_device",
+                emoji="📜"
             ),
             SelectOption(
                 label="参加方法",
-                value="entry"
+                description="ビト森杯・Online Loopstation Exhibition Battleの参加手続き方法",
+                value="entry",
+                emoji="📝"
             ),
             SelectOption(
                 label="エントリー受付期間",
-                value="entry_period"
+                description="ビト森杯・Online Loopstation Exhibition Battleのエントリー受付開始日・締め切り日",
+                value="entry_period",
+                emoji="📅"
             ),
             SelectOption(
-                label="当日のタイムスケジュール",
-                value="time_schedule"
+                label="ビト森杯タイムスケジュール",
+                description="ビト森杯当日のタイムスケジュール (Online Loopstation Exhibition Battleは後日発表)",
+                value="time_schedule",
+                emoji="📅"
             ),
             SelectOption(
-                label="キャンセル待ちについて",
-                value="replace"
+                label="ビト森杯キャンセル待ち",
+                description="ビト森杯には人数制限があります キャンセル待ち登録を行った方はこちらをご確認ください",
+                value="replace",
+                emoji="📝"
             ),
         ]
         super().__init__(placeholder="選択してください", options=options)
