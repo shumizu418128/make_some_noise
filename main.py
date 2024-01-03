@@ -251,6 +251,12 @@ async def on_message(message: Message):
         await message.channel.send(view=view)
         return
 
+    if message.content == "s.select":
+        await message.delete(delay=1)
+        view = await get_view(info=True)
+        await message.channel.send(view=view)
+        return
+
     if message.content == "s.oleb":
         await message.delete(delay=1)
         role_exhibition = message.guild.get_role(
