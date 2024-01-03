@@ -57,7 +57,7 @@ async def on_interaction(interaction: Interaction):
     if custom_id.startswith("select"):
         await interaction.response.defer(ephemeral=True, thinking=True)
         value = interaction.data["values"][0]
-        await interaction.followup.send_message(
+        await interaction.followup.send(
             file=File(f"{value}.jpg"),
             ephemeral=True
         )
