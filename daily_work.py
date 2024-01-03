@@ -358,9 +358,17 @@ async def replacement(client: Client):
             icon_url=bot_channel.guild.icon.url
         )
         embed.timestamp = datetime.now(JST)
-        await member_replace.send(member_replace.mention, embed=embed)
-        await member_replace.send("### このDMは送信専用です。ここに何も入力しないでください。")
 
+        try:
+            await member_replace.send(member_replace.mention, embed=embed)
+            await member_replace.send("### このDMは送信専用です。ここに何も入力しないでください。")
+        except Exception as e:
+            await debug_log(
+                function_name="replacement",
+                description=f"DM送信失敗 {type(e).__name__}\n{str(e)}",
+                color=red,
+                member=member_replace
+            )
         # 海外からのエントリーは運営対処が必要なので、運営へ通知
         locale = thread.name.split("_")[1]  # スレッド名からlocaleを取得
         if locale != "ja":
@@ -486,8 +494,16 @@ async def replacement_notice_24h(client: Client):
         await thread.send("以下のどちらかのボタンを押してください。", view=view)
 
         # DMでも送信
-        await member_replace.send(f"{member_replace.mention}\n# 明日21時締切", embed=embed)
-        await member_replace.send("### このDMは送信専用です。ここに何も入力しないでください。")
+        try:
+            await member_replace.send(f"{member_replace.mention}\n# 明日21時締切", embed=embed)
+            await member_replace.send("### このDMは送信専用です。ここに何も入力しないでください。")
+        except Exception as e:
+            await debug_log(
+                function_name="replacement_notice_24h",
+                description=f"DM送信失敗 {type(e).__name__}\n{str(e)}",
+                color=red,
+                member=member_replace
+            )
     return
 
 
