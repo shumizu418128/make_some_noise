@@ -208,7 +208,14 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
 
 def get_credits():
     credentials_json = os.environ.get('GOOGLE_CREDENTIALS')  # 環境変数から認証情報を取得
-    credentials_dict = json.loads(credentials_json)  # JSON文字列を辞書に変換
+
+    if not credentials_json:
+        raise ValueError("環境変数 'GOOGLE_CREDENTIALS' が設定されていません。")
+
+    try:
+        credentials_dict = json.loads(credentials_json)  # JSON文字列を辞書に変換
+    except json.JSONDecodeError:
+        raise ValueError("環境変数 'GOOGLE_CREDENTIALS' の値が無効なJSONです。")
 
     return Credentials.from_service_account_info(
         credentials_dict,
