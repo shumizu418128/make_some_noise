@@ -1,9 +1,60 @@
-from discord import ButtonStyle
-from discord.ui import Button, View
+from discord import ButtonStyle, File, SelectOption
+from discord.ui import Button, Select, View
 
 # NOTE: ビト森杯運営機能搭載ファイル
 
 # trueになっているボタンを表示 (falseは非表示)
+
+
+class BitomoriInfoSelect(Select):
+    def __init__(self):
+        options = [
+            SelectOption(
+                label="開催日・配信",
+                value="title"
+            ),
+            SelectOption(
+                label="賞金",
+                value="prize"
+            ),
+            SelectOption(
+                label="ビト森杯ルール",
+                value="rule_bitomori"
+            ),
+            SelectOption(
+                label="OLEBルール",
+                value="rule_exhibition"
+            ),
+            SelectOption(
+                label="2ndデバイスについて",
+                value="2nd_device"
+            ),
+            SelectOption(
+                label="参加方法",
+                value="entry"
+            ),
+            SelectOption(
+                label="エントリー受付期間",
+                value="entry_period"
+            ),
+            SelectOption(
+                label="当日のタイムスケジュール",
+                value="time_schedule"
+            ),
+            SelectOption(
+                label="キャンセル待ちについて",
+                value="replace"
+            ),
+        ]
+        super().__init__(placeholder="選択してください", options=options)
+
+    async def callback(self, interaction):
+        value = interaction.data["values"][0]
+        await interaction.response.send_message(
+            file=File(f"{value}.jpg"),
+            ephemeral=True
+        )
+        return
 
 
 async def get_view(
@@ -15,7 +66,8 @@ async def get_view(
     entry_exhibition: bool = False,
     entry: bool = False,
     replace: bool = False,
-    admin: bool = False
+    admin: bool = False,
+    info: bool = False
 ):
     view = View(timeout=None)
 
@@ -130,5 +182,8 @@ async def get_view(
         view.add_item(button_admin_cancel)
         view.add_item(button_admin_create_thread)
         view.add_item(button_admin_submission_content)
+
+    if info:
+        view.add_item(BitomoriInfoSelect())
 
     return view

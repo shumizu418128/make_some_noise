@@ -225,6 +225,10 @@ async def on_message(message: Message):
         await announce_bitomori.send("第3回ビト森杯・Online Loopstation Exhibition Battle", view=view)
         await bot_notice_channel.send("第3回ビト森杯・Online Loopstation Exhibition Battle", view=view)
         await contact.send("第3回ビト森杯・Online Loopstation Exhibition Battle", view=view)
+        view = await get_view(info=True)
+        await announce.send("以下のセレクトメニューからも詳細情報を確認できます。", view=view)
+        await announce_bitomori.send("以下のセレクトメニューからも詳細情報を確認できます。", view=view)
+        await contact.send("以下のセレクトメニューからも詳細情報を確認できます。", view=view)
 
     if message.content == "s.admin":
         await message.delete(delay=1)

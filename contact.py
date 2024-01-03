@@ -112,6 +112,14 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
                 \n{member.display_name}さんはビト森杯キャンセル待ちリストに登録されています。",
                 file=File("replace.jpg")
             )
+
+        embed = Embed(
+            title="ビト森公式X(旧Twitter)で公開された情報",
+            description="以下のセレクトメニューからも詳細情報を確認できます。",
+            color=blue
+        )
+        view = await get_view(info=True)
+        await thread.send(embed=embed, view=view)
         return
 
     # 海外アクセスの場合
