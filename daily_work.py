@@ -9,7 +9,7 @@ from entry import entry_cancel
 
 # NOTE: ビト森杯運営機能搭載ファイル
 JST = timezone(timedelta(hours=9))
-PM9 = time(21, 0, tzinfo=JST)
+PM10 = time(22, 0, tzinfo=JST)
 AM9 = time(9, 0, tzinfo=JST)
 green = 0x00ff00
 yellow = 0xffff00
@@ -20,6 +20,10 @@ blue = 0x00bfff
 Google spreadsheet
 row = 縦 1, 2, 3, ...
 col = 横 A, B, C, ...
+
+2024-01-03
+ビト森杯関係の定期作業（夜9時）を、すべて10時に変更
+ただしadvertise.pyは9時に据え置き
 """
 
 
@@ -282,7 +286,7 @@ async def replacement_expire(client: Client):
     return
 
 
-# 繰り上げ手続きは毎日21時に実行
+# 繰り上げ手続きは毎日22時に実行
 async def replacement(client: Client):
     bot_channel = client.get_channel(
         897784178958008322  # bot用チャット
@@ -490,12 +494,12 @@ async def replacement_notice_24h(client: Client):
         view = await get_view(replace=True)
 
         # 問い合わせthreadに送信
-        await thread.send(f"{member_replace.mention}\n# 明日21時締切", embed=embed)
+        await thread.send(f"{member_replace.mention}\n# 明日22時締切", embed=embed)
         await thread.send("以下のどちらかのボタンを押してください。", view=view)
 
         # DMでも送信
         try:
-            await member_replace.send(f"{member_replace.mention}\n# 明日21時締切", embed=embed)
+            await member_replace.send(f"{member_replace.mention}\n# 明日22時締切", embed=embed)
             await member_replace.send("### このDMは送信専用です。ここに何も入力しないでください。")
         except Exception as e:
             await debug_log(
@@ -507,8 +511,8 @@ async def replacement_notice_24h(client: Client):
     return
 
 
-@tasks.loop(time=PM9)
-async def daily_work_PM9(client: Client):
+@tasks.loop(time=PM10)
+async def daily_work_PM10(client: Client):
     dt_now = datetime.now(JST)
     dt_day1 = datetime(
         year=2024,
@@ -516,7 +520,7 @@ async def daily_work_PM9(client: Client):
         day=17,
         tzinfo=JST
     )
-    # 繰り上げ出場手続きのお願い(2/16 21:00まで)
+    # 繰り上げ出場手続きのお願い(2/16 22:00まで)
     if dt_now < dt_day1:
         await replacement_expire(client)
         await replacement(client)

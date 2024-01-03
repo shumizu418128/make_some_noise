@@ -23,13 +23,13 @@ col = 横 A, B, C, ...
 # 両カテゴリーのエントリーを受け付ける
 async def button_entry(interaction: Interaction):
 
-    # エントリー開始時刻を定義 1月6日 21:00
+    # エントリー開始時刻を定義 1月6日 22:00
     dt_now = datetime.now(JST)
     dt_entry_start = datetime(
         year=2024,
         month=1,
         day=6,
-        hour=21,
+        hour=22,
         tzinfo=JST
     )
     # ビト森杯エントリー済みかどうか確認
@@ -61,7 +61,7 @@ async def button_entry(interaction: Interaction):
     # エントリー開始時刻確認（tari_2は除外）tari_2 = 518041950146920449
     if dt_now < dt_entry_start and interaction.user.id != 518041950146920449:
         await interaction.response.send_message(
-            f"{interaction.user.mention}\nビト森杯・Online Loopstation Exhibition Battle\nエントリー受付開始は1月6日 21:00です。",
+            f"{interaction.user.mention}\nビト森杯・Online Loopstation Exhibition Battle\nエントリー受付開始は1月6日 22:00です。",
             ephemeral=True
         )
         return

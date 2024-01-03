@@ -25,7 +25,7 @@ from natural_language import natural_language
 from search_next_event import search_next_event
 
 # TODO エントリー開始時、有効化
-# from daily_work import daily_work_AM9, daily_work_PM9
+# from daily_work import daily_work_AM9, daily_work_PM10
 
 # NOTE: ビト森杯運営機能搭載ファイル
 TOKEN = os.environ['DISCORD_BOT_TOKEN']
@@ -41,7 +41,7 @@ JST = timezone(timedelta(hours=9))
 async def on_ready():  # 起動時に動作する処理
     advertise.start(client)  # バトスタ宣伝、バトスタ開始ボタン
     # TODO エントリー開始時、有効化
-    # daily_work_PM9.start(client)  # ビト森杯定期作業 21:00
+    # daily_work_PM10.start(client)  # ビト森杯定期作業 22:00
     # daily_work_AM9.start(client)  # ビト森杯定期作業 09:00
     return
 
