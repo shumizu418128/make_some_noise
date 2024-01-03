@@ -19,13 +19,11 @@ from button_callback import (button_accept_replace, button_call_admin,
                              button_submission_content)
 from button_view import get_view
 from contact import search_contact
+from daily_work import daily_work_AM9, daily_work_PM10
 from gbb_countdown import gbb_countdown
 from keep_alive import keep_alive
 from natural_language import natural_language
 from search_next_event import search_next_event
-
-# TODO エントリー開始時、有効化
-# from daily_work import daily_work_AM9, daily_work_PM10
 
 # NOTE: ビト森杯運営機能搭載ファイル
 TOKEN = os.environ['DISCORD_BOT_TOKEN']
@@ -40,9 +38,8 @@ JST = timezone(timedelta(hours=9))
 @client.event
 async def on_ready():  # 起動時に動作する処理
     advertise.start(client)  # バトスタ宣伝、バトスタ開始ボタン
-    # TODO エントリー開始時、有効化
-    # daily_work_PM10.start(client)  # ビト森杯定期作業 22:00
-    # daily_work_AM9.start(client)  # ビト森杯定期作業 09:00
+    daily_work_PM10.start(client)  # ビト森杯定期作業 22:00
+    daily_work_AM9.start(client)  # ビト森杯定期作業 09:00
     return
 
 
@@ -193,9 +190,8 @@ async def on_member_join(member: Member):
         await sleep(1)
         await channel.send(next_event.url)
 
-    # TODO エントリー開始時、有効化
-    """view = await get_view(entry=True, contact=True)
-    await channel.send("第3回ビト森杯・Online Loopstation Exhibition Battle", view=view)"""
+    view = await get_view(entry=True, contact=True)
+    await channel.send("第3回ビト森杯・Online Loopstation Exhibition Battle", view=view)
 
 
 @client.event
