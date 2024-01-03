@@ -231,6 +231,12 @@ async def on_message(message: Message):
         await message.channel.send(f"{message.author.mention}\n運営専用ボタン ※1分後に削除されます", view=view, delete_after=60)
         return
 
+    if message.content == "s.test2":
+        await message.delete(delay=1)
+        view = await get_view(entry=True, contact=True)
+        await message.channel.send(view=view)
+        return
+
     # VS参加・退出
     if message.content == "s.join":
         await message.delete(delay=1)
