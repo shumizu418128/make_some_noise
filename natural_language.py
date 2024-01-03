@@ -7,6 +7,9 @@ from gbb_countdown import gbb_countdown
 
 
 async def natural_language(message: Message):
+    if message.channel.type == ChannelType.private_thread:
+        return
+
     if message.channel.category.name == "ビト森杯":
         return
 
