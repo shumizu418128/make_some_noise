@@ -197,7 +197,7 @@ async def button_call_admin(interaction: Interaction):
 
     # メッセージが来たら運営へ通知
     def check(m):
-        return m.channel == contact and m.author == interaction.user
+        return m.channel == interaction.channel and m.author == interaction.user
 
     msg = await interaction.client.wait_for('message', check=check)
     await msg.reply(
