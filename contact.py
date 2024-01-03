@@ -1,10 +1,9 @@
-from google.oauth2.service_account import Credentials
 import os
-import json
 from datetime import datetime, timedelta, timezone
 
 import gspread_asyncio
 from discord import Client, Embed, File, Member
+from google.oauth2.service_account import Credentials
 
 from button_view import get_view
 
