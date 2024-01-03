@@ -198,6 +198,10 @@ async def maintenance(client: Client):
             description="\n".join(errors),
             color=red
         )
+        embed.set_footer(
+            icon_url=bot_notice_channel.guild.icon.url,
+            text="第3回ビト森杯\nOnline Loopstation Exhibition Battle"
+        )
         embed.timestamp = datetime.now(JST)
         await notice.reply(tari3210.mention, embed=embed)
 
@@ -206,6 +210,10 @@ async def maintenance(client: Client):
             title="DBメンテナンス結果",
             description="エラーはありませんでした。",
             color=green
+        )
+        embed.set_footer(
+            icon_url=bot_notice_channel.guild.icon.url,
+            text="第3回ビト森杯\nOnline Loopstation Exhibition Battle"
         )
         embed.timestamp = datetime.now(JST)
         await notice.reply(embed=embed)
@@ -261,6 +269,10 @@ async def replacement_expire(client: Client):
             description="ビト森杯 繰り上げ出場手続きのお願いを送信しましたが、72時間以内に返答がなかったため、キャンセルとみなします。\
                 \n\n※エントリー手続きを行えば、再度キャンセル待ち登録は可能ですが、キャンセル待ちの最後尾に追加されます。",
             color=red
+        )
+        embed.set_author(
+            name=member_replace.display_name,
+            icon_url=member_replace.avatar.url
         )
         embed.timestamp = datetime.now(JST)
         await thread.send(embed=embed)
@@ -320,6 +332,10 @@ async def replacement(client: Client):
                 \n\n**以下のどちらかのボタンを押してください。**",
             color=yellow
         )
+        embed.set_author(
+            name=member_replace.display_name,
+            icon_url=member_replace.avatar.url
+        )
         embed.timestamp = datetime.now(JST)
         view = await get_view(replace=True)
         await thread.send(member_replace.mention, embed=embed, view=view)
@@ -334,6 +350,10 @@ async def replacement(client: Client):
             color=yellow
         )
         embed.set_author(
+            name=member_replace.display_name,
+            icon_url=member_replace.avatar.url
+        )
+        embed.set_footer(
             name="あつまれ！ビートボックスの森",
             icon_url=bot_channel.guild.icon.url
         )
@@ -381,6 +401,10 @@ async def entry_list_update(client: Client):
         title="現時点でのビト森杯参加者一覧",
         description="\n".join(entry_list),
         color=blue
+    )
+    embed.set_footer(
+        icon_url=bot_notice_channel.guild.icon.url,
+        text="第3回ビト森杯"
     )
     embed.timestamp = datetime.now(JST)
     await bot_notice_channel.send(embed=embed)
@@ -443,6 +467,14 @@ async def replacement_notice_24h(client: Client):
                 \n\n```※他の出場希望者の機会確保のため、【72時間以内】の手続きをお願いしています。```\
                 \n\n【72時間以内】に手続きをお願いします。",
             color=red
+        )
+        embed.set_author(
+            name=member_replace.display_name,
+            icon_url=member_replace.avatar.url
+        )
+        embed.set_footer(
+            icon_url=bot_channel.guild.icon.url,
+            text="第3回ビト森杯"
         )
         embed.timestamp = datetime.now(JST)
 

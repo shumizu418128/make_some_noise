@@ -267,6 +267,10 @@ async def button_admin_cancel(interaction: Interaction):
             description=f"Error: {member.display_name}さんはエントリーしていません。",
             color=red
         )
+        embed.set_author(
+            name=member.display_name,
+            icon_url=member.avatar.url
+        )
         await interaction.channel.send(embed=embed)
         return
 

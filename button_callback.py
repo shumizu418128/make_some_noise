@@ -73,6 +73,10 @@ async def button_entry(interaction: Interaction):
             description="ビト森杯\nすでにエントリー済みです。",
             color=red
         )
+        embed.set_author(
+            name=interaction.user.display_name,
+            icon_url=interaction.user.avatar.url
+        )
         await interaction.response.send_message(interaction.user.mention, embed=embed, ephemeral=True)
         return
 
@@ -82,6 +86,10 @@ async def button_entry(interaction: Interaction):
             title="エントリー済み",
             description="Online Loopstation Exhibition Battle\nすでにエントリー済みです。",
             color=red
+        )
+        embed.set_author(
+            name=interaction.user.display_name,
+            icon_url=interaction.user.avatar.url
         )
         await interaction.response.send_message(interaction.user.mention, embed=embed, ephemeral=True)
         return
@@ -130,6 +138,10 @@ async def button_entry(interaction: Interaction):
         description=description,
         color=red
     )
+    embed.set_author(
+        name=interaction.user.display_name,
+        icon_url=interaction.user.avatar.url
+    )
     await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
 
     # 問い合わせスレッドにリダイレクト
@@ -146,6 +158,10 @@ async def button_contact(interaction: Interaction):
         title="お問い合わせチャンネル作成",
         description=f"{thread.jump_url} までお問い合わせください。",
         color=blue
+    )
+    embed.set_author(
+        name=interaction.user.display_name,
+        icon_url=interaction.user.avatar.url
     )
     await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
 
@@ -171,6 +187,10 @@ async def button_call_admin(interaction: Interaction):
         title="このチャンネルにご用件をご記入ください",
         description="運営が対応します",
         color=yellow
+    )
+    embed.set_author(
+        name=interaction.user.display_name,
+        icon_url=interaction.user.avatar.url
     )
     await interaction.followup.send(interaction.user.mention, embed=embed)
     await interaction.channel.send("↓↓↓ このチャットにご記入ください ↓↓↓")
@@ -218,6 +238,10 @@ async def button_cancel(interaction: Interaction):
             description=f"Error: {interaction.user.display_name}さんはエントリーしていません。",
             color=red
         )
+        embed.set_author(
+            name=interaction.user.display_name,
+            icon_url=interaction.user.avatar.url
+        )
         await interaction.channel.send(embed=embed)
         return
 
@@ -238,6 +262,10 @@ async def button_cancel(interaction: Interaction):
             description="どちらのエントリーをキャンセルしますか？\n🏆 ビト森杯\
                 \n⚔️ Online Loopstation Exhibition Battle\n❌ このメッセージを削除する",
             color=yellow
+        )
+        embed.set_author(
+            name=interaction.user.display_name,
+            icon_url=interaction.user.avatar.url
         )
         notice = await interaction.channel.send(embed=embed)
         await notice.add_reaction("🏆")
@@ -370,6 +398,10 @@ async def button_accept_replace(interaction: Interaction):
         title="繰り上げ出場手続き完了",
         description="手続きが完了しました。ビト森杯ご参加ありがとうございます。\n\n※エントリー状況照会ボタンで確認できるまで、10秒ほどかかります。",
         color=green
+    )
+    embed.set_author(
+        name=interaction.user.display_name,
+        icon_url=interaction.user.avatar.url
     )
     await interaction.followup.send(embed=embed)
 

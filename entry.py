@@ -105,6 +105,10 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
                     \n\n入力したよみがな：{read}",
                 color=red
             )
+            embed.set_author(
+                name=name,
+                icon_url=interaction.user.avatar.url
+            )
             await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
             return
 
@@ -115,6 +119,10 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
                 description="ビト森杯\nすでにエントリー済みです。",
                 color=red
             )
+            embed.set_author(
+                name=name,
+                icon_url=interaction.user.avatar.url
+            )
             await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
             return
 
@@ -124,6 +132,10 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
                 title="エントリー済み",
                 description="Online Loopstation Exhibition Battle\nすでにエントリー済みです。",
                 color=red
+            )
+            embed.set_author(
+                name=name,
+                icon_url=interaction.user.avatar.url
             )
             await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
             return
@@ -162,6 +174,10 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
             )
             exhibition_entry_status = "参加"
 
+        embed.set_author(
+            name=name,
+            icon_url=interaction.user.avatar.url
+        )
         embed.set_footer(
             text=f"Make Some Noise! 開発者: {tari3210.display_name}",
             icon_url=tari3210.avatar.url
@@ -263,6 +279,11 @@ async def entry_2nd(interaction: Interaction, category: str):
                 \nエントリー情報が反映されるまで、約10秒かかります。",
             color=green
         )
+
+    embed.set_author(
+        name=interaction.user.display_name,
+        icon_url=interaction.user.avatar.url
+    )
     await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
 
     # DB登録処理

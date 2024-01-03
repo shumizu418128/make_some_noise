@@ -166,6 +166,10 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
                 description=lang_entry_redirect[locale],
                 color=yellow
             )
+        embed_overseas.set_author(
+            name=member.display_name,
+            icon_url=member.avatar.url
+        )
         # 問い合わせスレッドにメンション付きで送信
         await thread.send(f"{member.mention}", embeds=[embed_overseas, embed_ja])
         await thread.send(f"{admin.mention}\n海外対応モード")
@@ -315,6 +319,10 @@ async def get_submission_embed(member: Member):
             embed_entry_status.description = description
 
     embed_entry_status.timestamp = datetime.now(JST)
+    embed_entry_status.set_author(
+        name=member.display_name,
+        icon_url=member.avatar.url
+    )
     return embed_entry_status
 
 
