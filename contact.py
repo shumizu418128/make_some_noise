@@ -5,7 +5,6 @@ from datetime import datetime, timedelta, timezone
 
 import gspread_asyncio
 from discord import Client, Embed, File, Member
-from oauth2client.service_account import ServiceAccountCredentials
 
 from button_view import get_view
 
@@ -207,18 +206,21 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
 
 
 def get_credits():
-    credentials_json = os.environ.get('GOOGLE_CREDENTIALS')  # 環境変数から認証情報を取得
-
-    if not credentials_json:
-        raise ValueError("環境変数 'GOOGLE_CREDENTIALS' が設定されていません。")
-
-    try:
-        credentials_dict = json.loads(credentials_json)  # JSON文字列を辞書に変換
-    except json.JSONDecodeError:
-        raise ValueError("環境変数 'GOOGLE_CREDENTIALS' の値が無効なJSONです。")
+    credential = {
+        "type": "service_account",
+        "project_id": os.environ['SHEET_PROJECT_ID'],
+        "private_key_id": os.environ['SHEET_PRIVATE_KEY_ID'],
+        "private_key": os.environ['SHEET_PRIVATE_KEY'],
+        "client_email": os.environ['SHEET_CLIENT_EMAIL'],
+        "client_id": os.environ['SHEET_CLIENT_ID'],
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": "https://oauth2.googleapis.com/token",
+        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+        "client_x509_cert_url": os.environ['SHEET_CLIENT_X509_CERT_URL']
+    }
 
     return Credentials.from_service_account_info(
-        credentials_dict,
+        credential,
         scopes=['https://spreadsheets.google.com/feeds',
                 'https://www.googleapis.com/auth/drive',
                 'https://www.googleapis.com/auth/spreadsheets'])
