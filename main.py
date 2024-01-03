@@ -55,8 +55,9 @@ async def on_interaction(interaction: Interaction):
 
     # セレクトメニューの場合
     if custom_id.startswith("select"):
+        await interaction.response.defer(ephemeral=True, thinking=True)
         value = interaction.data["values"][0]
-        await interaction.response.send_message(
+        await interaction.followup.send_message(
             file=File(f"{value}.jpg"),
             ephemeral=True
         )
