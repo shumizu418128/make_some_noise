@@ -53,6 +53,15 @@ async def on_interaction(interaction: Interaction):
     )
     custom_id = interaction.data["custom_id"]
 
+    # セレクトメニューの場合
+    if custom_id.startswith("select"):
+        value = interaction.data["values"][0]
+        await interaction.response.send_message(
+            file=File(f"{value}.jpg"),
+            ephemeral=True
+        )
+        return
+
     # ボタンのカスタムIDに_がない場合、custom_id未設定のためreturn
     if "_" not in custom_id:
         return

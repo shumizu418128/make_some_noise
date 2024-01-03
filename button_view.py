@@ -1,4 +1,4 @@
-from discord import ButtonStyle, File, SelectOption
+from discord import ButtonStyle, SelectOption
 from discord.ui import Button, Select, View
 
 # NOTE: ビト森杯運営機能搭載ファイル
@@ -64,15 +64,11 @@ class BitomoriInfoSelect(Select):
                 emoji="📝"
             ),
         ]
-        super().__init__(placeholder="選択してください", options=options)
-
-    async def callback(self, interaction):
-        value = interaction.data["values"][0]
-        await interaction.response.send_message(
-            file=File(f"{value}.jpg"),
-            ephemeral=True
+        super().__init__(
+            placeholder="選択してください",
+            options=options,
+            custom_id="select_bitomori_info"
         )
-        return
 
 
 async def get_view(
