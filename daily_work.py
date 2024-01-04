@@ -408,6 +408,10 @@ async def entry_list_update(client: Client):
     # エントリー名簿を取得
     entry_list = [member.display_name for member in role.members]
 
+    # いないなら終了
+    if bool(entry_list) is False:
+        return
+
     # ビト森杯botチャンネルへ送信
     embed = Embed(
         title="現時点でのビト森杯参加者一覧",
