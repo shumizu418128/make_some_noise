@@ -183,25 +183,26 @@ async def button_call_admin(interaction: Interaction):
     )
     # 問い合わせ前にselectを送信
     embed = Embed(
-        title="運営問い合わせ準備中...",
-        description="**お問い合わせの前に**\n以下のセレクトメニューから詳細情報を必ずご確認ください。",
-        color=red
+        title="お問い合わせ内容を選択",
+        description="以下のセレクトメニューから、お問い合わせ内容に近いものを選択してください。",
+        color=yellow
     )
     view = await get_view(info=True)
-    await interaction.followup.send(f"# お問い合わせの前に\n{interaction.user.mention}", embed=embed, view=view)
-    await sleep(2)
-    await interaction.channel.send("準備中...", delete_after=5)
-    await sleep(5)
+    await interaction.followup.send(interaction.user.mention, embed=embed, view=view)
+
+    def check(i):
+        return i.user == interaction.user and i.channel == interaction.channel and i.data["custom_id"] == "select_bitomori_info"
+
+    _ = await interaction.client.wait_for('reaction_add', check=check)
 
     # 本当に問い合わせるか確認
     embed = Embed(
         title="お問い合わせの前に",
-        description="以下のセレクトメニューから、9種類のビト森杯・Online Loopstation Exhibition Battleの詳細情報が書かれた画像をご覧いただけます。こちらを必ずご確認ください。\
-            \n以下のセレクトメニューで確認できる詳細情報に、知りたい内容は掲載されていませんでしたか？\
-            \n\n⭕ 疑問が解決した\n❌ このメッセージを削除する\n📩 運営にチャットで問い合わせる",
-        color=red
+        description="表示された画像に、お問い合わせ内容は記載されていましたか？\
+            \n\n⭕ 画像をみて解決した\n❌ このメッセージを削除する\n📩 運営にチャットで問い合わせる",
+        color=yellow
     )
-    notice = await interaction.channel.send("# お問い合わせの前に", embed=embed, view=view)
+    notice = await interaction.channel.send(embed=embed, view=view)
     await sleep(2)
     await notice.add_reaction("⭕")
     await notice.add_reaction("❌")
