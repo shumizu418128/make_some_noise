@@ -55,6 +55,7 @@ async def on_interaction(interaction: Interaction):
         await interaction.response.defer(ephemeral=True, thinking=True)
         value = interaction.data["values"][0]
         await interaction.followup.send(
+            interaction.user.mention,
             file=File(f"{value}.jpg"),
             ephemeral=True
         )
