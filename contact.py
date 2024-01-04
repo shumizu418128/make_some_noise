@@ -114,6 +114,13 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
             )
         view = await get_view(info=True)
         await thread.send("以下のセレクトメニューからも詳細情報を確認できます。", view=view)
+
+        await debug_log(
+            function_name="contact_start",
+            description="お問い合わせ開始",
+            color=blue,
+            member=member
+        )
         return
 
     # 海外アクセスの場合
