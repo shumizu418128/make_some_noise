@@ -1,4 +1,3 @@
-from asyncio import sleep
 from datetime import datetime, timedelta, timezone
 
 from discord import Embed, Interaction

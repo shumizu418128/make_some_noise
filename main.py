@@ -4,8 +4,8 @@ from asyncio import sleep
 from datetime import datetime, timedelta, timezone
 
 import discord
-from discord import (ChannelType, Client, Embed, EventStatus, File, Intents, Interaction,
-                     Member, Message, PrivacyLevel, VoiceState)
+from discord import (ChannelType, Client, Embed, EventStatus, File, Intents,
+                     Interaction, Member, Message, PrivacyLevel, VoiceState)
 from discord.errors import ClientException
 
 from advertise import advertise
@@ -18,7 +18,7 @@ from button_callback import (button_accept_replace, button_call_admin,
                              button_cancel, button_contact, button_entry,
                              button_submission_content)
 from button_view import get_view
-from contact import contact_restart, contact_start, search_contact
+from contact import contact_start, search_contact
 from daily_work import daily_work_AM9, daily_work_PM10
 from gbb_countdown import gbb_countdown
 from keep_alive import keep_alive
@@ -32,7 +32,8 @@ intents.typing = False  # typingを受け取らないように
 client = Client(intents=intents)
 JST = timezone(timedelta(hours=9))
 
-print(f"Make Some Noise! (server): {discord.__version__} {datetime.now(JST).strftime('%Y-%m-%d %H:%M:%S')}")
+print(
+    f"Make Some Noise! (server): {discord.__version__} {datetime.now(JST).strftime('%Y-%m-%d %H:%M:%S')}")
 
 
 @client.event
