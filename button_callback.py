@@ -1,3 +1,4 @@
+from asyncio import sleep
 from datetime import datetime, timedelta, timezone
 
 from discord import Embed, Interaction
@@ -194,6 +195,7 @@ async def button_call_admin(interaction: Interaction):
         return i.user == interaction.user and i.channel == interaction.channel and i.data["custom_id"] == "select_bitomori_info"
 
     _ = await interaction.client.wait_for('reaction_add', check=check)
+    await sleep(2)
 
     # 本当に問い合わせるか確認
     embed = Embed(
