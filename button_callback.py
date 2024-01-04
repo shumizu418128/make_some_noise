@@ -224,7 +224,7 @@ async def button_call_admin(interaction: Interaction):
         await notice.clear_reactions()
         embed = Embed(
             title="⭕ 画像をみて解決した",
-            description="ビト森杯のその他詳細情報も、セレクトメニューから確認できます。ぜひご活用ください。",
+            description="ビト森杯・Online Loopstation Exhibition Battleのその他詳細情報も、セレクトメニューから確認できます。ぜひご活用ください。",
             color=green
         )
         await interaction.channel.send(embed=embed)
