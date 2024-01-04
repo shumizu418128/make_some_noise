@@ -188,7 +188,8 @@ async def button_call_admin(interaction: Interaction):
         color=yellow
     )
     view = await get_view(info=True)
-    await interaction.followup.send(interaction.user.mention, embed=embed, view=view)
+    question = await interaction.followup.send(interaction.user.mention, embed=embed)
+    await interaction.channel.send(view=view)
 
     def check(i):
         return i.user == interaction.user and i.channel == interaction.channel and i.data["custom_id"] == "select_bitomori_info"
@@ -198,12 +199,12 @@ async def button_call_admin(interaction: Interaction):
     # 本当に問い合わせるか確認
     embed = Embed(
         title="お問い合わせの前に",
-        description="表示された画像に、お問い合わせ内容は記載されていましたか？\
-            \n\n⭕ 画像をみて解決した\n❌ このメッセージを削除する\n📩 運営にチャットで問い合わせる",
+        description="上記セレクトメニューから、その他の詳細情報も確認できます。表示された画像以外にも、詳細情報が掲載された画像がありますので、それぞれご確認ください。\
+            \n\nただいま表示された画像に、お問い合わせ内容は記載されていましたか？\
+            \n⭕ 画像をみて解決した\n❌ このメッセージを削除する\n📩 運営にチャットで問い合わせる",
         color=yellow
     )
     notice = await interaction.channel.send(embed=embed, view=view)
-    await sleep(2)
     await notice.add_reaction("⭕")
     await notice.add_reaction("❌")
     await notice.add_reaction("📩")
@@ -216,10 +217,22 @@ async def button_call_admin(interaction: Interaction):
 
     except TimeoutError:
         await notice.delete()
+        await question.delete()
         return
 
-    await notice.delete()
-    if reaction.emoji in ["⭕", "❌"]:
+    if reaction.emoji == "⭕":
+        await notice.clear_reactions()
+        embed = Embed(
+            title="⭕ 画像をみて解決した",
+            description="ビト森杯のその他詳細情報も、セレクトメニューから確認できます。ぜひご活用ください。",
+            color=green
+        )
+        await interaction.channel.send(embed=embed)
+        return
+
+    if reaction.emoji == "❌":
+        await notice.delete()
+        await question.delete()
         return
 
     # しゃべってよし
@@ -250,6 +263,7 @@ async def button_call_admin(interaction: Interaction):
     # エントリー状況照会
     embed = await get_submission_embed(interaction.user)
     await interaction.channel.send(embed=embed)
+    await interaction.channel.send("以下のセレクトメニューからも確認できます。", view=view)
     return
 
 
