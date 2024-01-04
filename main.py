@@ -4,7 +4,7 @@ from asyncio import sleep
 from datetime import datetime, timedelta, timezone
 
 import discord
-from discord import (Client, Embed, EventStatus, File, Intents, Interaction,
+from discord import (ChannelType, Client, Embed, EventStatus, File, Intents, Interaction,
                      Member, Message, PrivacyLevel, VoiceState)
 from discord.errors import ClientException
 
@@ -18,7 +18,7 @@ from button_callback import (button_accept_replace, button_call_admin,
                              button_cancel, button_contact, button_entry,
                              button_submission_content)
 from button_view import get_view
-from contact import search_contact
+from contact import contact_restart, contact_start, search_contact
 from daily_work import daily_work_AM9, daily_work_PM10
 from gbb_countdown import gbb_countdown
 from keep_alive import keep_alive
@@ -282,6 +282,16 @@ async def on_message(message: Message):
             embed.description += f"\n\n参加者{len(oleb_member_names)}名\nbye: {oleb_member_names[-1]}"
 
         await message.channel.send(embed=embed)
+        return
+
+    if message.content == "s.reset":
+        await message.delete(delay=1)
+        if message.channel.type != ChannelType.private_thread:
+            return
+
+        member_id = message.channel.name.split("_")[0]
+        member = message.guild.get_member(int(member_id))
+        await contact_start(client, member)
         return
 
     # VS参加・退出
