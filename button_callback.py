@@ -1,7 +1,9 @@
+from asyncio import sleep
 from datetime import datetime, timedelta, timezone
 
 from discord import Embed, Interaction
 
+from button_view import get_view
 from contact import (contact_start, debug_log, get_submission_embed,
                      get_worksheet, search_contact)
 from entry import entry_2nd, entry_cancel, modal_entry
@@ -179,6 +181,46 @@ async def button_call_admin(interaction: Interaction):
     admin = interaction.user.get_role(
         904368977092964352  # ビト森杯運営
     )
+    # 問い合わせ前にselectを送信
+    embed = Embed(
+        title="運営問い合わせ準備中...",
+        description="**お問い合わせの前に**\n以下のセレクトメニューから詳細情報を必ずご確認ください。",
+        color=red
+    )
+    view = await get_view(info=True)
+    await interaction.followup.send(f"# お問い合わせの前に\n{interaction.user.mention}", embed=embed, view=view)
+    await sleep(2)
+    await interaction.channel.send("準備中...", delete_after=5)
+    await sleep(5)
+
+    # 本当に問い合わせるか確認
+    embed = Embed(
+        title="お問い合わせの前に",
+        description="以下のセレクトメニューから、9種類のビト森杯・Online Loopstation Exhibition Battleの詳細情報が書かれた画像をご覧いただけます。こちらを必ずご確認ください。\
+            \n以下のセレクトメニューで確認できる詳細情報に、知りたい内容は掲載されていませんでしたか？\
+            \n\n⭕ 疑問が解決した\n❌ このメッセージを削除する\n📩 運営にチャットで問い合わせる",
+        color=red
+    )
+    notice = await interaction.channel.send("# お問い合わせの前に", embed=embed, view=view)
+    await sleep(2)
+    await notice.add_reaction("⭕")
+    await notice.add_reaction("❌")
+    await notice.add_reaction("📩")
+
+    def check(reaction, user):
+        return user == interaction.user and reaction.emoji in ["⭕", "❌", "📩"] and reaction.message == notice
+
+    try:
+        reaction, _ = await interaction.client.wait_for('reaction_add', check=check, timeout=10)
+
+    except TimeoutError:
+        await notice.delete()
+        return
+
+    await notice.delete()
+    if reaction.emoji in ["⭕", "❌"]:
+        return
+
     # しゃべってよし
     await contact.set_permissions(interaction.user, send_messages_in_threads=True)
 
@@ -192,7 +234,7 @@ async def button_call_admin(interaction: Interaction):
         name=interaction.user.display_name,
         icon_url=interaction.user.avatar.url
     )
-    await interaction.followup.send(interaction.user.mention, embed=embed)
+    await interaction.channel.send(interaction.user.mention, embed=embed)
     await interaction.channel.send("↓↓↓ このチャットにご記入ください ↓↓↓")
 
     # メッセージが来たら運営へ通知
