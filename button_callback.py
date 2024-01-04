@@ -199,7 +199,7 @@ async def button_call_admin(interaction: Interaction):
     # 本当に問い合わせるか確認
     embed = Embed(
         title="お問い合わせの前に",
-        description="上記セレクトメニューから、その他の詳細情報も確認できます。表示された画像以外にも、詳細情報が掲載された画像がありますので、それぞれご確認ください。\
+        description="以下のセレクトメニューから、その他の詳細情報も確認できます。表示された画像以外にも、詳細情報が掲載された画像がありますので、それぞれご確認ください。\
             \n\nただいま表示された画像に、お問い合わせ内容は記載されていましたか？\
             \n⭕ 画像をみて解決した\n❌ このメッセージを削除する\n📩 運営にチャットで問い合わせる",
         color=yellow
@@ -227,7 +227,7 @@ async def button_call_admin(interaction: Interaction):
             description="ビト森杯・Online Loopstation Exhibition Battleのその他詳細情報も、セレクトメニューから確認できます。ぜひご活用ください。",
             color=green
         )
-        await interaction.channel.send(embed=embed)
+        await interaction.channel.send(embed=embed, view=view)
         return
 
     if reaction.emoji == "❌":
