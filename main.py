@@ -30,9 +30,9 @@ TOKEN = os.environ['DISCORD_BOT_TOKEN']
 intents = Intents.all()  # デフォルトのIntentsオブジェクトを生成
 intents.typing = False  # typingを受け取らないように
 client = Client(intents=intents)
-print(f"Make Some Noise! (server): {discord.__version__}")
-
 JST = timezone(timedelta(hours=9))
+
+print(f"Make Some Noise! (server): {discord.__version__} {datetime.now(JST).strftime('%Y-%m-%d %H:%M:%S')}")
 
 
 @client.event
