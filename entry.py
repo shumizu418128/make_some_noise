@@ -442,7 +442,7 @@ async def entry_cancel(member: Member, category: str):
         await debug_log(
             function_name="entry_cancel",
             description=f"キャンセル完了 {category}",
-            color=yellow,
+            color=blue,
             member=member
         )
         return
