@@ -6,8 +6,15 @@ JST = timezone(timedelta(hours=9))
 
 
 async def countdown():
-    dt_gbb_start = datetime(2023, 10, 18, 13, 0)  # 2023/10/18 13:00
-    dt_gbb_end = datetime(2023, 10, 22)  # 2023/10/22
+
+    # GBB開始日時
+    # 2023/10/18 13:00
+    dt_gbb_start = datetime(2023, 10, 18, 13, 0)
+
+    # GBB終了日時
+    # 2023/10/22（GBB最終日の翌日0:00）
+    dt_gbb_end = datetime(2023, 10, 22)
+
     dt_gbb_start = dt_gbb_start.replace(tzinfo=JST)  # JSTに変換
     dt_gbb_end = dt_gbb_end.replace(tzinfo=JST)  # JSTに変換
     dt_now = datetime.now(JST)
@@ -20,13 +27,13 @@ async def countdown():
     h, m = divmod(m, 60)  # mを60で割った商と余りをh, mに代入
 
     if dt_gbb_start > dt_now:  # GBB開始前なら
-        return f"GBB2023まであと{td_gbb.days}日{h}時間{m}分{s}.{td_gbb.microseconds}秒です。"
+        return f"GBB{dt_gbb_start.year}まであと{td_gbb.days}日{h}時間{m}分{s}.{td_gbb.microseconds}秒です。"
 
     elif dt_gbb_end > dt_now:  # GBB開催中なら
-        return f"今日はGBB2023 {td_gbb.days + 1}日目です。"
+        return f"今日はGBB{dt_gbb_start.year} {td_gbb.days + 1}日目です。"
 
     # GBB終了後なら
-    return f"GBB2023は{td_gbb.days}日{h}時間{m}分{s}.{td_gbb.microseconds}秒前に開催されました。"
+    return f"GBB{dt_gbb_start.year}は{td_gbb.days}日{h}時間{m}分{s}.{td_gbb.microseconds}秒前に開催されました。"
 
 
 async def send_gbbinfo(message: Message):
