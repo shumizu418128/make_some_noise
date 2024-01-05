@@ -20,7 +20,7 @@ from button_callback import (button_accept_replace, button_call_admin,
 from button_view import get_view
 from contact import contact_start, search_contact
 from daily_work import daily_work_AM9, daily_work_PM10
-from gbb_countdown import gbb_countdown
+from gbb import countdown
 from keep_alive import keep_alive
 from natural_language import natural_language
 from search_next_event import search_next_event
@@ -184,7 +184,7 @@ async def on_member_join(member: Member):
                     value="https://gbbinfo-jpn.jimdofree.com/")
     embed.add_field(name="swissbeatbox 公式instagram",
                     value="https://www.instagram.com/swissbeatbox/")
-    text = await gbb_countdown()  # GBBまでのカウントダウン
+    text = await countdown()  # GBBまでのカウントダウン
     embed.set_footer(text=text)
     await channel.send(f"{member.mention}\nあつまれ！ビートボックスの森 へようこそ！", embeds=[embed_discord, embed])
     next_event = await search_next_event(channel.guild.scheduled_events)

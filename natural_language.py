@@ -3,7 +3,7 @@ import re
 
 from discord import ChannelType, Embed, Message
 
-from gbb_countdown import gbb_countdown
+from gbb import countdown, send_gbbinfo
 
 
 async def natural_language(message: Message):
@@ -11,6 +11,10 @@ async def natural_language(message: Message):
         return
 
     if message.channel.category.name == "ビト森杯":
+        return
+
+    if message.startswith("m!"):
+        await send_gbbinfo(message)
         return
 
     if "草" in message.content:
@@ -29,7 +33,7 @@ async def natural_language(message: Message):
                     value="https://gbbinfo-jpn.jimdofree.com/")
     embed.add_field(name="swissbeatbox 公式instagram",
                     value="https://www.instagram.com/swissbeatbox/")
-    text = await gbb_countdown()
+    text = await countdown()
     embed.set_footer(text=text)
 
     if "m!wc" in message.content.lower():
@@ -39,13 +43,19 @@ async def natural_language(message: Message):
     # テキストチャンネルの場合
     if message.channel.type in [ChannelType.text, ChannelType.forum, ChannelType.public_thread]:
         emoji = random.choice(message.guild.emojis)
-        if message.author.id in [891228765022195723, 886518627023613962]:  # Yuiにはbrezを
+
+        # Yuiにはbrezを
+        if message.author.id in [891228765022195723, 886518627023613962]:
             emoji = message.guild.get_emoji(889877286055198731)  # brez
-        if message.author.id in [887328590407032852, 870434043810971659]:  # 湯にはsaroを
+
+        # 湯にはsaroを
+        if message.author.id in [887328590407032852, 870434043810971659]:
             emoji = message.guild.get_emoji(889920546408661032)  # oras
+
         # maycoにはheliumを
         if message.author.id in [389427133099016193, 735099594010132480, 990630026275860540]:
             emoji = message.guild.get_emoji(890506350868721664)  # helium
+
         await message.add_reaction(emoji)
 
         url_check = re.search(
