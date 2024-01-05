@@ -13,7 +13,7 @@ async def natural_language(message: Message):
     if message.channel.category.name == "ビト森杯":
         return
 
-    if message.startswith("m!"):
+    if message.content.startswith("m!"):
         await send_gbbinfo(message)
         return
 
