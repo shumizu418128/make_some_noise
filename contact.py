@@ -283,8 +283,8 @@ async def get_submission_embed(member: Member):
         read = cell_values[3]
         status_bitomori = cell_values[4]
         status_exhibition = cell_values[5]
-        device = cell_values[6]
-        note = cell_values[7]
+        device = cell_values[6].replace("\n", " ")
+        note = cell_values[7].replace("\n", " ")
         time = cell_values[8]
 
         if status_bitomori == "":
