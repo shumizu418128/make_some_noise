@@ -208,6 +208,8 @@ async def on_message(message: Message):
         if message.channel.id == 1035965200341401600:  # ビト森杯 お知らせ
             view = await get_view(entry=True, contact=True)
             await message.channel.send(view=view)
+            view = await get_view(info=True)
+            await message.channel.send("以下のセレクトメニューからも詳細情報を確認できます。", view=view)
         return
 
     if message.content == "s.test":
