@@ -319,7 +319,7 @@ async def get_submission_embed(member: Member):
         else:
 
             # strにまとめる
-            description = "Error: DB登録なし\n"
+            description = ""
             if role_check[0]:
                 description += "ビト森杯エントリー済み\n"
             elif role_check[1]:
@@ -330,7 +330,7 @@ async def get_submission_embed(member: Member):
             # bot用チャットにエラー通知
             await debug_log(
                 function_name="get_submission_embed",
-                description=description,
+                description="Error: DB登録なし\n" + description,
                 color=red,
                 member=member
             )
