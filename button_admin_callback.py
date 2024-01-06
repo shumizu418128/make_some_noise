@@ -49,7 +49,7 @@ async def button_admin_entry(interaction: Interaction):
             # 1分待機
             msg = await interaction.client.wait_for('message', check=check, timeout=60)
         except TimeoutError:  # 1分経過ならさよなら
-            await notice.delete()
+            await notice.delete(delay=1)
             return
 
         await msg.add_reaction("✅")
@@ -236,7 +236,7 @@ async def button_admin_cancel(interaction: Interaction):
             # 1分待機
             msg = await interaction.client.wait_for('message', check=check, timeout=60)
         except TimeoutError:  # 1分経過ならさよなら
-            await notice.delete()
+            await notice.delete(delay=1)
             return
 
         await msg.add_reaction("✅")
@@ -309,7 +309,7 @@ async def button_admin_cancel(interaction: Interaction):
 
         # 60秒で処理中止
         except TimeoutError:
-            await notice.delete()
+            await notice.delete(delay=1)
             await interaction.channel.send("Error: Timeout\nもう1度お試しください")
             return
 
@@ -352,7 +352,7 @@ async def button_admin_cancel(interaction: Interaction):
 
     # 10秒で処理中止
     except TimeoutError:
-        await notice.delete()
+        await notice.delete(delay=1)
         await interaction.channel.send("Error: Timeout\nもう1度お試しください")
         return
 
@@ -378,7 +378,7 @@ async def button_admin_create_thread(interaction: Interaction):
         # 1分待機
         msg = await interaction.client.wait_for('message', check=check, timeout=60)
     except TimeoutError:  # 1分経過ならさよなら
-        await notice.delete()
+        await notice.delete(delay=1)
         return
 
     await msg.add_reaction("✅")
@@ -428,7 +428,7 @@ async def button_admin_submission_content(interaction: Interaction):
             # 1分待機
             msg = await interaction.client.wait_for('message', check=check, timeout=60)
         except TimeoutError:  # 1分経過ならさよなら
-            await notice.delete()
+            await notice.delete(delay=1)
             return
 
         await msg.add_reaction("✅")
