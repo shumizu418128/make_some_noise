@@ -38,7 +38,7 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
         ))
         self.add_item(TextInput(
             label="使用するLoopstationデバイス（すべて記入）",
-            placeholder="使用するデバイス",
+            placeholder="Loopデバイス",
             style=TextStyle.long,
             custom_id="device"
         ))
@@ -158,7 +158,7 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
             embed = Embed(
                 title="エントリー完了",
                 description="エントリー受付完了しました。\
-                    ビト森杯ご参加ありがとうございます。\n\n",
+                    ビト森杯(Loop)ご参加ありがとうございます。\n注: 第3回ビト森杯はLoopstation限定です\n\n",
                 color=green
             )
             bitomori_entry_status = "出場"

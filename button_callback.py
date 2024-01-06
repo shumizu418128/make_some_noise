@@ -63,7 +63,7 @@ async def button_entry(interaction: Interaction):
     # エントリー開始時刻確認（tari_2は除外）tari_2 = 518041950146920449
     if dt_now < dt_entry_start and interaction.user.id != 518041950146920449:
         await interaction.response.send_message(
-            f"{interaction.user.mention}\nビト森杯・Online Loopstation Exhibition Battle\nエントリー受付開始は1月6日 22:00です。",
+            f"{interaction.user.mention}\nビト森杯(Loop)・Online Loopstation Exhibition Battle\nエントリー受付開始は1月6日 22:00です。",
             ephemeral=True
         )
         return
