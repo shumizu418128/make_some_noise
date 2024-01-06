@@ -37,7 +37,7 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
             custom_id="read"
         ))
         self.add_item(TextInput(
-            label="使用するデバイス（すべて記入）",
+            label="使用するLoopstationデバイス（すべて記入）",
             placeholder="使用するデバイス",
             style=TextStyle.long,
             custom_id="device"

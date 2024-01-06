@@ -111,7 +111,7 @@ async def get_view(
     )
     button_entry_bitomori = Button(
         style=ButtonStyle.green,
-        label="ビト森杯エントリー",
+        label="ビト森杯(Loop)エントリー",
         custom_id="button_entry_bitomori",
         emoji="🏆"
     )
