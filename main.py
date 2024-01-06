@@ -268,6 +268,16 @@ async def on_message(message: Message):
         await contact_start(client, member)
         return
 
+    if message.content == "s.contact":
+        role = message.guild.get_role(
+            1036149651847524393  # ビト森杯
+        )
+        for member in role.members:
+            thread = await search_contact(member)
+            if thread is None:
+                await contact_start(client, member, entry_redirect=True)
+        return
+
     # VS参加・退出
     if message.content == "s.join":
         await message.delete(delay=1)
