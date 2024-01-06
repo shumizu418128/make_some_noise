@@ -23,13 +23,14 @@ async def advertise(client: Client):
 
     # 次のイベント
     next_event = await search_next_event(channel.guild.scheduled_events)
-    await channel.send(next_event.url)  # 次のイベントのURL送信
+    if bool(next_event):
+        await channel.send(next_event.url)  # 次のイベントのURL送信
 
-    # バトスタの場合
-    if bool(next_event) and next_event.name == "BATTLE STADIUM":
+        # バトスタの場合
+        if next_event.name == "BATTLE STADIUM":
 
-        # gif
-        await channel.send(file=File(f"battle_stadium_{random.randint(1, 3)}.gif"))
+            # gif
+            await channel.send(file=File(f"battle_stadium_{random.randint(1, 3)}.gif"))
 
     ##############################
     # 以下無期限凍結
