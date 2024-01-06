@@ -193,7 +193,7 @@ async def on_member_join(member: Member):
         await channel.send(next_event.url)
 
     view = await get_view(entry=True, contact=True)
-    await channel.send("第3回ビト森杯(Loop) :rcc: ・Online Loopstation Exhibition Battle", view=view)
+    await channel.send("第3回ビト森杯(Loop)・Online Loopstation Exhibition Battle", view=view)
 
 
 @client.event
