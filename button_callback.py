@@ -181,61 +181,6 @@ async def button_call_admin(interaction: Interaction):
     admin = interaction.user.get_role(
         904368977092964352  # ビト森杯運営
     )
-    # 問い合わせ前にselectを送信
-    embed = Embed(
-        title="お問い合わせ内容を選択",
-        description="以下のセレクトメニューから、お問い合わせ内容に近いものを選択してください。",
-        color=yellow
-    )
-    view = await get_view(info=True)
-    question = await interaction.followup.send(interaction.user.mention, embed=embed)
-    await interaction.channel.send(view=view)
-
-    def check(i):
-        return i.user == interaction.user and i.channel == interaction.channel and i.data["custom_id"] == "select_bitomori_info"
-
-    _ = await interaction.client.wait_for('interaction', check=check)
-    await sleep(2)
-
-    # 本当に問い合わせるか確認
-    embed = Embed(
-        title="お問い合わせの前に",
-        description="以下のセレクトメニューから、その他の詳細情報も確認できます。表示された画像以外にも、詳細情報が掲載された画像がありますので、それぞれご確認ください。\
-            \n\nただいま表示された画像に、お問い合わせ内容は記載されていましたか？\
-            \n⭕ 画像をみて解決した\n❌ このメッセージを削除する\n📩 運営にチャットで問い合わせる",
-        color=yellow
-    )
-    notice = await interaction.channel.send(embed=embed, view=view)
-    await notice.add_reaction("⭕")
-    await notice.add_reaction("❌")
-    await notice.add_reaction("📩")
-
-    def check(reaction, user):
-        return user == interaction.user and reaction.emoji in ["⭕", "❌", "📩"] and reaction.message == notice
-
-    try:
-        reaction, _ = await interaction.client.wait_for('reaction_add', check=check, timeout=10)
-
-    except TimeoutError:
-        await notice.delete()
-        await question.delete()
-        return
-
-    if reaction.emoji == "⭕":
-        await notice.clear_reactions()
-        embed = Embed(
-            title="⭕ 画像をみて解決した",
-            description="ビト森杯・Online Loopstation Exhibition Battleのその他詳細情報も、セレクトメニューから確認できます。ぜひご活用ください。",
-            color=green
-        )
-        await interaction.channel.send(embed=embed, view=view)
-        return
-
-    if reaction.emoji == "❌":
-        await notice.delete()
-        await question.delete()
-        return
-
     # しゃべってよし
     await contact.set_permissions(interaction.user, send_messages_in_threads=True)
 
@@ -264,7 +209,6 @@ async def button_call_admin(interaction: Interaction):
     # エントリー状況照会
     embed = await get_submission_embed(interaction.user)
     await interaction.channel.send(embed=embed)
-    await interaction.channel.send("以下のセレクトメニューからも確認できます。", view=view)
     return
 
 
