@@ -191,10 +191,19 @@ async def maintenance(client: Client):
         errors.append(f"- 解決済み：名前変更検知 {member.display_name} {member.id}")
 
         # ビト森杯botチャンネルで叱る
-        await bot_notice_channel.send(
-            f"{member.mention}\nユーザー名の変更を検知したため、エントリー申請の際に記入した名前に変更しました。\
-            \n\nユーザー名の変更はご遠慮ください。"
+        embed = Embed(
+            title="名前変更検知",
+            description="ユーザー名の変更を検知したため、エントリー申請の際に記入した名前に変更しました。\
+                イベントの円滑な運営の妨げになるため、ユーザー名の変更はご遠慮ください。\
+                \n\n※名前変更をご希望の場合、運営へお問い合わせください。",
+            color=red
         )
+        await bot_notice_channel.send(member.mention, embed=embed)
+
+        # 問い合わせスレッドでも叱る
+        thread = await search_contact(member=member)
+        await thread.send(member.mention, embed=embed)
+
     # 結果通知
     if bool(errors):
         embed = Embed(
