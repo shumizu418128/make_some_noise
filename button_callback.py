@@ -194,7 +194,7 @@ async def button_call_admin(interaction: Interaction):
     def check(i):
         return i.user == interaction.user and i.channel == interaction.channel and i.data["custom_id"] == "select_bitomori_info"
 
-    _ = await interaction.client.wait_for('reaction_add', check=check)
+    _ = await interaction.client.wait_for('interaction', check=check)
     await sleep(2)
 
     # 本当に問い合わせるか確認
