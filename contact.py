@@ -357,9 +357,14 @@ async def debug_log(function_name: str, description: str, color: int, member: Me
         412082841829113877  # tari3210
     )
     thread = await search_contact(member)
+
+    thread_jump_url = ""
+    if bool(thread):
+        thread_jump_url = thread.jump_url
+
     embed = Embed(
         title=function_name,
-        description=f"{description}\n\n{member.mention}\n{thread.jump_url}\
+        description=f"{description}\n\n{member.mention}\n{thread_jump_url}\
             \n[スプレッドシート](https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0)",
         color=color
     )
