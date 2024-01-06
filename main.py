@@ -216,31 +216,6 @@ async def on_message(message: Message):
         await message.channel.send(f"{str(client.user)}\n{discord.__version__}")
         return
 
-    if message.content == "s.loop":
-        await message.delete(delay=1)
-        announce_bitomori = client.get_channel(
-            1035965200341401600  # ビト森杯 お知らせ
-        )
-        announce = client.get_channel(
-            885462548055461898  # お知らせ
-        )
-        bot_notice_channel = client.get_channel(
-            1035946838487994449  # ビト森杯 進行bot
-        )
-        contact = client.get_channel(
-            1035964918198960128  # 問い合わせ
-        )
-        view = await get_view(entry=True, contact=True)
-        await announce.send("第3回ビト森杯・Online Loopstation Exhibition Battle", view=view)
-        await announce_bitomori.send("第3回ビト森杯・Online Loopstation Exhibition Battle", view=view)
-        await bot_notice_channel.send("第3回ビト森杯・Online Loopstation Exhibition Battle", view=view)
-        await contact.send("第3回ビト森杯・Online Loopstation Exhibition Battle", view=view)
-        view = await get_view(info=True)
-        await announce.send("以下のセレクトメニューからも詳細情報を確認できます。", view=view)
-        await announce_bitomori.send("以下のセレクトメニューからも詳細情報を確認できます。", view=view)
-        await bot_notice_channel.send("以下のセレクトメニューからも詳細情報を確認できます。", view=view)
-        await contact.send("以下のセレクトメニューからも詳細情報を確認できます。", view=view)
-
     if message.content == "s.admin":
         await message.delete(delay=1)
         view = await get_view(admin=True)
@@ -251,12 +226,8 @@ async def on_message(message: Message):
         await message.delete(delay=1)
         view = await get_view(entry=True, contact=True)
         await message.channel.send(view=view)
-        return
-
-    if message.content == "s.select":
-        await message.delete(delay=1)
         view = await get_view(info=True)
-        await message.channel.send(view=view)
+        await message.channel.send("以下のセレクトメニューからも詳細情報を確認できます。", view=view)
         return
 
     if message.content == "s.oleb":
