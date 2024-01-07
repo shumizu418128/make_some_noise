@@ -316,11 +316,16 @@ async def replacement(client: Client):
     ]
     # 繰り上げ手続き中の枠は確保されている
 
-    # エントリー済み + 繰り上げ出場確認中 = 現在のエントリー数とする
+    # 現在のエントリー数 = エントリー済み + 繰り上げ出場確認中 とする
     entry_count = len(role.members) + len(values_status)
 
+    # 繰り上げ人数が0人以下なら終了（マイナスになる可能性を考慮）
+    replace_count = 16 - entry_count
+    if replace_count <= 0:
+        return
+
     # キャンセル待ちへの通知(不足人数分for文を回す)
-    for _ in range(16 - entry_count):
+    for _ in range(replace_count):
 
         # キャンセル待ちの順番最初の人を取得
         cell_waitlist_first = await worksheet.find("キャンセル待ち", in_column=5)
