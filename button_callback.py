@@ -192,7 +192,7 @@ async def button_call_admin(interaction: Interaction):
         name=interaction.user.display_name,
         icon_url=interaction.user.avatar.url
     )
-    await interaction.channel.send(interaction.user.mention, embed=embed)
+    await interaction.followup.send(interaction.user.mention, embed=embed)
     await interaction.channel.send("↓↓↓ このチャットにご記入ください ↓↓↓")
 
     # メッセージが来たら運営へ通知
