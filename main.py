@@ -288,7 +288,7 @@ async def on_message(message: Message):
         member_ids.pop(0)
 
         for id in member_ids:
-            member = await message.guild.get_member(int(id))
+            member = message.guild.get_member(int(id))
             role_check = [
                 any([
                     member.get_role(
