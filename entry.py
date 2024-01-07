@@ -157,8 +157,8 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
             await interaction.user.add_roles(role)
             embed = Embed(
                 title="エントリー完了",
-                description="エントリー受付完了しました。\
-                    ビト森杯(Loop)ご参加ありがとうございます。\n注: 第3回ビト森杯はLoopstation限定です\n\n",
+                description="エントリー受付完了しました。ビト森杯(Loop)ご参加ありがとうございます。\
+                    \n注: 第3回ビト森杯はLoopstation限定です\n\n",
                 color=green
             )
             bitomori_entry_status = "出場"
@@ -168,8 +168,7 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
             await interaction.user.add_roles(role_exhibition)
             embed = Embed(
                 title="エントリー完了",
-                description="エントリー受付完了しました。\
-                    Online Loopstation Exhibition Battleご参加ありがとうございます。\n\n",
+                description="エントリー受付完了しました。Online Loopstation Exhibition Battleご参加ありがとうございます。\n\n",
                 color=green
             )
             exhibition_entry_status = "参加"
@@ -273,8 +272,7 @@ async def entry_2nd(interaction: Interaction, category: str):
         await interaction.user.add_roles(role_exhibition)
         embed = Embed(
             title="エントリー完了",
-            description="エントリー受付完了しました。\
-                Online Loopstation Exhibition Battle ご参加ありがとうございます。\
+            description="エントリー受付完了しました。Online Loopstation Exhibition Battle ご参加ありがとうございます。\
                 \n\n※ビト森杯にエントリーした際の情報をそのまま登録しました。\
                 \nエントリー情報が反映されるまで、約10秒かかります。",
             color=green
