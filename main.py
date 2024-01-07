@@ -291,20 +291,6 @@ async def on_message(message: Message):
         # 空白を削除
         member_ids = [id for id in member_ids if id != ""]
 
-        # すでに送った人を削除
-        sent_ids = [918499053938040913,
-                    1172453588136628224,
-                    905370745285255168,
-                    548884297730490368,
-                    572771411400327179,
-                    704544809750102066,
-                    863036173277593600,
-                    835093978202112023,
-                    1062731871395512390]
-
-        # sent_idsでフィルター
-        member_ids = [id for id in member_ids if int(id) not in sent_ids]
-
         for id in member_ids:
             member = message.guild.get_member(int(id))
             role_check = [
