@@ -372,7 +372,7 @@ async def replacement(client: Client):
             icon_url=member_replace.avatar.url
         )
         embed.set_footer(
-            name="あつまれ！ビートボックスの森",
+            text="あつまれ！ビートボックスの森",
             icon_url=bot_channel.guild.icon.url
         )
         embed.timestamp = datetime.now(JST)
