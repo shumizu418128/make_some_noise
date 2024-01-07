@@ -176,7 +176,7 @@ async def button_call_admin(interaction: Interaction):
     contact = interaction.client.get_channel(
         1035964918198960128  # 問い合わせ
     )
-    admin = interaction.user.get_role(
+    admin = interaction.guild.get_role(
         904368977092964352  # ビト森杯運営
     )
     # しゃべってよし
