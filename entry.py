@@ -23,7 +23,7 @@ col = 横 A, B, C, ...
 
 class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
     def __init__(self, display_name: str, category: str):
-        super().__init__(title="エントリー受付", custom_id=f"modal_entry_{category}")
+        super().__init__(title=f"エントリー受付 {category}", custom_id=f"modal_entry_{category}")
 
         self.add_item(TextInput(
             label="あなたの名前",

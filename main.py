@@ -18,7 +18,7 @@ from button_callback import (button_accept_replace, button_call_admin,
                              button_cancel, button_contact, button_entry,
                              button_submission_content)
 from button_view import get_view
-from contact import contact_start, search_contact
+from contact import contact_start, get_submission_embed, get_worksheet, search_contact
 from daily_work import daily_work_AM9, daily_work_PM10
 from gbb import countdown
 from keep_alive import keep_alive
@@ -276,6 +276,44 @@ async def on_message(message: Message):
             thread = await search_contact(member)
             if thread is None:
                 await contact_start(client, member, entry_redirect=True)
+        return
+
+    if message.content == "s.notice":
+        worksheet = await get_worksheet("エントリー名簿")
+
+        # エントリーした人全員のIDを取得
+        member_ids = await worksheet.col_values(10)
+
+        # 最初はヘッダーなので削除
+        member_ids.pop(0)
+
+        for id in member_ids:
+            member = await message.guild.get_member(int(id))
+            role_check = [
+                any([
+                    member.get_role(
+                        1036149651847524393  # ビト森杯
+                    ),
+                    member.get_role(
+                        1172542396597289093  # キャンセル待ち ビト森杯
+                    )
+                ]),
+                member.get_role(
+                    1171760161778581505  # エキシビション
+                )
+            ]
+            if not all(role_check):
+
+                # 片方しかエントリーしていない人にDM
+                thread = await search_contact(member)
+                embed = await get_submission_embed(member)
+
+                await thread.send(
+                    f"{member.mention} さんのエントリー状況は以下の通りです。\
+                        \n\n※ビト森杯・Online Loopstation Exhibition Battle どちらか片方にのみエントリーしている方に対し、確認のため送信しています。\
+                        \n※エントリー状況に問題がない場合、このメッセージは無視してください。",
+                    embed=embed
+                )
         return
 
     # VS参加・退出
