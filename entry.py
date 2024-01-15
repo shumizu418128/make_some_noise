@@ -294,48 +294,49 @@ async def entry_2nd(interaction: Interaction, category: str):
 
         # 一応受付時刻は更新する
         await worksheet.update_cell(cell_id.row, 9, str(datetime.now(JST).strftime("%Y-%m-%d %H:%M:%S")))
-        return
-
-    # DB新規登録
-    # エントリー数を更新
-    num_entries = await worksheet.cell(row=3, col=1)
-    num_entries.value = int(num_entries.value) + 1
-    await worksheet.update_cell(row=3, col=1, value=str(num_entries.value))
 
     # ビト森杯へのエントリーなら、一旦新規行に登録した後、もとの行を削除する
-    # もとの行のセルを取得
-    cell_name = await worksheet.cell(cell_id.row, 3)
-    cell_read = await worksheet.cell(cell_id.row, 4)
-    cell_device = await worksheet.cell(cell_id.row, 7)
-    cell_note = await worksheet.cell(cell_id.row, 8)
-    cell_replace_deadline = await worksheet.cell(cell_id.row, 11)
+    if category == "bitomori":
 
-    # もとの行の内容を取得
-    name = cell_name.value
-    read = cell_read.value
-    device = cell_device.value
-    note = cell_note.value
-    replace_deadline = cell_replace_deadline.value
+        # DB新規登録
+        # エントリー数を更新
+        num_entries = await worksheet.cell(row=3, col=1)
+        num_entries.value = int(num_entries.value) + 1
+        await worksheet.update_cell(row=3, col=1, value=str(num_entries.value))
 
-    # エントリー情報を書き込み
-    row = int(num_entries.value) + 1
-    values = [
-        name,
-        read,
-        bitomori_entry_status,
-        "参加",  # OLEB参加状況
-        device,
-        note,
-        str(datetime.now(JST).strftime("%Y-%m-%d %H:%M:%S")),
-        str(interaction.user.id),
-        replace_deadline
-    ]
-    for col, value in zip(range(3, 12), values):
-        await worksheet.update_cell(row=row, col=col, value=value)
+        # もとの行のセルを取得
+        cell_name = await worksheet.cell(cell_id.row, 3)
+        cell_read = await worksheet.cell(cell_id.row, 4)
+        cell_device = await worksheet.cell(cell_id.row, 7)
+        cell_note = await worksheet.cell(cell_id.row, 8)
+        cell_replace_deadline = await worksheet.cell(cell_id.row, 11)
 
-    # もとの行を削除
-    for col, value in zip(range(3, 12), values):
-        await worksheet.update_cell(row=cell_id.row, col=col, value="")
+        # もとの行の内容を取得
+        name = cell_name.value
+        read = cell_read.value
+        device = cell_device.value
+        note = cell_note.value
+        replace_deadline = cell_replace_deadline.value
+
+        # エントリー情報を書き込み
+        row = int(num_entries.value) + 1
+        values = [
+            name,
+            read,
+            bitomori_entry_status,
+            "参加",  # OLEB参加状況
+            device,
+            note,
+            str(datetime.now(JST).strftime("%Y-%m-%d %H:%M:%S")),
+            str(interaction.user.id),
+            replace_deadline
+        ]
+        for col, value in zip(range(3, 12), values):
+            await worksheet.update_cell(row=row, col=col, value=value)
+
+        # もとの行を削除
+        for col, value in zip(range(3, 12), values):
+            await worksheet.update_cell(row=cell_id.row, col=col, value="")
 
     # bot用チャットへ通知
     await debug_log(
