@@ -25,20 +25,18 @@ async def natural_language(message: Message):
     # twitterリンクをvxtwitter.comに置換
     if "twitter.com" in message.content or "x.com" in message.content:
 
+        # twitterリンクを取り出す
+        url_pattern = r'http[s]?://(?:x\.com|twitter\.com)(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))*'
+        urls = re.findall(url_pattern, message.content)
+
         # リンクがあれば置換
-        pattern = r"(http://|https://)(www\.)?(x\.com|twitter\.com)"
-        if re.search(pattern, message.content):
+        if bool(urls):
+            replace_part = r"(http://|https://)(www\.)?(x\.com|twitter\.com)"
+            vxtwitter = r"\1vxtwitter.com"
+            replaced_urls = ""
 
-            # リンクだけ取り出す
-            url_pattern = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+(?:x\.com|twitter\.com)'
-            urls = re.findall(url_pattern, message.content)
-
-            # リンクを取り出せたなら置換
-            if bool(urls):
-                replacement = r"\1vxtwitter.com"
-                replaced_urls = ""
-                for url in urls:
-                    replaced_urls += re.sub(pattern, replacement, url) + "\n"
+            for url in urls:
+                replaced_urls += re.sub(replace_part, vxtwitter, url) + "\n"
 
                 await message.channel.reply(replaced_urls, mention_author=False)
 
