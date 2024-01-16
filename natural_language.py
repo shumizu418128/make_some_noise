@@ -33,11 +33,9 @@ async def natural_language(message: Message):
         if bool(urls):
             replace_part = r"(http://|https://)(www\.)?(x\.com|twitter\.com)"
             vxtwitter = r"\1vxtwitter.com"
-            replaced_urls = ""
 
             for url in urls:
-                replaced_urls += re.sub(replace_part, vxtwitter, url) + "\n"
-
+                replaced_urls = re.sub(replace_part, vxtwitter, url)
                 await message.channel.reply(replaced_urls, mention_author=False)
 
     # 以下おふざけリアクション機能・GBB情報お知らせ機能
