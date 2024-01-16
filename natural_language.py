@@ -36,7 +36,7 @@ async def natural_language(message: Message):
 
             for url in urls:
                 replaced_urls = re.sub(replace_part, vxtwitter, url)
-                await message.channel.reply(replaced_urls, mention_author=False)
+                await message.reply(replaced_urls, mention_author=False)
 
     # 以下おふざけリアクション機能・GBB情報お知らせ機能
     if "草" in message.content:
