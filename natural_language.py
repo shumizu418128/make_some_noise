@@ -7,16 +7,42 @@ from gbb import countdown, send_gbbinfo
 
 
 async def natural_language(message: Message):
+
+    # ビト森杯関連機能
+    # プライベートスレッドはお問合せチャンネルなので除外
     if message.channel.type == ChannelType.private_thread:
         return
 
+    # ビト森杯カテゴリーの場合除外
     if message.channel.category.name == "ビト森杯":
         return
 
+    # GBB情報お知らせ機能
     if message.content.startswith("m!"):
         await send_gbbinfo(message)
         return
 
+    # twitterリンクをvxtwitter.comに置換
+    if "twitter.com" in message.content or "x.com" in message.content:
+
+        # リンクがあれば置換
+        pattern = r"(http://|https://)(www\.)?(x\.com|twitter\.com)"
+        if re.search(pattern, message.content):
+
+            # リンクだけ取り出す
+            url_pattern = r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+(?:x\.com|twitter\.com)'
+            urls = re.findall(url_pattern, message.content)
+
+            # リンクを取り出せたなら置換
+            if bool(urls):
+                replacement = r"\1vxtwitter.com"
+                replaced_urls = ""
+                for url in urls:
+                    replaced_urls += re.sub(pattern, replacement, url) + "\n"
+
+                await message.channel.reply(replaced_urls, mention_author=False)
+
+    # 以下おふざけリアクション機能・GBB情報お知らせ機能
     if "草" in message.content:
         emoji = message.guild.get_emoji(990222099744432198)  # 草
         await message.add_reaction(emoji)
@@ -35,10 +61,6 @@ async def natural_language(message: Message):
                     value="https://www.instagram.com/swissbeatbox/")
     text = await countdown()
     embed.set_footer(text=text)
-
-    if "m!wc" in message.content.lower():
-        await message.channel.send(embed=embed)
-        await message.channel.send("[GBB 2023 Wildcard結果・出場者一覧 はこちら](https://gbbinfo-jpn.jimdofree.com/20230222/)")
 
     # テキストチャンネルの場合
     if message.channel.type in [ChannelType.text, ChannelType.forum, ChannelType.public_thread]:
@@ -63,6 +85,7 @@ async def natural_language(message: Message):
         if bool(url_check):
             return
 
+        # GBBに関する言葉が含まれていたら、GBB情報を送信
         for word in ["gbb", "wildcard", "ワイカ", "ワイルドカード", "結果", "出場", "通過", "チケット", "ルール", "審査員", "ジャッジ", "日本人", "colaps"]:
             if word in message.content.lower():
                 if any(["?" in message.content, "？" in message.content]):
