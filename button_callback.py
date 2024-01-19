@@ -340,9 +340,9 @@ async def button_cancel(interaction: Interaction):
 
 
 async def button_submission_content(interaction: Interaction):
-    await interaction.response.defer(thinking=True)
+    await interaction.response.send_message("処理中...", ephemeral=True)
     embed = await get_submission_embed(interaction.user)
-    await interaction.followup.send(embed=embed)
+    await interaction.channel.send(embed=embed)
     return
 
 
