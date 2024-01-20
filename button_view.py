@@ -179,7 +179,7 @@ async def get_view(
         emoji="👑"
     )
     button_admin_create_thread = Button(
-        style=ButtonStyle.green,
+        style=ButtonStyle.primary,
         label="問い合わせチャンネル作成",
         custom_id="button_admin_create_thread",
         emoji="👑"
