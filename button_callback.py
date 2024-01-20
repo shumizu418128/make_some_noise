@@ -75,7 +75,7 @@ async def button_entry(interaction: Interaction):
         )
         embed.set_author(
             name=interaction.user.display_name,
-            icon_url=interaction.user.avatar.url
+            icon_url=interaction.user.display_avatar.url
         )
         await interaction.response.send_message(interaction.user.mention, embed=embed, ephemeral=True)
         return
@@ -89,7 +89,7 @@ async def button_entry(interaction: Interaction):
         )
         embed.set_author(
             name=interaction.user.display_name,
-            icon_url=interaction.user.avatar.url
+            icon_url=interaction.user.display_avatar.url
         )
         await interaction.response.send_message(interaction.user.mention, embed=embed, ephemeral=True)
         return
@@ -140,7 +140,7 @@ async def button_entry(interaction: Interaction):
     )
     embed.set_author(
         name=interaction.user.display_name,
-        icon_url=interaction.user.avatar.url
+        icon_url=interaction.user.display_avatar.url
     )
     await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
 
@@ -161,7 +161,7 @@ async def button_contact(interaction: Interaction):
     )
     embed.set_author(
         name=interaction.user.display_name,
-        icon_url=interaction.user.avatar.url
+        icon_url=interaction.user.display_avatar.url
     )
     await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
 
@@ -190,7 +190,7 @@ async def button_call_admin(interaction: Interaction):
     )
     embed.set_author(
         name=interaction.user.display_name,
-        icon_url=interaction.user.avatar.url
+        icon_url=interaction.user.display_avatar.url
     )
     await interaction.followup.send(interaction.user.mention, embed=embed)
     await interaction.channel.send("↓↓↓ このチャットにご記入ください ↓↓↓")
@@ -240,7 +240,7 @@ async def button_cancel(interaction: Interaction):
         )
         embed.set_author(
             name=interaction.user.display_name,
-            icon_url=interaction.user.avatar.url
+            icon_url=interaction.user.display_avatar.url
         )
         await interaction.channel.send(embed=embed)
         return
@@ -265,7 +265,7 @@ async def button_cancel(interaction: Interaction):
         )
         embed.set_author(
             name=interaction.user.display_name,
-            icon_url=interaction.user.avatar.url
+            icon_url=interaction.user.display_avatar.url
         )
         notice = await interaction.channel.send(embed=embed)
         await notice.add_reaction("🏆")
@@ -401,7 +401,7 @@ async def button_accept_replace(interaction: Interaction):
     )
     embed.set_author(
         name=interaction.user.display_name,
-        icon_url=interaction.user.avatar.url
+        icon_url=interaction.user.display_avatar.url
     )
     await interaction.followup.send(embed=embed)
 

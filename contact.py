@@ -93,7 +93,7 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
         )
         embed.set_footer(
             text=f"Make Some Noise! 開発者: {tari3210.display_name}",
-            icon_url=tari3210.avatar.url
+            icon_url=tari3210.display_avatar.url
         )
         view = await get_view(
             call_admin=True,
@@ -178,7 +178,7 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
             )
         embed_overseas.set_author(
             name=member.display_name,
-            icon_url=member.avatar.url
+            icon_url=member.display_avatar.url
         )
         # 問い合わせスレッドにメンション付きで送信
         await thread.send(f"{member.mention}", embeds=[embed_overseas, embed_ja])
@@ -344,7 +344,7 @@ async def get_submission_embed(member: Member):
     embed_entry_status.timestamp = datetime.now(JST)
     embed_entry_status.set_author(
         name=member.display_name,
-        icon_url=member.avatar.url
+        icon_url=member.display_avatar.url
     )
     return embed_entry_status
 
@@ -370,7 +370,7 @@ async def debug_log(function_name: str, description: str, color: int, member: Me
     )
     embed.set_author(
         name=member.display_name,
-        icon_url=member.avatar.url
+        icon_url=member.display_avatar.url
     )
     embed.timestamp = datetime.now(JST)
 

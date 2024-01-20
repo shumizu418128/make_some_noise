@@ -23,7 +23,8 @@ col = 横 A, B, C, ...
 
 class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
     def __init__(self, display_name: str, category: str):
-        super().__init__(title=f"エントリー受付 {category}", custom_id=f"modal_entry_{category}")
+        super().__init__(
+            title=f"エントリー受付 {category}", custom_id=f"modal_entry_{category}")
 
         self.add_item(TextInput(
             label="あなたの名前",
@@ -107,7 +108,7 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
             )
             embed.set_author(
                 name=name,
-                icon_url=interaction.user.avatar.url
+                icon_url=interaction.user.display_avatar.url
             )
             await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
             return
@@ -121,7 +122,7 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
             )
             embed.set_author(
                 name=name,
-                icon_url=interaction.user.avatar.url
+                icon_url=interaction.user.display_avatar.url
             )
             await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
             return
@@ -135,7 +136,7 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
             )
             embed.set_author(
                 name=name,
-                icon_url=interaction.user.avatar.url
+                icon_url=interaction.user.display_avatar.url
             )
             await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
             return
@@ -175,11 +176,11 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
 
         embed.set_author(
             name=name,
-            icon_url=interaction.user.avatar.url
+            icon_url=interaction.user.display_avatar.url
         )
         embed.set_footer(
             text=f"Make Some Noise! 開発者: {tari3210.display_name}",
-            icon_url=tari3210.avatar.url
+            icon_url=tari3210.display_avatar.url
         )
         submission = f"受付内容\n- `名前:` {name}\
             \n- `よみがな:` {read}\n- `デバイス:` {device}\n- `備考:` {note}\
@@ -280,7 +281,7 @@ async def entry_2nd(interaction: Interaction, category: str):
 
     embed.set_author(
         name=interaction.user.display_name,
-        icon_url=interaction.user.avatar.url
+        icon_url=interaction.user.display_avatar.url
     )
     await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
 
@@ -382,7 +383,7 @@ async def entry_cancel(member: Member, category: str):
     )
     embed.set_author(
         name=member.display_name,
-        icon_url=member.avatar.url
+        icon_url=member.display_avatar.url
     )
     # キャンセル完了通知の内容を設定
     if category == "bitomori":

@@ -87,7 +87,7 @@ async def button_admin_entry(interaction: Interaction):
         )
         embed.set_author(
             name=member.display_name,
-            icon_url=member.avatar.url
+            icon_url=member.display_avatar.url
         )
         await interaction.channel.send(embed=embed, ephemeral=True)
         return
@@ -101,7 +101,7 @@ async def button_admin_entry(interaction: Interaction):
         )
         embed.set_author(
             name=member.display_name,
-            icon_url=member.avatar.url
+            icon_url=member.display_avatar.url
         )
         await interaction.channel.send(embed=embed, ephemeral=True)
         return
@@ -269,7 +269,7 @@ async def button_admin_cancel(interaction: Interaction):
         )
         embed.set_author(
             name=member.display_name,
-            icon_url=member.avatar.url
+            icon_url=member.display_avatar.url
         )
         await interaction.channel.send(embed=embed)
         return
@@ -398,7 +398,7 @@ async def button_admin_create_thread(interaction: Interaction):
     )
     embed.set_author(
         name=member.display_name,
-        icon_url=member.avatar.url
+        icon_url=member.display_avatar.url
     )
     await interaction.channel.send(embed=embed)
 

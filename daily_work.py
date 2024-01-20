@@ -285,7 +285,7 @@ async def replacement_expire(client: Client):
         )
         embed.set_author(
             name=member_replace.display_name,
-            icon_url=member_replace.avatar.url
+            icon_url=member_replace.display_avatar.url
         )
         embed.timestamp = datetime.now(JST)
         await thread.send(embed=embed)
@@ -352,7 +352,7 @@ async def replacement(client: Client):
         )
         embed.set_author(
             name=member_replace.display_name,
-            icon_url=member_replace.avatar.url
+            icon_url=member_replace.display_avatar.url
         )
         embed.timestamp = datetime.now(JST)
         view = await get_view(replace=True)
@@ -369,7 +369,7 @@ async def replacement(client: Client):
         )
         embed.set_author(
             name=member_replace.display_name,
-            icon_url=member_replace.avatar.url
+            icon_url=member_replace.display_avatar.url
         )
         embed.set_footer(
             text="あつまれ！ビートボックスの森",
@@ -500,7 +500,7 @@ async def replacement_notice_24h(client: Client):
         )
         embed.set_author(
             name=member_replace.display_name,
-            icon_url=member_replace.avatar.url
+            icon_url=member_replace.display_avatar.url
         )
         embed.set_footer(
             icon_url=bot_channel.guild.icon.url,
