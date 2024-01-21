@@ -40,7 +40,7 @@ async def send_gbbinfo(message: Message):
 
     # ジャッジ一覧
     if "judge" in message.content:
-        url = ""  # ジャッジ一覧のURL
+        url = "https://gbbinfo-jpn.jimdofree.com/20240121/#p06"  # ジャッジ一覧のURL
         await message.channel.send(f"[GBBジャッジ一覧はこちら]({url})")
         return
 
@@ -48,4 +48,10 @@ async def send_gbbinfo(message: Message):
     if "wc" in message.content:
         url = ""  # Wildcard結果のURL
         await message.channel.send(f"[GBB Wildcard結果はこちら]({url})")
+        return
+
+    # Wildcardルール
+    if "rule" in message.content:
+        url = "https://gbbinfo-jpn.jimdofree.com/20240121/"  # WildcardルールのURL
+        await message.channel.send(f"[GBB Wildcardルールはこちら]({url})")
         return
