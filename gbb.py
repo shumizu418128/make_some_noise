@@ -46,7 +46,7 @@ async def send_gbbinfo(message: Message):
 
     # Wildcard結果
     if "wc" in message.content:
-        url = ""  # Wildcard結果のURL
+        url = "https://gbbinfo-jpn.jimdofree.com/20240121-2/"  # Wildcard結果のURL
         await message.channel.send(f"[GBB Wildcard結果はこちら]({url})")
         return
 
