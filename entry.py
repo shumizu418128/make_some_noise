@@ -4,7 +4,7 @@ from datetime import datetime, timedelta, timezone
 from discord import Embed, Interaction, Member, TextStyle
 from discord.ui import Modal, TextInput
 
-from contact import contact_start, debug_log, get_worksheet, search_contact
+from contact import contact_start, debug_log, get_submission_embed, get_worksheet, search_contact
 
 # NOTE: ビト森杯運営機能搭載ファイル
 re_hiragana = re.compile(r'^[ぁ-ゞ　 ー]+$')
@@ -346,6 +346,17 @@ async def entry_2nd(interaction: Interaction, category: str):
         color=blue,
         member=interaction.user
     )
+
+    # 問い合わせスレッドにエントリー情報の送信だけやる
+    # 問い合わせスレッドを取得
+    thread = await search_contact(member=interaction.user)
+
+    # memberインスタンスを再取得 (roleを更新するため)
+    member = interaction.guild.get_member(interaction.user.id)
+
+    # エントリー情報を送信
+    embed = await get_submission_embed(member=member)
+    await thread.send("参加手続きが完了しました。ご参加ありがとうございます。", embed=embed)
     return
 
 
