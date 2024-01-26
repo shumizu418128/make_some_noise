@@ -22,22 +22,6 @@ async def natural_language(message: Message):
         await send_gbbinfo(message)
         return
 
-    # twitterリンクをvxtwitter.comに置換
-    if "twitter.com" in message.content or "x.com" in message.content:
-
-        # twitterリンクを取り出す
-        url_pattern = r'http[s]?://(?:x\.com|twitter\.com)(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))*'
-        urls = re.findall(url_pattern, message.content)
-
-        # リンクがあれば置換
-        if bool(urls):
-            replace_part = r"(http://|https://)(www\.)?(x\.com|twitter\.com)"
-            vxtwitter = r"\1vxtwitter.com"
-
-            for url in urls:
-                replaced_urls = re.sub(replace_part, vxtwitter, url)
-                await message.reply(replaced_urls, mention_author=False)
-
     # 以下おふざけリアクション機能・GBB情報お知らせ機能
     if "草" in message.content:
         emoji = message.guild.get_emoji(990222099744432198)  # 草
