@@ -48,12 +48,16 @@ async def maintenance(client: Client):
     # エントリー名簿取得
     worksheet = await get_worksheet('エントリー名簿')
 
+    # 全登録者のIDと名前を取得（エントリー名簿より）
+    DB_all_ids = await worksheet.col_values(10)
+    DB_all_names = await worksheet.col_values(3)
+
     # ビト森杯出場者の情報
     role_entry_ids = [member.id for member in role_entry.members]
     role_entry_names = [member.display_name for member in role_entry.members]
     worksheet_entry = await get_worksheet('ビト森杯出場者一覧')
     DB_entry_ids = await worksheet_entry.col_values(3)
-    DB_entry_names = await worksheet_entry.col_values(1)
+    DB_entry_names = await worksheet_entry.col_values(1)  # いらない？
 
     # ビト森杯キャンセル待ちの情報
     role_reserve_ids = [member.id for member in role_reserve.members]
@@ -61,14 +65,14 @@ async def maintenance(client: Client):
         member.display_name for member in role_reserve.members]
     worksheet_reserve = await get_worksheet('ビト森杯キャンセル待ち一覧')
     DB_reserve_ids = await worksheet_reserve.col_values(3)
-    DB_reserve_names = await worksheet_reserve.col_values(1)
+    DB_reserve_names = await worksheet_reserve.col_values(1)  # いらない？
 
     # OLEB出場者の情報
     role_OLEB_ids = [member.id for member in role_OLEB.members]
     role_OLEB_names = [member.display_name for member in role_OLEB.members]
     worksheet_OLEB = await get_worksheet('OLEB出場者一覧')
     DB_OLEB_ids = await worksheet_OLEB.col_values(3)
-    DB_OLEB_names = await worksheet_OLEB.col_values(1)
+    DB_OLEB_names = await worksheet_OLEB.col_values(1)  # いらない？
 
     # DBリストの最初の要素はヘッダーなので削除
     DB_entry_ids.pop(0)
@@ -77,6 +81,8 @@ async def maintenance(client: Client):
     DB_reserve_names.pop(0)
     DB_OLEB_ids.pop(0)
     DB_OLEB_names.pop(0)
+    DB_all_ids.pop(0)
+    DB_all_names.pop(0)
 
     # DBリストからNoneと#N/Aを削除、IDはintに変換
     DB_entry_ids = [
@@ -97,12 +103,18 @@ async def maintenance(client: Client):
     DB_OLEB_names = [
         name for name in DB_OLEB_names if name != "" and name != "#N/A"
     ]
+    DB_all_ids = [
+        int(id) for id in DB_all_ids if id != "" and id != "#N/A"
+    ]
+    DB_all_names = [
+        name for name in DB_all_names if name != "" and name != "#N/A"
+    ]
 
     # エラーを保存
     errors = []
 
     # ロール未付与(idベースで確認)
-    no_role_ids = set(DB_entry_ids + DB_reserve_ids + DB_OLEB_ids) - \
+    no_role_ids = set(DB_all_ids) - \
         set(role_entry_ids + role_reserve_ids + role_OLEB_ids)
 
     for id in no_role_ids:
@@ -143,7 +155,7 @@ async def maintenance(client: Client):
 
     # DB未登録(idベースで確認)
     no_DB_ids = set(role_entry_ids + role_reserve_ids + role_OLEB_ids) - \
-        set(DB_entry_ids + DB_reserve_ids + DB_OLEB_ids)
+        set(DB_all_ids)
 
     for id in no_DB_ids:
 
@@ -172,7 +184,7 @@ async def maintenance(client: Client):
             f"- DB未登録(エントリー時刻確認) {member.display_name} {member.id} {status}")
 
     # 名前が一致しているか確認
-    wrong_names = set(DB_entry_names + DB_reserve_names + DB_OLEB_names) - \
+    wrong_names = set(DB_all_names) - \
         set(role_entry_names + role_reserve_names + role_OLEB_names)
 
     for name in wrong_names:
