@@ -63,6 +63,18 @@ class BitomoriInfoSelect(Select):
                 value="replace",
                 emoji="📝"
             ),
+            SelectOption(
+                label="当日の流れ",
+                description="ビト森杯・Online Loopstation Exhibition Battleに参加する方は必ずご確認ください",
+                value="flow",
+                emoji="⚙️"
+            ),
+            SelectOption(
+                label="当日の注意事項",
+                description="ビト森杯・Online Loopstation Exhibition Battleに参加する方は必ずご確認ください",
+                value="note",
+                emoji="⚠️"
+            )
         ]
         super().__init__(
             placeholder="選択してください",

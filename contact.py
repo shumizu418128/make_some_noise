@@ -188,7 +188,7 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
         await contact.set_permissions(member, send_messages_in_threads=True)
 
         def check(m):
-            return m.channel == thread and m.content == "日本語希望"
+            return m.channel == thread and "日本語希望" in m.content
 
         # 日本語希望の場合
         _ = await client.wait_for('message', check=check)

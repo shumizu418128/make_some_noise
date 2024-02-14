@@ -66,7 +66,7 @@ async def natural_language(message: Message):
             return
 
         # GBBに関する言葉が含まれていたら、GBB情報を送信
-        for word in ["gbb", "wildcard", "ワイカ", "ワイルドカード", "結果", "出場", "通過", "チケット", "ルール", "審査員", "ジャッジ", "日本人", "colaps"]:
+        for word in ["gbb", "wildcard", "ワイカ", "ワイルドカード", "結果", "出場", "通過", "チケット", "ルール", "審査員", "ジャッジ", "日本人", "辞退", "キャンセル", "シード"]:
             if word in message.content.lower():
                 if any(["?" in message.content, "？" in message.content]):
                     await message.reply("**GBB最新情報をお探しですか？**\n## ぜひこちらのサイトをご覧ください！\n\n[GBBINFO-JPN 日本非公式情報サイト](https://gbbinfo-jpn.jimdofree.com/)")
