@@ -301,44 +301,40 @@ async def on_message(message: Message):
         return
 
     if message.content == "s.notice":
-        worksheet = await get_worksheet("エントリー名簿")
 
-        # エントリーした人全員のIDを取得
-        member_ids = await worksheet.col_values(10)
+        # ビト森杯エントリー者のIDを取得
+        role_bitomori = message.guild.get_role(
+            1036149651847524393  # ビト森杯
+        )
+        role_exhibition = message.guild.get_role(
+            1171760161778581505  # エキシビション
+        )
+        # 両方のメンバーの集合を取得
+        members = role_bitomori.members | role_exhibition.members
 
-        # 最初はヘッダーなので削除
-        member_ids.pop(0)
+        # エントリー者全員にZoomリンクを通知
+        for member in members:
 
-        # 空白を削除
-        member_ids = [id for id in member_ids if id != ""]
+            # スレッドを取得
+            thread = await search_contact(member)
+            if thread is None:
+                await contact_start(client, member, entry_redirect=True)
 
-        for id in member_ids:
-            member = message.guild.get_member(int(id))
-            role_check = [
-                any([
-                    member.get_role(
-                        1036149651847524393  # ビト森杯
-                    ),
-                    member.get_role(
-                        1172542396597289093  # キャンセル待ち ビト森杯
-                    )
-                ]),
-                member.get_role(
-                    1171760161778581505  # エキシビション
-                )
-            ]
-            if not all(role_check):
-
-                # 片方しかエントリーしていない人にDM
-                thread = await search_contact(member)
-                embed = await get_submission_embed(member)
-
-                await thread.send(
-                    f"{member.mention} さんのエントリー状況は以下の通りです。\
-                        \n\n※ビト森杯・Online Loopstation Exhibition Battle どちらか片方にのみエントリーしている方に対し、確認のため送信しています。\
-                        \n※エントリー状況に問題がない場合、このメッセージは無視してください。",
-                    embed=embed
-                )
+            embed = Embed(
+                title="ビト森杯・Online Loopstation Exhibition Battle 共通Zoomリンク",
+                description="ご参加ありがとうございます\n\n[当日使用するZoomリンクはこちらです](https://zoom.us/j/94689140157?pwd=djFGUUtYRUhvejVoWDd5VWo5VHVCdz09)\
+                    \n\n[ノイズキャンセル設定方法](https://support.zoom.com/hc/ja/article?id=zm_kb&sysparm_article=KB0059995#h_01GZ2K7TDMTK8YCKCTQ4JJ2NWB)\
+                    \n\n[ステレオ設定方法](https://support.zoom.com/hc/ja/article?id=zm_kb&sysparm_article=KB0063294#h_77f0b3d3-cdeb-4b6f-9e47-204b127e2059)"
+            )
+            embed.set_footer(
+                text="※リンクは絶対に他人に教えないでください",
+                icon_url=message.guild.icon.url
+            )
+            await thread.send(
+                f"{member.mention}\n### リンクは絶対に他人に教えないでください",
+                embed=embed
+            )
+            await thread.send("当日の注意事項はこちらをご確認ください。\nhttps://discord.com/channels/864475338340171786/1035965200341401600/1206598450288787466")
         return
 
     # VS参加・退出
