@@ -310,7 +310,7 @@ async def on_message(message: Message):
             1171760161778581505  # エキシビション
         )
         # 両方のメンバーの集合を取得
-        members = role_bitomori.members | role_exhibition.members
+        members = set(role_bitomori.members + role_exhibition.members)
 
         # エントリー者全員にZoomリンクを通知
         for member in members:
