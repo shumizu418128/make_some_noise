@@ -18,8 +18,7 @@ from button_callback import (button_accept_replace, button_call_admin,
                              button_cancel, button_contact, button_entry,
                              button_submission_content)
 from button_view import get_view
-from contact import (contact_start, get_submission_embed, get_worksheet,
-                     search_contact)
+from contact import (contact_start, search_contact)
 from daily_work import daily_work_AM9, daily_work_PM10
 from gbb import countdown
 from keep_alive import keep_alive
