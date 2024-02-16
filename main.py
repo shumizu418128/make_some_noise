@@ -315,10 +315,15 @@ async def on_message(message: Message):
         # エントリー者全員にZoomリンクを通知
         for member in members:
 
+            # 除外メンバー
+            if member.id == 1173621407658299523 or member.id == 1042416484338630686:
+                continue
+
             # スレッドを取得
             thread = await search_contact(member)
             if thread is None:
                 await contact_start(client, member, entry_redirect=True)
+                thread = await search_contact(member)
 
             embed = Embed(
                 title="ビト森杯・Online Loopstation Exhibition Battle 共通Zoomリンク",
