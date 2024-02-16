@@ -324,7 +324,7 @@ async def on_message(message: Message):
                 title="ビト森杯・Online Loopstation Exhibition Battle 共通Zoomリンク",
                 description="ご参加ありがとうございます\n\n[当日使用するZoomリンクはこちらです](https://zoom.us/j/94689140157?pwd=djFGUUtYRUhvejVoWDd5VWo5VHVCdz09)\
                     \n\n[ノイズキャンセル設定方法](https://support.zoom.com/hc/ja/article?id=zm_kb&sysparm_article=KB0059995#h_01GZ2K7TDMTK8YCKCTQ4JJ2NWB)\
-                    \n\n[ステレオ設定方法](https://support.zoom.com/hc/ja/article?id=zm_kb&sysparm_article=KB0063294#h_77f0b3d3-cdeb-4b6f-9e47-204b127e2059)"
+                    \n[ステレオ設定方法](https://support.zoom.com/hc/ja/article?id=zm_kb&sysparm_article=KB0063294#h_77f0b3d3-cdeb-4b6f-9e47-204b127e2059)"
             )
             embed.set_footer(
                 text="※リンクは絶対に他人に教えないでください",
