@@ -19,7 +19,7 @@ from button_callback import (button_accept_replace, button_call_admin,
                              button_submission_content)
 from button_view import get_view
 from contact import (contact_start, search_contact)
-from daily_work import daily_work_AM9, daily_work_PM10
+# from daily_work import daily_work_AM9, daily_work_PM10
 from gbb import countdown
 from keep_alive import keep_alive
 from natural_language import natural_language
