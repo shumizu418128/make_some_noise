@@ -39,8 +39,8 @@ print(
 @client.event
 async def on_ready():  # 起動時に動作する処理
     advertise.start(client)  # バトスタ宣伝、バトスタ開始ボタン
-    daily_work_PM10.start(client)  # ビト森杯定期作業 22:00
-    daily_work_AM9.start(client)  # ビト森杯定期作業 09:00
+    # daily_work_PM10.start(client)  # ビト森杯定期作業 22:00
+    # daily_work_AM9.start(client)  # ビト森杯定期作業 09:00
     return
 
 
