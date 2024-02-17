@@ -14,11 +14,11 @@ from button_admin_callback import (button_admin_cancel,
                                    button_admin_create_thread,
                                    button_admin_entry,
                                    button_admin_submission_content)
-from button_callback import (button_accept_replace, button_call_admin,
-                             button_cancel, button_contact, button_entry,
+from button_callback import (button_call_admin, button_cancel, button_contact,
                              button_submission_content)
+# button_accept_replace, button_entry
 from button_view import get_view
-from contact import (contact_start, search_contact)
+from contact import contact_start, search_contact
 # from daily_work import daily_work_AM9, daily_work_PM10
 from gbb import countdown
 from keep_alive import keep_alive
@@ -124,8 +124,8 @@ async def on_interaction(interaction: Interaction):
     ##############################
 
     # ビト森杯エントリー
-    if custom_id.startswith("button_entry"):
-        await button_entry(interaction)
+    # if custom_id.startswith("button_entry"):
+    #     await button_entry(interaction)
 
     # お問い合わせ
     if custom_id == "button_contact":
@@ -144,8 +144,8 @@ async def on_interaction(interaction: Interaction):
         await button_submission_content(interaction)
 
     # 繰り上げエントリー
-    if custom_id == "button_accept_replace":
-        await button_accept_replace(interaction)
+    # if custom_id == "button_accept_replace":
+    #     await button_accept_replace(interaction)
 
 
 @client.event
