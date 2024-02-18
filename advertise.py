@@ -18,9 +18,6 @@ PM9 = time(21, 0, tzinfo=JST)
 async def advertise(client: Client):
     channel = client.get_channel(864475338340171791)  # 全体チャット
 
-    view = await get_view(entry=True, contact=True)
-    await channel.send("第3回ビト森杯(Loop)\nOnline Loopstation Exhibition Battle", view=view)
-
     # 次のイベント
     next_event = await search_next_event(channel.guild.scheduled_events)
     if bool(next_event):

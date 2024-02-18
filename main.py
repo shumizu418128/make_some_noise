@@ -44,7 +44,7 @@ async def on_ready():  # 起動時に動作する処理
     return
 
 
-@client.event
+"""@client.event
 async def on_interaction(interaction: Interaction):
     bot_channel = interaction.guild.get_channel(
         897784178958008322  # bot用チャット
@@ -124,8 +124,8 @@ async def on_interaction(interaction: Interaction):
     ##############################
 
     # ビト森杯エントリー
-    # if custom_id.startswith("button_entry"):
-    #     await button_entry(interaction)
+    if custom_id.startswith("button_entry"):
+        await button_entry(interaction)
 
     # お問い合わせ
     if custom_id == "button_contact":
@@ -144,8 +144,9 @@ async def on_interaction(interaction: Interaction):
         await button_submission_content(interaction)
 
     # 繰り上げエントリー
-    # if custom_id == "button_accept_replace":
-    #     await button_accept_replace(interaction)
+    if custom_id == "button_accept_replace":
+        await button_accept_replace(interaction)
+"""
 
 
 @client.event
@@ -212,9 +213,6 @@ async def on_member_join(member: Member):
     if bool(next_event):
         await sleep(1)
         await channel.send(next_event.url)
-
-    view = await get_view(entry=True, contact=True)
-    await channel.send("第3回ビト森杯(Loop)・Online Loopstation Exhibition Battle", view=view)
 
 
 @client.event
