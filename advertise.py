@@ -5,7 +5,7 @@ from datetime import time, timedelta, timezone  # , datetime
 from discord import Client, File  # , Embed
 from discord.ext import tasks
 
-from button_view import get_view
+# from button_view import get_view
 # from battle_stadium import start
 from search_next_event import search_next_event
 
