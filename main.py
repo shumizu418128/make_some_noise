@@ -4,22 +4,24 @@ from asyncio import sleep
 from datetime import datetime, timedelta, timezone
 
 import discord
-from discord import (ChannelType, Client, Embed, EventStatus, File, Intents,
-                     Interaction, Member, Message, PrivacyLevel, VoiceState)
+from discord import (Client, Embed, EventStatus, File, Intents, Member,
+                     Message, PrivacyLevel, VoiceState)
 from discord.errors import ClientException
 
 from advertise import advertise
 from battle_stadium import battle, start
+
+"""
 from button_admin_callback import (button_admin_cancel,
                                    button_admin_create_thread,
                                    button_admin_entry,
                                    button_admin_submission_content)
 from button_callback import (button_call_admin, button_cancel, button_contact,
-                             button_submission_content)
-# button_accept_replace, button_entry
+                             button_submission_content, button_accept_replace, button_entry)
 from button_view import get_view
 from contact import contact_start, search_contact
-# from daily_work import daily_work_AM9, daily_work_PM10
+from daily_work import daily_work_AM9, daily_work_PM10
+"""
 from gbb import countdown
 from keep_alive import keep_alive
 from natural_language import natural_language
@@ -224,119 +226,10 @@ async def on_message(message: Message):
     # s.から始まらない場合(コマンドではない場合)
     if not message.content.startswith("s."):
         await natural_language(message)
-        if message.channel.id == 1035965200341401600:  # ビト森杯 お知らせ
-            view = await get_view(entry=True, contact=True)
-            await message.channel.send(view=view)
-            view = await get_view(info=True)
-            await message.channel.send("以下のセレクトメニューからも詳細情報を確認できます。", view=view)
         return
 
     if message.content == "s.test":
         await message.channel.send(f"{str(client.user)}\n{discord.__version__}")
-        return
-
-    if message.content == "s.admin":
-        await message.delete(delay=1)
-        view = await get_view(admin=True)
-        await message.channel.send(f"{message.author.mention}\n運営専用ボタン ※1分後に削除されます", view=view, delete_after=60)
-        return
-
-    if message.content == "s.entry":
-        await message.delete(delay=1)
-        view = await get_view(entry=True, contact=True)
-        await message.channel.send(view=view)
-        view = await get_view(info=True)
-        await message.channel.send("以下のセレクトメニューからも詳細情報を確認できます。", view=view)
-        return
-
-    if message.content == "s.oleb":
-        await message.delete(delay=1)
-        role_exhibition = message.guild.get_role(
-            1171760161778581505  # エキシビション
-        )
-        oleb_member_names = [
-            member.display_name for member in role_exhibition.members
-        ]
-        if len(oleb_member_names) < 2:
-            await message.channel.send("参加者数が不足しています。")
-            return
-
-        random.shuffle(oleb_member_names)
-        embed = Embed(
-            title="Online Loopstation Exhibition Battle 対戦表",
-            description="対戦表"
-        )
-        for i in range(0, len(oleb_member_names), 2):
-            embed.add_field(
-                name=f"{i//2+1}回戦",
-                value=f"{oleb_member_names[i]} vs {oleb_member_names[i+1]}"
-            )
-        if len(oleb_member_names) % 2 == 1:
-            embed.description += f"\n\n参加者{len(oleb_member_names)}名\nbye: {oleb_member_names[-1]}"
-
-        await message.channel.send(embed=embed)
-        return
-
-    if message.content == "s.reset":
-        await message.delete(delay=1)
-        if message.channel.type != ChannelType.private_thread:
-            return
-
-        member_id = message.channel.name.split("_")[0]
-        member = message.guild.get_member(int(member_id))
-        await contact_start(client, member)
-        return
-
-    if message.content == "s.contact":
-        role = message.guild.get_role(
-            1036149651847524393  # ビト森杯
-        )
-        for member in role.members:
-            thread = await search_contact(member)
-            if thread is None:
-                await contact_start(client, member, entry_redirect=True)
-        return
-
-    if message.content == "s.notice":
-
-        # ビト森杯エントリー者のIDを取得
-        role_bitomori = message.guild.get_role(
-            1036149651847524393  # ビト森杯
-        )
-        role_exhibition = message.guild.get_role(
-            1171760161778581505  # エキシビション
-        )
-        # 両方のメンバーの集合を取得
-        members = set(role_bitomori.members + role_exhibition.members)
-
-        # エントリー者全員にZoomリンクを通知
-        for member in members:
-
-            # 除外メンバー
-            if member.id == 1173621407658299523 or member.id == 1042416484338630686:
-                continue
-
-            # スレッドを取得
-            thread = await search_contact(member)
-            if thread is None:
-                await contact_start(client, member, entry_redirect=True)
-                thread = await search_contact(member)
-
-            embed = Embed(
-                title="ビト森杯・Online Loopstation Exhibition Battle 共通Zoomリンク",
-                description="ご参加ありがとうございます\n\n[当日使用するZoomリンクはこちらです](https://zoom.us/j/94689140157?pwd=djFGUUtYRUhvejVoWDd5VWo5VHVCdz09)\
-                    \n\n[ノイズキャンセル設定方法](https://support.zoom.com/hc/ja/article?id=zm_kb&sysparm_article=KB0059995#h_01GZ2K7TDMTK8YCKCTQ4JJ2NWB)\
-                    \n[ステレオ設定方法](https://support.zoom.com/hc/ja/article?id=zm_kb&sysparm_article=KB0063294#h_77f0b3d3-cdeb-4b6f-9e47-204b127e2059)"
-            )
-            embed.set_footer(
-                text="※リンクは絶対に他人に教えないでください",
-                icon_url=message.guild.icon.url
-            )
-            await thread.send(
-                f"{member.mention}\n### リンクは絶対に他人に教えないでください",
-                embed=embed
-            )
-            await thread.send("当日の注意事項はこちらをご確認ください。\nhttps://discord.com/channels/864475338340171786/1035965200341401600/1206598450288787466")
         return
 
     # VS参加・退出
