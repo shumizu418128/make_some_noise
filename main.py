@@ -232,6 +232,13 @@ async def on_message(message: Message):
         await message.channel.send(f"{str(client.user)}\n{discord.__version__}")
         return
 
+    # vcのroleメンバーを削除
+    if message.content == "s.clear":
+        vc_role = message.guild.get_role(935073171462307881)  # in a vc
+        for member in vc_role.members:
+            await member.remove_roles(vc_role)
+        return
+
     # VS参加・退出
     if message.content == "s.join":
         await message.delete(delay=1)
