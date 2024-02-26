@@ -5,7 +5,7 @@ from discord import Embed, Interaction
 import database
 from contact import (contact_start, debug_log, get_submission_embed,
                      search_contact)
-from entry import Modal_entry, entry_2nd, entry_cancel
+from entry import Modal_entry, entry_cancel
 from database import get_worksheet
 
 # NOTE: ビト森杯運営機能搭載ファイル
@@ -94,11 +94,11 @@ async def button_entry(interaction: Interaction):
 
     # 以下モーダル送信しないのでdeferをかける
     await interaction.response.defer(ephemeral=True, thinking=True)
-
+    """
     # 日本からの、2回目のエントリーの場合
     if locale == "ja":
         await entry_2nd(interaction, category)
-        return
+        return"""
 
     # 海外からのエントリー
     thread = await search_contact(member=interaction.user, create=True, locale=str(interaction.locale))
