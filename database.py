@@ -89,6 +89,9 @@ EMOJI_ORAS = 889920546408661032
 # helium
 EMOJI_HELIUM = 890506350868721664
 
+# loop_button
+EMOJI_LOOP_BUTTON = 885778461879320586
+
 ######################
 # Google Sheets
 ######################
