@@ -1,3 +1,8 @@
+import os
+
+import gspread_asyncio
+from google.oauth2.service_account import Credentials
+
 # 定数一覧
 
 ######################
@@ -84,15 +89,44 @@ EMOJI_ORAS = 889920546408661032
 # helium
 EMOJI_HELIUM = 890506350868721664
 
+######################
+# Google Sheets
+######################
+
+"""
+row = 縦 1, 2, 3, ...
+col = 横 A, B, C, ...
+"""
+
+# ビト森杯 LOOP部門
+SHEET_LOOP = '1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw'
 
 
+def get_credits():
+    credential = {
+        "type": "service_account",
+        "project_id": os.environ['SHEET_PROJECT_ID'],
+        "private_key_id": os.environ['SHEET_PRIVATE_KEY_ID'],
+        "private_key": os.environ['SHEET_PRIVATE_KEY'],
+        "client_email": os.environ['SHEET_CLIENT_EMAIL'],
+        "client_id": os.environ['SHEET_CLIENT_ID'],
+        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+        "token_uri": "https://oauth2.googleapis.com/token",
+        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+        "client_x509_cert_url": os.environ['SHEET_CLIENT_X509_CERT_URL']
+    }
+    return Credentials.from_service_account_info(
+        credential,
+        scopes=['https://spreadsheets.google.com/feeds',
+                'https://www.googleapis.com/auth/drive',
+                'https://www.googleapis.com/auth/spreadsheets'])
 
 
+async def get_worksheet(sheet_key: str, name: str):
+    gc = gspread_asyncio.AsyncioGspreadClientManager(get_credits)
+    agc = await gc.authorize()
+    workbook = await agc.open_by_key(sheet_key)
+    worksheet = await workbook.worksheet(name)
 
-
-
-
-
-
-
+    return worksheet
 

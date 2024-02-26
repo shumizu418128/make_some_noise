@@ -1,9 +1,6 @@
-import os
 from datetime import datetime, timedelta, timezone
 
-import gspread_asyncio
 from discord import Client, Embed, File, Member
-from google.oauth2.service_account import Credentials
 
 import database
 from button_view import get_view
@@ -14,12 +11,6 @@ yellow = 0xffff00
 red = 0xff0000
 blue = 0x00bfff
 JST = timezone(timedelta(hours=9))
-
-"""
-Google spreadsheet
-row = 縦 1, 2, 3, ...
-col = 横 A, B, C, ...
-"""
 
 
 async def search_contact(member: Member, create: bool = False, locale: str = "ja"):
@@ -209,39 +200,6 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
         return
 
 
-def get_credits():
-    credential = {
-        "type": "service_account",
-        "project_id": os.environ['SHEET_PROJECT_ID'],
-        "private_key_id": os.environ['SHEET_PRIVATE_KEY_ID'],
-        "private_key": os.environ['SHEET_PRIVATE_KEY'],
-        "client_email": os.environ['SHEET_CLIENT_EMAIL'],
-        "client_id": os.environ['SHEET_CLIENT_ID'],
-        "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-        "token_uri": "https://oauth2.googleapis.com/token",
-        "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-        "client_x509_cert_url": os.environ['SHEET_CLIENT_X509_CERT_URL']
-    }
-
-    return Credentials.from_service_account_info(
-        credential,
-        scopes=['https://spreadsheets.google.com/feeds',
-                'https://www.googleapis.com/auth/drive',
-                'https://www.googleapis.com/auth/spreadsheets'])
-
-
-async def get_worksheet(name: str):
-    # https://docs.google.com/spreadsheets/d/1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw/edit#gid=0
-    gc = gspread_asyncio.AsyncioGspreadClientManager(get_credits)
-    agc = await gc.authorize()
-    workbook = await agc.open_by_key(
-        '1Bv9J7OohQHKI2qkYBMnIFNn7MHla8KyKTYTfghcmIRw'
-    )
-    worksheet = await workbook.worksheet(name)
-
-    return worksheet
-
-
 async def get_submission_embed(member: Member):
     role_check = [
         member.get_role(database.ROLE_LOOP),
@@ -249,7 +207,7 @@ async def get_submission_embed(member: Member):
         member.get_role(database.ROLE_OLEB)
     ]
     # Google spreadsheet worksheet読み込み
-    worksheet = await get_worksheet("エントリー名簿")
+    worksheet = await database.get_worksheet("エントリー名簿")
 
     # 異常なロール付与の場合
     if role_check[0] and role_check[1]:

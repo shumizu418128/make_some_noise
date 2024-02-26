@@ -4,8 +4,9 @@ from discord import Embed, Interaction
 
 import database
 from contact import (contact_start, debug_log, get_submission_embed,
-                     get_worksheet, search_contact)
-from entry import entry_2nd, entry_cancel, modal_entry
+                     search_contact)
+from entry import Modal_entry, entry_2nd, entry_cancel
+from database import get_worksheet
 
 # NOTE: ビト森杯運営機能搭載ファイル
 JST = timezone(timedelta(hours=9))
@@ -13,12 +14,6 @@ green = 0x00ff00
 yellow = 0xffff00
 red = 0xff0000
 blue = 0x00bfff
-
-"""
-Google spreadsheet
-row = 縦 1, 2, 3, ...
-col = 横 A, B, C, ...
-"""
 
 
 # 両カテゴリーのエントリーを受け付ける
@@ -94,7 +89,7 @@ async def button_entry(interaction: Interaction):
 
         # 1回目のエントリーの場合
         if not any(role_check):
-            await interaction.response.send_modal(modal_entry(interaction.user.display_name, category))
+            await interaction.response.send_modal(Modal_entry(interaction.user.display_name, category))
             return
 
     # 以下モーダル送信しないのでdeferをかける

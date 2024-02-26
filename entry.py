@@ -5,8 +5,7 @@ from discord import Embed, Interaction, Member, TextStyle
 from discord.ui import Modal, TextInput
 
 import database
-from contact import (contact_start, debug_log, get_submission_embed,
-                     get_worksheet, search_contact)
+from contact import contact_start, debug_log, search_contact
 
 # NOTE: ビト森杯運営機能搭載ファイル
 re_hiragana = re.compile(r'^[ぁ-ゞ　 ー]+$')
@@ -16,14 +15,8 @@ yellow = 0xffff00
 red = 0xff0000
 blue = 0x00bfff
 
-"""
-Google spreadsheet
-row = 縦 1, 2, 3, ...
-col = 横 A, B, C, ...
-"""
 
-
-class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
+class Modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
     def __init__(self, display_name: str, category: str):
         super().__init__(
             title=f"エントリー受付 {category}", custom_id=f"modal_entry_{category}")
@@ -78,7 +71,7 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
             interaction.user.get_role(database.ROLE_OLEB)
         ]
         # Google spreadsheet worksheet読み込み
-        worksheet = await get_worksheet('エントリー名簿')
+        worksheet = await database.get_worksheet('エントリー名簿')
 
         category = self.custom_id.split("_")[2]  # "bitomori" or "exhibition"
 
@@ -213,7 +206,7 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
 
         # bot用チャットへ通知
         await debug_log(
-            function_name="modal_entry",
+            function_name="Modal_entry",
             description=f"エントリー完了 {category}",
             color=blue,
             member=member
@@ -239,7 +232,7 @@ async def entry_cancel(member: Member, category: str):
         member.get_role(database.ROLE_OLEB)
     ]
     # Google spreadsheet worksheet読み込み
-    worksheet = await get_worksheet('エントリー名簿')
+    worksheet = await database.get_worksheet('エントリー名簿')
 
     # 問い合わせスレッドを取得
     thread = await search_contact(member=member)

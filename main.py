@@ -1,11 +1,9 @@
 import os
-import random
 from asyncio import sleep
 from datetime import datetime, timedelta, timezone
 
 import discord
-from discord import (Client, Embed, EventStatus, File, Intents, Member,
-                     Message, PrivacyLevel, VoiceState)
+from discord import Client, Embed, Intents, Member, Message, VoiceState
 from discord.errors import ClientException
 
 from advertise import advertise

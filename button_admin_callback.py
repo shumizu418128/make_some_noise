@@ -5,8 +5,9 @@ from discord import ChannelType, Embed, Interaction
 
 import database
 from contact import (contact_start, debug_log, get_submission_embed,
-                     get_worksheet, search_contact)
+                     search_contact)
 from entry import entry_cancel
+from database import get_worksheet
 
 # NOTE: ビト森杯運営機能搭載ファイル
 JST = timezone(timedelta(hours=9))
