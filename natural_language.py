@@ -3,6 +3,7 @@ import re
 
 from discord import ChannelType, Embed, Message
 
+import database
 from gbb import countdown, send_gbbinfo
 
 
@@ -24,7 +25,7 @@ async def natural_language(message: Message):
 
     # 以下おふざけリアクション機能・GBB情報お知らせ機能
     if "草" in message.content:
-        emoji = message.guild.get_emoji(990222099744432198)  # 草
+        emoji = message.guild.get_emoji(database.EMOJI_KUSA)
         await message.add_reaction(emoji)
 
     for word in ["💜❤💙💚", "brez", "ぶれず", "ブレズ", "愛", "sar", "oras", "かわいい", "カワイイ", "好", "impe", "いんぴ", "インピ", "ベッドタイムキャンディ"]:
@@ -47,16 +48,16 @@ async def natural_language(message: Message):
         emoji = random.choice(message.guild.emojis)
 
         # Yuiにはbrezを
-        if message.author.id in [891228765022195723, 886518627023613962]:
-            emoji = message.guild.get_emoji(889877286055198731)  # brez
+        if message.author.id in [database.YUI_1, database.YUI_2]:
+            emoji = message.guild.get_emoji(database.EMOJI_BREZ)
 
         # 湯にはsaroを
-        if message.author.id in [887328590407032852, 870434043810971659]:
-            emoji = message.guild.get_emoji(889920546408661032)  # oras
+        if message.author.id in [database.NURUYU_1, database.NURUYU_2]:
+            emoji = message.guild.get_emoji(database.EMOJI_ORAS)
 
         # maycoにはheliumを
-        if message.author.id in [389427133099016193, 735099594010132480, 990630026275860540]:
-            emoji = message.guild.get_emoji(890506350868721664)  # helium
+        if message.author.id in [database.MAYCO_1, database.MAYCO_2, database.MAYCO_3]:
+            emoji = message.guild.get_emoji(database.EMOJI_HELIUM)
 
         await message.add_reaction(emoji)
 

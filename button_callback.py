@@ -2,6 +2,7 @@ from datetime import datetime, timedelta, timezone
 
 from discord import Embed, Interaction
 
+import database
 from contact import (contact_start, debug_log, get_submission_embed,
                      get_worksheet, search_contact)
 from entry import entry_2nd, entry_cancel, modal_entry
@@ -36,16 +37,10 @@ async def button_entry(interaction: Interaction):
     # ビト森杯はanyでキャンセル待ちも含む
     role_check = [
         any([
-            interaction.user.get_role(
-                1036149651847524393  # ビト森杯
-            ),
-            interaction.user.get_role(
-                1172542396597289093  # キャンセル待ち ビト森杯
-            )
+            interaction.user.get_role(database.ROLE_LOOP),
+            interaction.user.get_role(database.ROLE_LOOP_RESERVE)
         ]),
-        interaction.user.get_role(
-            1171760161778581505  # エキシビション
-        )
+        interaction.user.get_role(database.ROLE_OLEB)
     ]
     # エントリーカテゴリー取得
     category = interaction.data["custom_id"].replace("button_entry_", "")
@@ -58,8 +53,8 @@ async def button_entry(interaction: Interaction):
     if bool(thread):
         locale = thread.name.split("_")[1]
 
-    # エントリー開始時刻確認（tari_2は除外）tari_2 = 518041950146920449
-    if dt_now < dt_entry_start and interaction.user.id != 518041950146920449:
+    # エントリー開始時刻確認（tari_2は除外）
+    if dt_now < dt_entry_start and interaction.user.id != database.TARI_2:
         await interaction.response.send_message(
             f"{interaction.user.mention}\nビト森杯(Loop)・Online Loopstation Exhibition Battle\nエントリー受付開始は1月6日 22:00です。",
             ephemeral=True
@@ -173,12 +168,8 @@ async def button_contact(interaction: Interaction):
 async def button_call_admin(interaction: Interaction):
     await interaction.response.defer(thinking=True)
 
-    contact = interaction.client.get_channel(
-        1035964918198960128  # 問い合わせ
-    )
-    admin = interaction.guild.get_role(
-        904368977092964352  # ビト森杯運営
-    )
+    contact = interaction.client.get_channel(database.CHANNEL_CONTACT)
+    admin = interaction.guild.get_role(database.ROLE_ADMIN)
     # しゃべってよし
     await contact.set_permissions(interaction.user, send_messages_in_threads=True)
 
@@ -217,16 +208,10 @@ async def button_cancel(interaction: Interaction):
 
     role_check = [
         any([
-            interaction.user.get_role(
-                1036149651847524393  # ビト森杯
-            ),
-            interaction.user.get_role(
-                1172542396597289093  # キャンセル待ち ビト森杯
-            )
+            interaction.user.get_role(database.ROLE_LOOP),
+            interaction.user.get_role(database.ROLE_LOOP_RESERVE)
         ]),
-        interaction.user.get_role(
-            1171760161778581505  # エキシビション
-        )
+        interaction.user.get_role(database.ROLE_OLEB)
     ]
     emoji = ""
 
@@ -348,15 +333,10 @@ async def button_submission_content(interaction: Interaction):
 
 async def button_accept_replace(interaction: Interaction):
     await interaction.response.defer(thinking=True)
-    role = interaction.guild.get_role(
-        1036149651847524393  # ビト森杯
-    )
-    role_reserve = interaction.guild.get_role(
-        1172542396597289093  # キャンセル待ち ビト森杯
-    )
-    contact = interaction.guild.get_channel(
-        1035964918198960128  # 問い合わせ
-    )
+    role = interaction.guild.get_role(database.ROLE_LOOP)
+    role_reserve = interaction.guild.get_role(database.ROLE_LOOP_RESERVE)
+    contact = interaction.guild.get_channel(database.CHANNEL_CONTACT)
+
     # Google spreadsheet worksheet読み込み
     worksheet = await get_worksheet('エントリー名簿')
 

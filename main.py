@@ -22,6 +22,7 @@ from button_view import get_view
 from contact import contact_start, search_contact
 from daily_work import daily_work_AM9, daily_work_PM10
 """
+import database
 from gbb import countdown
 from keep_alive import keep_alive
 from natural_language import natural_language
@@ -48,9 +49,7 @@ async def on_ready():  # 起動時に動作する処理
 
 """@client.event
 async def on_interaction(interaction: Interaction):
-    bot_channel = interaction.guild.get_channel(
-        897784178958008322  # bot用チャット
-    )
+    bot_channel = interaction.guild.get_channel(database.CHANNEL_BOT)
     custom_id = interaction.data["custom_id"]
 
     # セレクトメニューの場合
@@ -101,7 +100,7 @@ async def on_interaction(interaction: Interaction):
     # 運営専用ボタン
     ##############################
 
-    role_check = interaction.user.get_role(904368977092964352)  # ビト森杯運営
+    role_check = interaction.user.get_role(database.ROLE_ADMIN)
     if bool(role_check):
 
         # ビト森杯エントリー
@@ -153,10 +152,10 @@ async def on_interaction(interaction: Interaction):
 
 @client.event
 async def on_voice_state_update(member: Member, before: VoiceState, after: VoiceState):
-    if member.id == 412082841829113877 or member.bot:  # tari3210
+    if member.id == database.TARI3210 or member.bot:
         return
     try:
-        vc_role = member.guild.get_role(935073171462307881)  # in a vc
+        vc_role = member.guild.get_role(database.ROLE_VC)
 
         # チャンネルから退出
         if bool(before.channel) and after.channel is None:
@@ -176,7 +175,7 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
                 text="We love beatbox, We are beatbox family\nあつまれ！ビートボックスの森",
                 icon_url=member.guild.icon.url
             )
-            if after.channel.id == 886099822770290748:  # リアタイ部屋
+            if after.channel.id == database.VC_REALTIME:  # リアタイ部屋
                 content = f"{member.mention} チャットはこちら chat is here"
 
                 # マイクオンの場合、通知する
@@ -199,7 +198,7 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
 
 @client.event
 async def on_member_join(member: Member):
-    channel = client.get_channel(864475338340171791)  # 全体チャット
+    channel = client.get_channel(database.CHANNEL_GENERAL)
     await sleep(2)
     embed_discord = Embed(
         title="Discordの使い方", description="https://note.com/me1o_crew/n/nf2971acd1f1a")
@@ -220,8 +219,8 @@ async def on_member_join(member: Member):
 @client.event
 async def on_message(message: Message):
     # バトスタ対戦表、バトスタチャット
-    if message.author.bot or message.content.startswith("l.") or message.channel.id in [930767329137143839, 930839018671837184]:
-        return
+    """if message.author.bot or message.content.startswith("l.") or message.channel.id in [930767329137143839, 930839018671837184]:
+        return"""
 
     # s.から始まらない場合(コマンドではない場合)
     if not message.content.startswith("s."):
@@ -234,7 +233,7 @@ async def on_message(message: Message):
 
     # vcのroleメンバーを削除
     if message.content == "s.clear":
-        vc_role = message.guild.get_role(935073171462307881)  # in a vc
+        vc_role = message.guild.get_role(database.ROLE_VC)
         for member in vc_role.members:
             await member.remove_roles(vc_role)
         return
@@ -274,7 +273,7 @@ async def on_message(message: Message):
     if message.content == "s.start":
         await start(client)
         return
-
+"""
     if message.content == "s.end":
         await message.delete(delay=1)
         pairing_channel = client.get_channel(930767329137143839)  # 対戦表
@@ -318,7 +317,7 @@ async def on_message(message: Message):
         await announce.send(event.url)
         await general.send(file=File(f"battle_stadium_{random.randint(1, 3)}.gif"))
         await general.send(event.url)
-        return
+        return"""
 
 keep_alive()
 try:

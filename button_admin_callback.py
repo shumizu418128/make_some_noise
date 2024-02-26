@@ -3,6 +3,7 @@ from datetime import datetime, timedelta, timezone
 
 from discord import ChannelType, Embed, Interaction
 
+import database
 from contact import (contact_start, debug_log, get_submission_embed,
                      get_worksheet, search_contact)
 from entry import entry_cancel
@@ -20,17 +21,18 @@ async def button_admin_entry(interaction: Interaction):
     # 応答タイミングが状況に応じて違うので、ここで応答を済ませる
     await interaction.response.send_message(f"{interaction.user.mention}\n処理中...", delete_after=2)
 
-    role = interaction.guild.get_role(
-        1036149651847524393  # ビト森杯
-    )
-    role_reserve = interaction.guild.get_role(
-        1172542396597289093  # キャンセル待ち ビト森杯
-    )
-    role_exhibition = interaction.guild.get_role(
-        1171760161778581505  # エキシビション
-    )
+    # ビト森杯
+    role = interaction.guild.get_role(database.ROLE_LOOP)
+
+    # ビト森杯キャンセル待ち
+    role_reserve = interaction.guild.get_role(database.ROLE_LOOP_RESERVE)
+
+    # OLEB
+    role_exhibition = interaction.guild.get_role(database.ROLE_OLEB)
+
+    # エントリーするカテゴリー "bitomori" or "exhibition"
     category = interaction.data["custom_id"].replace(
-        "button_admin_entry_", "").replace("button_entry_", "")  # "bitomori" or "exhibition"
+        "button_admin_entry_", "").replace("button_entry_", "")
 
     # エントリーの対象者を取得
     # thread内なら名前から、それ以外なら入力させる
@@ -63,16 +65,10 @@ async def button_admin_entry(interaction: Interaction):
     # ビト森杯エントリー済みか確認
     role_check = [
         any([
-            member.get_role(
-                1036149651847524393  # ビト森杯
-            ),
-            member.get_role(
-                1172542396597289093  # キャンセル待ち ビト森杯
-            )
+            member.get_role(database.ROLE_LOOP),
+            member.get_role(database.ROLE_LOOP_RESERVE)
         ]),
-        member.get_role(
-            1171760161778581505  # エキシビション
-        )
+        member.get_role(database.ROLE_OLEB)
     ]
     # Google spreadsheet worksheet読み込み
     worksheet = await get_worksheet('エントリー名簿')
@@ -249,16 +245,10 @@ async def button_admin_cancel(interaction: Interaction):
 
     role_check = [
         any([
-            member.get_role(
-                1036149651847524393  # ビト森杯
-            ),
-            member.get_role(
-                1172542396597289093  # キャンセル待ち ビト森杯
-            )
+            member.get_role(database.ROLE_LOOP),
+            member.get_role(database.ROLE_LOOP_RESERVE)
         ]),
-        member.get_role(
-            1171760161778581505  # エキシビション
-        )
+        member.get_role(database.ROLE_OLEB)
     ]
     # どのロールも持っていない場合
     if any(role_check) is False:

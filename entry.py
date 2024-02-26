@@ -4,7 +4,9 @@ from datetime import datetime, timedelta, timezone
 from discord import Embed, Interaction, Member, TextStyle
 from discord.ui import Modal, TextInput
 
-from contact import contact_start, debug_log, get_submission_embed, get_worksheet, search_contact
+import database
+from contact import (contact_start, debug_log, get_submission_embed,
+                     get_worksheet, search_contact)
 
 # NOTE: ビト森杯運営機能搭載ファイル
 re_hiragana = re.compile(r'^[ぁ-ゞ　 ー]+$')
@@ -55,32 +57,25 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
     async def on_submit(self, interaction: Interaction):
         await interaction.response.defer(ephemeral=True, thinking=True)
 
-        role = interaction.guild.get_role(
-            1036149651847524393  # ビト森杯
-        )
-        role_reserve = interaction.guild.get_role(
-            1172542396597289093  # キャンセル待ち ビト森杯
-        )
-        role_exhibition = interaction.guild.get_role(
-            1171760161778581505  # エキシビション
-        )
-        tari3210 = interaction.guild.get_member(
-            412082841829113877
-        )
+        # ビト森杯
+        role = interaction.guild.get_role(database.ROLE_LOOP)
+
+        # キャンセル待ち ビト森杯
+        role_reserve = interaction.guild.get_role(database.ROLE_LOOP_RESERVE)
+
+        # エキシビション
+        role_exhibition = interaction.guild.get_role(database.ROLE_OLEB)
+
+        tari3210 = interaction.guild.get_member(database.TARI3210)
+
         # ビト森杯エントリー済みかどうか確認
         # ビト森杯はanyでキャンセル待ちも含む
         role_check = [
             any([
-                interaction.user.get_role(
-                    1036149651847524393  # ビト森杯
-                ),
-                interaction.user.get_role(
-                    1172542396597289093  # キャンセル待ち ビト森杯
-                )
+                interaction.user.get_role(database.ROLE_LOOP),
+                interaction.user.get_role(database.ROLE_LOOP_RESERVE)
             ]),
-            interaction.user.get_role(
-                1171760161778581505  # エキシビション
-            )
+            interaction.user.get_role(database.ROLE_OLEB)
         ]
         # Google spreadsheet worksheet読み込み
         worksheet = await get_worksheet('エントリー名簿')
@@ -228,158 +223,20 @@ class modal_entry(Modal):  # self = Modal, category = "bitomori" or "exhibition"
         return
 
 
-async def entry_2nd(interaction: Interaction, category: str):
-    # button_entryにおいてdefer使用済み
-
-    role = interaction.guild.get_role(
-        1036149651847524393  # ビト森杯
-    )
-    role_reserve = interaction.guild.get_role(
-        1172542396597289093  # キャンセル待ち ビト森杯
-    )
-    role_exhibition = interaction.guild.get_role(
-        1171760161778581505  # エキシビション
-    )
-    bitomori_entry_status = ""
-
-    # エントリー数が上限に達している or キャンセル待ちリストに人がいる場合
-    if any([len(role.members) >= 16, len(role_reserve.members) > 0]) and category == "bitomori":
-        await interaction.user.add_roles(role_reserve)
-        wait = len(role_reserve.members) + 1
-        embed = Embed(
-            title="キャンセル待ち登録",
-            description=f"参加者数が上限に達しているため、キャンセル待ちリストに登録しました。\
-                \nキャンセル待ち順番: {wait}\
-                \n\n※Online Loopstation Exhibition Battleにエントリーした際の情報をそのまま登録しました。\
-                \nエントリー情報が反映されるまで、約20秒かかります。",
-            color=blue
-        )
-        bitomori_entry_status = "キャンセル待ち"
-
-    # ビト森杯エントリー受付完了通知（キャンセル待ちなしで、正常にエントリー完了）
-    elif category == "bitomori":
-        await interaction.user.add_roles(role)
-        embed = Embed(
-            title="エントリー完了",
-            description="エントリー受付完了しました。ビト森杯ご参加ありがとうございます。\
-                \n\n※Online Loopstation Exhibition Battleにエントリーした際の情報をそのまま登録しました。\
-                \nエントリー情報が反映されるまで、約20秒かかります。",
-            color=green
-        )
-        bitomori_entry_status = "出場"
-
-    # エキシビションエントリー受付完了通知
-    elif category == "exhibition":
-        await interaction.user.add_roles(role_exhibition)
-        embed = Embed(
-            title="エントリー完了",
-            description="エントリー受付完了しました。Online Loopstation Exhibition Battle ご参加ありがとうございます。\
-                \n\n※ビト森杯にエントリーした際の情報をそのまま登録しました。\
-                \nエントリー情報が反映されるまで、約10秒かかります。",
-            color=green
-        )
-
-    embed.set_author(
-        name=interaction.user.display_name,
-        icon_url=interaction.user.display_avatar.url
-    )
-    await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
-
-    # DB登録処理
-    worksheet = await get_worksheet('エントリー名簿')
-    cell_id = await worksheet.find(f'{interaction.user.id}')
-
-    # OLEBへのエントリーなら、DBに "参加" と追記するだけ
-    if category == "exhibition":
-        await worksheet.update_cell(cell_id.row, 6, "参加")
-
-        # 一応受付時刻は更新する
-        await worksheet.update_cell(cell_id.row, 9, str(datetime.now(JST).strftime("%Y-%m-%d %H:%M:%S")))
-
-    # ビト森杯へのエントリーなら、一旦新規行に登録した後、もとの行を削除する
-    if category == "bitomori":
-
-        # DB新規登録
-        # エントリー数を更新
-        num_entries = await worksheet.cell(row=3, col=1)
-        num_entries.value = int(num_entries.value) + 1
-        await worksheet.update_cell(row=3, col=1, value=str(num_entries.value))
-
-        # もとの行のセルを取得
-        cell_name = await worksheet.cell(cell_id.row, 3)
-        cell_read = await worksheet.cell(cell_id.row, 4)
-        cell_device = await worksheet.cell(cell_id.row, 7)
-        cell_note = await worksheet.cell(cell_id.row, 8)
-        cell_replace_deadline = await worksheet.cell(cell_id.row, 11)
-
-        # もとの行の内容を取得
-        name = cell_name.value
-        read = cell_read.value
-        device = cell_device.value
-        note = cell_note.value
-        replace_deadline = cell_replace_deadline.value
-
-        # エントリー情報を書き込み
-        row = int(num_entries.value) + 1
-        values = [
-            name,
-            read,
-            bitomori_entry_status,
-            "参加",  # OLEB参加状況
-            device,
-            note,
-            str(datetime.now(JST).strftime("%Y-%m-%d %H:%M:%S")),
-            str(interaction.user.id),
-            replace_deadline
-        ]
-        for col, value in zip(range(3, 12), values):
-            await worksheet.update_cell(row=row, col=col, value=value)
-
-        # もとの行を削除
-        for col, value in zip(range(3, 12), values):
-            await worksheet.update_cell(row=cell_id.row, col=col, value="")
-
-    # bot用チャットへ通知
-    await debug_log(
-        function_name="entry_2nd",
-        description=f"エントリー完了 {category}",
-        color=blue,
-        member=interaction.user
-    )
-
-    # 問い合わせスレッドにエントリー情報の送信だけやる
-    # 問い合わせスレッドを取得
-    thread = await search_contact(member=interaction.user)
-
-    # memberインスタンスを再取得 (roleを更新するため)
-    member = interaction.guild.get_member(interaction.user.id)
-
-    # エントリー情報を送信
-    embed = await get_submission_embed(member=member)
-    await thread.send("参加手続きが完了しました。ご参加ありがとうございます。", embed=embed)
-    return
-
-
 async def entry_cancel(member: Member, category: str):
-    role = member.guild.get_role(
-        1036149651847524393  # ビト森杯
-    )
-    role_reserve = member.guild.get_role(
-        1172542396597289093  # キャンセル待ち ビト森杯
-    )
-    role_exhibition = member.guild.get_role(
-        1171760161778581505  # エキシビション
-    )
+    # ビト森杯
+    role = member.guild.get_role(database.ROLE_LOOP)
+
+    # キャンセル待ち ビト森杯
+    role_reserve = member.guild.get_role(database.ROLE_LOOP_RESERVE)
+
+    # エキシビション
+    role_exhibition = member.guild.get_role(database.ROLE_OLEB)
+
     role_check = [
-        member.get_role(
-            1036149651847524393  # ビト森杯
-        ),
-        member.get_role(
-            1172542396597289093  # キャンセル待ち ビト森杯
-        ),
-        member.get_role(
-            1171760161778581505  # エキシビション
-        )
+        member.get_role(database.ROLE_LOOP),
+        member.get_role(database.ROLE_LOOP_RESERVE),
+        member.get_role(database.ROLE_OLEB)
     ]
     # Google spreadsheet worksheet読み込み
     worksheet = await get_worksheet('エントリー名簿')
@@ -434,15 +291,9 @@ async def entry_cancel(member: Member, category: str):
 
         # role_checkを再取得
         role_check = [
-            member.get_role(
-                1036149651847524393  # ビト森杯
-            ),
-            member.get_role(
-                1172542396597289093  # キャンセル待ち ビト森杯
-            ),
-            member.get_role(
-                1171760161778581505  # エキシビション
-            )
+            member.get_role(database.ROLE_LOOP),
+            member.get_role(database.ROLE_LOOP_RESERVE),
+            member.get_role(database.ROLE_OLEB)
         ]
         # すべてのロールを持っていない場合、DBの行を削除
         if any(role_check) is False:

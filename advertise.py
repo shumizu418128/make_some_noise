@@ -4,7 +4,7 @@ from datetime import time, timedelta, timezone  # , datetime
 
 from discord import Client, File  # , Embed
 from discord.ext import tasks
-
+import database
 # from button_view import get_view
 # from battle_stadium import start
 from search_next_event import search_next_event
@@ -16,7 +16,7 @@ PM9 = time(21, 0, tzinfo=JST)
 
 @tasks.loop(time=PM9)
 async def advertise(client: Client):
-    channel = client.get_channel(864475338340171791)  # 全体チャット
+    channel = client.get_channel(database.CHANNEL_GENERAL)
 
     # 次のイベント
     next_event = await search_next_event(channel.guild.scheduled_events)

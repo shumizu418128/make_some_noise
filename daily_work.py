@@ -3,6 +3,7 @@ from datetime import datetime, time, timedelta, timezone
 from discord import Client, Embed
 from discord.ext import tasks
 
+import database
 from button_view import get_view
 from contact import debug_log, get_worksheet, search_contact
 from entry import entry_cancel
@@ -28,21 +29,21 @@ col = 横 A, B, C, ...
 
 
 async def maintenance(client: Client):
-    bot_notice_channel = client.get_channel(
-        1035946838487994449  # ビト森杯 進行bot
-    )
-    role_entry = bot_notice_channel.guild.get_role(
-        1036149651847524393  # ビト森杯
-    )
+    # ビト森杯 進行bot
+    bot_notice_channel = client.get_channel(database.CHANNEL_BITOMORI_BOT)
+
+    # ビト森杯
+    role_entry = bot_notice_channel.guild.get_role(database.ROLE_LOOP)
+
+    # キャンセル待ち ビト森杯
     role_reserve = bot_notice_channel.guild.get_role(
-        1172542396597289093  # キャンセル待ち ビト森杯
-    )
-    role_OLEB = bot_notice_channel.guild.get_role(
-        1171760161778581505  # エキシビション
-    )
-    tari3210 = bot_notice_channel.guild.get_member(
-        412082841829113877
-    )
+        database.ROLE_LOOP_RESERVE)
+
+    # エキシビション
+    role_OLEB = bot_notice_channel.guild.get_role(database.ROLE_OLEB)
+
+    tari3210 = bot_notice_channel.guild.get_member(database.TARI3210)
+
     notice = await bot_notice_channel.send("DB定期メンテナンス中...")
 
     # エントリー名簿取得
@@ -164,15 +165,9 @@ async def maintenance(client: Client):
 
         # エントリー状況をroleから取得
         role_check = [
-            member.get_role(
-                1036149651847524393  # ビト森杯
-            ),
-            member.get_role(
-                1172542396597289093  # キャンセル待ち ビト森杯
-            ),
-            member.get_role(
-                1171760161778581505  # エキシビション
-            )
+            member.get_role(database.ROLE_LOOP),
+            member.get_role(database.ROLE_LOOP_RESERVE),
+            member.get_role(database.ROLE_OLEB)
         ]
         status = ""
         for role, name in zip(role_check, ["ビト森杯 ", "キャンセル待ち ", "OLEB"]):
@@ -246,9 +241,8 @@ async def maintenance(client: Client):
 
 
 async def replacement_expire(client: Client):
-    bot_channel = client.get_channel(
-        897784178958008322  # bot用チャット
-    )
+    bot_channel = client.get_channel(database.CHANNEL_BOT)
+
     # Google spreadsheet worksheet読み込み
     worksheet = await get_worksheet('エントリー名簿')
 
@@ -270,9 +264,8 @@ async def replacement_expire(client: Client):
         thread = await search_contact(member=member_replace)
 
         # 繰り上げ手続き済みか確認
-        role_check = member_replace.get_role(
-            1036149651847524393  # ビト森杯
-        )
+        role_check = member_replace.get_role(database.ROLE_LOOP)
+
         # すでに繰り上げ手続きを完了している場合
         if role_check:
             await debug_log(
@@ -309,15 +302,15 @@ async def replacement_expire(client: Client):
 
 # 繰り上げ手続きは毎日22時に実行
 async def replacement(client: Client):
-    bot_channel = client.get_channel(
-        897784178958008322  # bot用チャット
-    )
-    role = bot_channel.guild.get_role(
-        1036149651847524393  # ビト森杯
-    )
-    admin = bot_channel.guild.get_role(
-        904368977092964352  # ビト森杯運営
-    )
+    # ビト森杯 進行bot
+    bot_channel = client.get_channel(database.CHANNEL_BITOMORI_BOT)
+
+    # ビト森杯
+    role = bot_channel.guild.get_role(database.ROLE_LOOP)
+
+    # ビト森杯運営
+    admin = bot_channel.guild.get_role(database.ROLE_ADMIN)
+
     # Google spreadsheet worksheet読み込み
     worksheet = await get_worksheet('エントリー名簿')
 
@@ -425,12 +418,12 @@ async def replacement(client: Client):
 
 
 async def entry_list_update(client: Client):
-    bot_notice_channel = client.get_channel(
-        1035946838487994449  # ビト森杯 進行bot
-    )
-    role = bot_notice_channel.guild.get_role(
-        1036149651847524393  # ビト森杯
-    )
+    # ビト森杯 進行bot
+    bot_notice_channel = client.get_channel(database.CHANNEL_BITOMORI_BOT)
+
+    # ビト森杯
+    role = bot_notice_channel.guild.get_role(database.ROLE_LOOP)
+
     # エントリー名簿を取得
     entry_list = [member.display_name for member in role.members]
 
@@ -455,9 +448,8 @@ async def entry_list_update(client: Client):
 
 # 24時間前に繰り上げ出場手続きのお願いを再度送信
 async def replacement_notice_24h(client: Client):
-    bot_channel = client.get_channel(
-        897784178958008322  # bot用チャット
-    )
+    bot_channel = client.get_channel(database.CHANNEL_BOT)
+
     # Google spreadsheet worksheet読み込み
     worksheet = await get_worksheet('エントリー名簿')
 
@@ -483,9 +475,8 @@ async def replacement_notice_24h(client: Client):
         thread = await search_contact(member=member_replace)
 
         # 繰り上げ手続き済みか確認
-        role_check = member_replace.get_role(
-            1036149651847524393  # ビト森杯
-        )
+        role_check = member_replace.get_role(database.ROLE_LOOP)
+
         # すでに繰り上げ手続きを完了している場合
         if role_check:
             await debug_log(

@@ -5,6 +5,7 @@ import gspread_asyncio
 from discord import Client, Embed, File, Member
 from google.oauth2.service_account import Credentials
 
+import database
 from button_view import get_view
 
 # NOTE: ビト森杯運営機能搭載ファイル
@@ -22,10 +23,12 @@ col = 横 A, B, C, ...
 
 
 async def search_contact(member: Member, create: bool = False, locale: str = "ja"):
-    contact = member.guild.get_channel(
-        1035964918198960128  # 問い合わせ
-    )
-    threads = contact.threads  # 問い合わせスレッド一覧
+    # 問い合わせチャンネル
+    contact = member.guild.get_channel(database.CHANNEL_CONTACT)
+
+    # 問い合わせスレッド一覧
+    threads = contact.threads
+
     # スレッド名一覧 (member.id)_(locale)
     thread_names = [thread.name.split("_")[0] for thread in threads]
 
@@ -44,28 +47,21 @@ async def search_contact(member: Member, create: bool = False, locale: str = "ja
 
 
 async def contact_start(client: Client, member: Member, entry_redirect: bool = False):
-    contact = member.guild.get_channel(
-        1035964918198960128  # 問い合わせ
-    )
-    announce = member.guild.get_channel(
-        1035965200341401600  # ビト森杯お知らせ
-    )
-    admin = member.guild.get_role(
-        904368977092964352  # ビト森杯運営
-    )
-    tari3210 = member.guild.get_member(
-        412082841829113877
-    )
+    # 問い合わせチャンネル
+    contact = member.guild.get_channel(database.CHANNEL_CONTACT)
+
+    # ビト森杯お知らせチャンネル
+    announce = member.guild.get_channel(database.CHANNEL_BITOMORI_ANNOUNCE)
+
+    # ビト森杯運営
+    admin = member.guild.get_role(database.ROLE_ADMIN)
+
+    tari3210 = member.guild.get_member(database.TARI3210)
+
     role_check = [
-        member.get_role(
-            1036149651847524393  # ビト森杯
-        ),
-        member.get_role(
-            1172542396597289093  # キャンセル待ち ビト森杯
-        ),
-        member.get_role(
-            1171760161778581505  # エキシビション
-        )
+        member.get_role(database.ROLE_LOOP),
+        member.get_role(database.ROLE_LOOP_RESERVE),
+        member.get_role(database.ROLE_OLEB)
     ]
     # 最初は喋るな
     await contact.set_permissions(member, send_messages_in_threads=False)
@@ -248,15 +244,9 @@ async def get_worksheet(name: str):
 
 async def get_submission_embed(member: Member):
     role_check = [
-        member.get_role(
-            1036149651847524393  # ビト森杯
-        ),
-        member.get_role(
-            1172542396597289093  # キャンセル待ち ビト森杯
-        ),
-        member.get_role(
-            1171760161778581505  # エキシビション
-        )
+        member.get_role(database.ROLE_LOOP),
+        member.get_role(database.ROLE_LOOP_RESERVE),
+        member.get_role(database.ROLE_OLEB)
     ]
     # Google spreadsheet worksheet読み込み
     worksheet = await get_worksheet("エントリー名簿")
@@ -350,12 +340,12 @@ async def get_submission_embed(member: Member):
 
 
 async def debug_log(function_name: str, description: str, color: int, member: Member):
-    bot_channel = member.guild.get_channel(
-        897784178958008322  # bot用チャット
-    )
-    tari3210 = member.guild.get_member(
-        412082841829113877  # tari3210
-    )
+    # bot用チャット
+    bot_channel = member.guild.get_channel(database.CHANNEL_BOT)
+
+    tari3210 = member.guild.get_member(database.TARI3210)
+
+    # ユーザーの問い合わせスレッドを取得
     thread = await search_contact(member)
 
     thread_jump_url = ""
