@@ -5,8 +5,8 @@ from discord import Embed, Interaction
 import database
 from contact import (contact_start, debug_log, get_submission_embed,
                      search_contact)
-from entry import Modal_entry, entry_cancel
 from database import get_worksheet
+from entry import Modal_entry, entry_cancel, process_entry
 
 # NOTE: ビト森杯運営機能搭載ファイル
 JST = timezone(timedelta(hours=9))
@@ -15,8 +15,72 @@ yellow = 0xffff00
 red = 0xff0000
 blue = 0x00bfff
 
+"""
+原則ここではフロントエンドの処理を行う
+バックグラウンドは別関数に投げる
+"""
+
+
+async def modal_callback(interaction: Interaction):
+    await interaction.response.defer(ephemeral=True, thinking=True)
+    tari3210 = interaction.guild.get_member(database.TARI3210)
+
+    # loop, soloA, soloB どのモーダルか判定
+    category = interaction.data["custom_id"].replace("modal_entry_", "")
+
+    # 入力内容を取得
+    input_contents = {
+        sub_component['custom_id']: sub_component['value']
+        for component in interaction.data['components']
+        for sub_component in component['components']
+    }
+    # custom_id = name, read, device(Loopのみ), note
+
+    # TODO: とりあえず仮で申請受付完了通知
+
+    # TODO: process_entry関数に裏処理は投げる
+    status = await process_entry(interaction.user, category, input_contents)
+
+    # ひらがなではない場合、エラー通知
+    if status == "Error: よみがなエラー":
+
+        embed = Embed(
+            title="❌ Error ❌",
+            description="エントリーに失敗しました。\nよみがなは、**「ひらがな・伸ばし棒** `ー` **のみ」** で入力してください\
+                \n\n入力したよみがな：" + input_contents["read"],
+            color=red
+        )
+        embed.set_author(
+            name=input_contents["name"],
+            icon_url=interaction.user.display_avatar.url
+        )
+        await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
+        return
+
+    # すでにエントリー済みの場合、エラー通知
+    if status == "Error: すでにエントリー済み":
+        await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
+        return
+
+    input_values = input_contents.values()
+
+    embed.description += "入力内容\n" + "\n".join(input_values)
+
+    embed.set_author(
+        name=input_contents["name"],
+        icon_url=interaction.user.display_avatar.url
+    )
+    embed.set_footer(
+        text=f"Make Some Noise! 開発者: {tari3210.display_name}",
+        icon_url=tari3210.display_avatar.url
+    )
+
+    # 申請結果のembed送信
+    await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
 
 # 両カテゴリーのエントリーを受け付ける
+
+
 async def button_entry(interaction: Interaction):
 
     # エントリー開始時刻を定義 1月6日 22:00

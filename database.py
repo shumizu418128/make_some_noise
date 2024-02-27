@@ -12,11 +12,17 @@ from google.oauth2.service_account import Credentials
 # Online Loopstation Exhibition Battle
 ROLE_OLEB = 1171760161778581505
 
-# ビト森杯 LOOP部門
+# ビト森杯 Loop部門・キャンセル待ち
 ROLE_LOOP = 1036149651847524393
-
-# ビト森杯 LOOP部門 キャンセル待ち
 ROLE_LOOP_RESERVE = 1172542396597289093
+
+# ビト森杯 soloA部門・キャンセル待ち
+ROLE_SOLO_A = 1035945116591996979
+ROLE_SOLO_A_RESERVE = 1211923899521048637
+
+# ビト森杯 soloB部門・キャンセル待ち
+ROLE_SOLO_B = 1035945267733737542
+ROLE_SOLO_B_RESERVE = 1211923802985070662
 
 # ビト森杯運営
 ROLE_ADMIN = 904368977092964352
@@ -95,7 +101,7 @@ EMOJI_LOOP_BUTTON = 885778461879320586
 ######################
 # Google Sheets
 ######################
-
+# TODO: スプシ作ってないので後で追加 3部門の管理をどうするか
 """
 row = 縦 1, 2, 3, ...
 col = 横 A, B, C, ...

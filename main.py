@@ -17,7 +17,6 @@ from button_admin_callback import (button_admin_cancel,
 from button_callback import (button_call_admin, button_cancel, button_contact,
                              button_submission_content, button_accept_replace, button_entry)
 from button_view import get_view
-from contact import contact_start, search_contact
 from daily_work import daily_work_AM9, daily_work_PM10
 """
 import database
@@ -45,12 +44,20 @@ async def on_ready():  # 起動時に動作する処理
     return
 
 
+# TODO: 第4回ビト森杯実装
+# A, B, Loop部門のエントリー受付
+# モーダルの処理を追加
 """@client.event
 async def on_interaction(interaction: Interaction):
     bot_channel = interaction.guild.get_channel(database.CHANNEL_BOT)
     custom_id = interaction.data["custom_id"]
 
+    # ボタンのカスタムIDに_がない場合、custom_id未設定のためreturn
+    if "_" not in custom_id:
+        return
+
     # セレクトメニューの場合
+    # いったん凍結
     if custom_id.startswith("select"):
         await interaction.response.defer(ephemeral=True, thinking=True)
         value = interaction.data["values"][0]
@@ -61,38 +68,10 @@ async def on_interaction(interaction: Interaction):
         )
         return
 
-    # ボタンのカスタムIDに_がない場合、custom_id未設定のためreturn
-    if "_" not in custom_id:
-        return
-
-    # interaction通知
-    embed = Embed(
-        title=custom_id,
-        description=f"{interaction.user.mention}\n{interaction.message.jump_url}",
-        color=0x00bfff
-    )
-    embed.set_author(
-        name=interaction.user.display_name,
-        icon_url=interaction.user.display_avatar.url
-    )
-    embed.timestamp = datetime.now(JST)
-
-    # 問い合わせスレッドがあり、かつ該当interactionと別チャンネルなら、descriptionに追加
-    thread = await search_contact(interaction.user)
-    if bool(thread) and interaction.message.channel.id != thread.id:
-        embed.description += f"\n\nthread: {thread.jump_url}"
-
-    # モーダルの場合、提出内容を表示
+    # モーダルの場合、エントリー処理 (callback.pyに移動)
     if custom_id.startswith("modal"):
-        values_list = [
-            f"- `{sub_component['custom_id']}:` {sub_component['value']}"
-            for component in interaction.data['components']
-            for sub_component in component['components']
-        ]
-        values = "\n".join(values_list)
-        embed.add_field(name="提出内容", value=values)
-
-    await bot_channel.send(f"{interaction.user.id}", embed=embed)
+        await modal_callback(interaction)
+        return
 
     ##############################
     # 運営専用ボタン
@@ -116,35 +95,58 @@ async def on_interaction(interaction: Interaction):
         # 問い合わせスレッド作成
         if custom_id == "button_admin_create_thread":
             await button_admin_create_thread(interaction)
-        return
 
     ##############################
     # 参加者が押すボタン
     ##############################
 
-    # ビト森杯エントリー
-    if custom_id.startswith("button_entry"):
-        await button_entry(interaction)
+    else:
+        # ビト森杯エントリー
+        if custom_id.startswith("button_entry"):
+            await button_entry(interaction)
 
-    # お問い合わせ
-    if custom_id == "button_contact":
-        await button_contact(interaction)
+        # お問い合わせ
+        if custom_id == "button_contact":
+            await button_contact(interaction)
 
-    # 運営呼び出し
-    if custom_id == "button_call_admin":
-        await button_call_admin(interaction)
+        # 運営呼び出し
+        if custom_id == "button_call_admin":
+            await button_call_admin(interaction)
 
-    # キャンセル
-    if custom_id == "button_cancel":
-        await button_cancel(interaction)
+        # キャンセル
+        if custom_id == "button_cancel":
+            await button_cancel(interaction)
 
-    # エントリー状況照会
-    if custom_id == "button_submission_content":
-        await button_submission_content(interaction)
+        # エントリー状況照会
+        if custom_id == "button_submission_content":
+            await button_submission_content(interaction)
 
-    # 繰り上げエントリー
-    if custom_id == "button_accept_replace":
-        await button_accept_replace(interaction)
+        # 繰り上げエントリー
+        if custom_id == "button_accept_replace":
+            await button_accept_replace(interaction)
+
+    # interaction通知
+    embed = Embed(
+        title=custom_id,
+        description=f"{interaction.user.mention}\n{interaction.message.jump_url}",
+        color=0x00bfff
+    )
+    embed.set_author(
+        name=interaction.user.display_name,
+        icon_url=interaction.user.display_avatar.url
+    )
+    embed.timestamp = datetime.now(JST)
+
+    # 問い合わせスレッドがあり、かつ該当interactionと別チャンネルなら、descriptionに追加
+    thread = await search_contact(interaction.user)
+    if bool(thread) and interaction.message.channel.id != thread.id:
+        embed.description += f"\n\nthread: {thread.jump_url}"
+
+    # ない場合その旨を表示
+    else:
+        embed.description += "\n\nthread: なし"
+
+    await bot_channel.send(f"{interaction.user.id}", embed=embed)
 """
 
 
