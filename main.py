@@ -96,9 +96,9 @@ async def on_interaction(interaction: Interaction):
         if custom_id == "button_admin_create_thread":
             await button_admin_create_thread(interaction)
 
-    ##############################
+    ###################
     # 参加者が押すボタン
-    ##############################
+    ###################
 
     else:
         # ビト森杯エントリー
@@ -125,10 +125,13 @@ async def on_interaction(interaction: Interaction):
         if custom_id == "button_accept_replace":
             await button_accept_replace(interaction)
 
+    ###################
     # interaction通知
+    ###################
+
     embed = Embed(
         title=custom_id,
-        description=f"{interaction.user.mention}\n{interaction.message.jump_url}",
+        description=f"{interaction.user.mention}\nmessage: {interaction.message.jump_url}",
         color=0x00bfff
     )
     embed.set_author(
@@ -140,11 +143,11 @@ async def on_interaction(interaction: Interaction):
     # 問い合わせスレッドがあり、かつ該当interactionと別チャンネルなら、descriptionに追加
     thread = await search_contact(interaction.user)
     if bool(thread) and interaction.message.channel.id != thread.id:
-        embed.description += f"\n\nthread: {thread.jump_url}"
+        embed.description += f"\n\ncontact: {thread.jump_url}"
 
     # ない場合その旨を表示
-    else:
-        embed.description += "\n\nthread: なし"
+    if bool(thread) is False:
+        embed.description += "\n\ncontact: なし"
 
     await bot_channel.send(f"{interaction.user.id}", embed=embed)
 """

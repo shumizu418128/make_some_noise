@@ -98,7 +98,7 @@ async def get_view(
     view = View(timeout=None)
 
     button_contact = Button(
-        label="お問い合わせチャンネル作成",
+        label="お問い合わせ",
         style=ButtonStyle.primary,
         custom_id="button_contact",
         emoji="📝"
@@ -121,17 +121,35 @@ async def get_view(
         custom_id="button_cancel",
         emoji="😭"
     )
-    button_entry_bitomori = Button(
+    button_entry_loop = Button(
         style=ButtonStyle.green,
-        label="ビト森杯(Loop)エントリー",
-        custom_id="button_entry_bitomori",
+        label="ビト森杯Loop エントリー",
+        custom_id="button_entry_loop",
         emoji="🏆"
     )
-    button_entry_exhibition = Button(
+    button_entry_soloA = Button(
+        style=ButtonStyle.green,
+        label="ビト森杯ソロA エントリー",
+        custom_id="button_entry_soloA",
+        emoji="🏆"
+    )
+    button_entry_soloB = Button(
+        style=ButtonStyle.green,
+        label="ビト森杯ソロB エントリー",
+        custom_id="button_entry_soloB",
+        emoji="🏆"
+    )
+    """button_entry_exhibition = Button(
         style=ButtonStyle.green,
         label="OLEBエントリー",
         custom_id="button_entry_exhibition",
         emoji="⚔️"
+    )"""
+    button_accept_replace = Button(
+        style=ButtonStyle.green,
+        label="繰り上げを確定",
+        custom_id="button_accept_replace",
+        emoji="✅"
     )
     # 問い合わせスレッド作成
     if contact:
@@ -150,40 +168,36 @@ async def get_view(
         view.add_item(button_cancel)
 
     # ビト森杯エントリー
-    if entry_bitomori or entry:
-        view.add_item(button_entry_bitomori)
+    if entry:
+        view.add_item(button_entry_loop)
+        view.add_item(button_entry_soloA)
+        view.add_item(button_entry_soloB)
 
     # OLEBエントリー
-    if entry_exhibition or entry:
-        view.add_item(button_entry_exhibition)
+    """if entry_exhibition or entry:
+        view.add_item(button_entry_exhibition)"""
 
-    # entry = entry_bitomori and entry_exhibition
-
-    # 繰り上げ出場
-    button_accept_replace = Button(
-        style=ButtonStyle.green,
-        label="ビト森杯に出場する",
-        custom_id="button_accept_replace",
-        emoji="✅"
-    )
     if replace:
         view.add_item(button_accept_replace)
         view.add_item(button_cancel)
         view.add_item(button_call_admin)
 
+    ######################
     # 運営用ボタン
-    button_admin_entry_bitomori = Button(
+    ######################
+
+    button_admin_entry = Button(
         style=ButtonStyle.green,
         label="ビト森杯エントリー",
-        custom_id="button_admin_entry_bitomori",
+        custom_id="button_admin_entry",
         emoji="👑"
     )
-    button_admin_entry_exhibition = Button(
+    """button_admin_entry_exhibition = Button(
         style=ButtonStyle.green,
         label="OLEBエントリー",
         custom_id="button_admin_entry_exhibition",
         emoji="👑"
-    )
+    )"""
     button_admin_cancel = Button(
         style=ButtonStyle.red,
         label="キャンセル",
@@ -203,8 +217,7 @@ async def get_view(
         emoji="👑"
     )
     if admin:
-        view.add_item(button_admin_entry_bitomori)
-        view.add_item(button_admin_entry_exhibition)
+        view.add_item(button_admin_entry)
         view.add_item(button_admin_cancel)
         view.add_item(button_admin_create_thread)
         view.add_item(button_admin_submission_content)

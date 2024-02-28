@@ -29,6 +29,8 @@ col = 横 A, B, C, ...
 """
 
 
+# TODO: このファイル全体 第4回ビト森杯のスプシを作成して、それに合わせて修正する
+
 async def maintenance(client: Client):
     # ビト森杯 進行bot
     bot_notice_channel = client.get_channel(database.CHANNEL_BITOMORI_BOT)

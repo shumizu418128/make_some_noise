@@ -1,3 +1,4 @@
+from asyncio import sleep
 from datetime import datetime, timedelta, timezone
 
 from discord import Client, Embed, File, Member
@@ -121,48 +122,42 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
         embed_ja.set_footer(text=f"ISO 639-1 code: {locale}")
         # この時点でのlocaleは実際の言語設定
 
-        # 有効な言語設定のみをリスト化
-        available_langs = [
-            "ko", "zh-TW", "zh-CN",
-            "en-US", "en-GB", "es-ES", "pt-BR"
-        ]
-
-        # 未対応の言語設定の場合は英語として扱う
-        if locale not in available_langs:
-            locale = "en-US"
-
         # 各種言語の文言
-        lang_contact = {
+        # 通常の問い合わせの場合
+        langs = {
             "en-US": "Please write your inquiry here",
             "en-GB": "Please write your inquiry here",
             "zh-TW": "請把疑問寫在這裡",
             "zh-CN": "请把疑问写在这里 ※此服务器仅以日英交流",
             "ko": "문의 내용을 이 채널에 기입해주세요",
             "es-ES": "Por favor, escriba su consulta aquí",
-            "pt-BR": "Por favor, escreva sua consulta aqui"
+            "pt-BR": "Por favor, escreva sua consulta aqui",
+            "fr": "Veuillez écrire votre demande ici"
         }
-        lang_entry_redirect = {
-            "en-US": "Please hold on, the moderator will be here soon",
-            "en-GB": "Please hold on, the moderator will be here soon",
-            "zh-TW": "請稍候片刻, 正與管理員對接",
-            "zh-CN": "请稍候片刻, 正与管理员对接 ※此服务器仅以日英交流",
-            "ko": "대회 운영자가 대응합니다. 잠시 기다려주십시오",
-            "es-ES": "Por favor, espere un momento, el moderador estará aquí pronto",
-            "pt-BR": "Por favor, aguarde um momento, o moderador estará aqui em breve"
-        }
-        # 通常の問い合わせの場合
         embed_overseas = Embed(
             title="海外からのお問い合わせ contact from overseas",
-            description=lang_contact[locale],
-            color=yellow
         )
         # 海外エントリー時の問い合わせリダイレクトの場合
         if entry_redirect:
+            langs = {
+                "en-US": "Please hold on, the moderator will be here soon",
+                "en-GB": "Please hold on, the moderator will be here soon",
+                "zh-TW": "請稍候片刻, 正與管理員對接",
+                "zh-CN": "请稍候片刻, 正与管理员对接 ※此服务器仅以日英交流",
+                "ko": "대회 운영자가 대응합니다. 잠시 기다려주십시오",
+                "es-ES": "Por favor, espere un momento, el moderador estará aquí pronto",
+                "pt-BR": "Por favor, aguarde um momento, o moderador estará aqui em breve",
+                "fr": "Veuillez patienter, le modérateur sera bientôt là"
+            }
             embed_overseas = Embed(
                 title="海外からのエントリー entry from overseas",
-                description=lang_entry_redirect[locale],
-                color=yellow
             )
+        # 言語に対応する文言を取得（ない場合英語）
+        try:
+            embed_overseas.description = langs[locale]
+        except KeyError:
+            embed_overseas.description = langs["en-US"]
+
         embed_overseas.set_author(
             name=member.display_name,
             icon_url=member.display_avatar.url
@@ -200,6 +195,7 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
         return
 
 
+# TODO: 第4回ビト森杯実装
 async def get_submission_embed(member: Member):
     role_check = [
         member.get_role(database.ROLE_LOOP),
@@ -327,3 +323,55 @@ async def debug_log(function_name: str, description: str, color: int, member: Me
     else:
         await bot_channel.send(f"{member.id}", embed=embed)
     return
+
+
+async def warning_before_contact(client: Client, member: Member):
+    contact = await search_contact(member)
+
+    # 問い合わせ前にselectを送信
+    embed = Embed(
+        title="お問い合わせ内容を選択",
+        description="以下のセレクトメニューから、お問い合わせ内容に近いものを選択してください。",
+        color=yellow
+    )
+    view = await get_view(info=True)
+    await contact.send(member.mention, embed=embed, view=view)
+
+    def check(i):
+        return i.user == member and i.channel == contact and i.data["custom_id"] == "select_bitomori_info"
+
+    # ユーザーの選択を待つ
+    _ = await client.wait_for('interaction', check=check)
+
+    # 本当に問い合わせるか確認
+    embed = Embed(
+        title="お問い合わせの前に",
+        description="表示された画像に、お問い合わせ内容は記載されていましたか？\
+            \n\n⭕ 画像をみて解決した\n❌ このメッセージを削除する\n📩 運営にチャットで問い合わせる",
+        color=yellow
+    )
+    notice = await contact.send(embed=embed, view=view)
+
+    await sleep(2)
+    await notice.add_reaction("⭕")
+    await notice.add_reaction("❌")
+    await notice.add_reaction("📩")
+
+    def check(reaction, user):
+        return user == member and reaction.emoji in ["⭕", "❌", "📩"] and reaction.message == notice
+
+    try:
+        reaction, _ = await client.wait_for('reaction_add', check=check, timeout=60)
+
+    # タイムアウト
+    except TimeoutError:
+        await notice.delete()
+        return False
+
+    await notice.delete()
+
+    # 画像をみて解決した
+    if reaction.emoji in ["⭕", "❌"]:
+        return False
+
+    return True

@@ -1,10 +1,11 @@
 from datetime import datetime, timedelta, timezone
 
 from discord import Embed, Interaction
+from button_view import get_view
 
 import database
 from contact import (contact_start, debug_log, get_submission_embed,
-                     search_contact)
+                     search_contact, warning_before_contact)
 from database import get_worksheet
 from entry import Modal_entry, entry_cancel, process_entry
 
@@ -78,9 +79,8 @@ async def modal_callback(interaction: Interaction):
     # 申請結果のembed送信
     await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
 
-# 両カテゴリーのエントリーを受け付ける
 
-
+# TODO: 繰り上げ出場もここで処理できるようにする
 async def button_entry(interaction: Interaction):
 
     # エントリー開始時刻を定義 1月6日 22:00
@@ -92,17 +92,55 @@ async def button_entry(interaction: Interaction):
         hour=22,
         tzinfo=JST
     )
-    # ビト森杯エントリー済みかどうか確認
-    # ビト森杯はanyでキャンセル待ちも含む
-    role_check = [
-        any([
-            interaction.user.get_role(database.ROLE_LOOP),
-            interaction.user.get_role(database.ROLE_LOOP_RESERVE)
-        ]),
-        interaction.user.get_role(database.ROLE_OLEB)
-    ]
+    str_entry_start = dt_entry_start.strftime("%m月%d日 %H:%M")
+
+    # エントリー開始時刻確認（tari_2は除外）
+    if dt_now < dt_entry_start and interaction.user.id != database.TARI_2:
+        await interaction.response.send_message(
+            f"{interaction.user.mention}\nビト森杯エントリー受付開始日時は、{str_entry_start}です。",
+            ephemeral=True
+        )
+        return
+
     # エントリーカテゴリー取得
+    # loop, soloA, soloB のいずれか
     category = interaction.data["custom_id"].replace("button_entry_", "")
+
+    role_ids = {
+        "loop": (database.ROLE_LOOP, database.ROLE_LOOP_RESERVE),
+        "soloA": (database.ROLE_SOLO_A, database.ROLE_SOLO_A_RESERVE),
+        "soloB": (database.ROLE_SOLO_B, database.ROLE_SOLO_B_RESERVE),
+    }
+    id, id_reserve = role_ids.get(category)
+
+    # ボタンを押した部門にエントリー済みかどうか確認
+    user_role_statuses = [
+        interaction.user.get_role(id),
+        interaction.user.get_role(id_reserve)
+    ]
+    # エントリー済みの場合、エラー通知
+    if any(user_role_statuses):
+        embed = Embed(
+            title="エントリー済み",
+            description=f"ビト森杯{category}部門\nすでにエントリー済みです。",
+            color=red
+        )
+        embed.set_author(
+            name=interaction.user.display_name,
+            icon_url=interaction.user.display_avatar.url
+        )
+        await interaction.response.send_message(interaction.user.mention, embed=embed, ephemeral=True)
+
+        # TODO: 繰り上げ出場手続き中の場合、繰り上げ手続きを促す
+        if user_role_statuses[1]:
+            # ここで繰り上げ手続き中かを確認
+            # 繰り上げ手続き中の場合、繰り上げボタンを再度送信
+            return
+
+        # 繰り上げ出場手続き中ではない場合、キャンセルの案内をする
+        # とりあえずcontact_start関数に投げる
+        await contact_start(client=interaction.client, member=interaction.user)
+        return
 
     # localeを取得
     locale = str(interaction.locale)
@@ -112,69 +150,18 @@ async def button_entry(interaction: Interaction):
     if bool(thread):
         locale = thread.name.split("_")[1]
 
-    # エントリー開始時刻確認（tari_2は除外）
-    if dt_now < dt_entry_start and interaction.user.id != database.TARI_2:
-        await interaction.response.send_message(
-            f"{interaction.user.mention}\nビト森杯(Loop)・Online Loopstation Exhibition Battle\nエントリー受付開始は1月6日 22:00です。",
-            ephemeral=True
-        )
-        return
-
-    # ビト森杯エントリー済み
-    if role_check[0] and category == "bitomori":
-        embed = Embed(
-            title="エントリー済み",
-            description="ビト森杯\nすでにエントリー済みです。",
-            color=red
-        )
-        embed.set_author(
-            name=interaction.user.display_name,
-            icon_url=interaction.user.display_avatar.url
-        )
-        await interaction.response.send_message(interaction.user.mention, embed=embed, ephemeral=True)
-        return
-
-    # エキシビションエントリー済み
-    if role_check[1] and category == "exhibition":
-        embed = Embed(
-            title="エントリー済み",
-            description="Online Loopstation Exhibition Battle\nすでにエントリー済みです。",
-            color=red
-        )
-        embed.set_author(
-            name=interaction.user.display_name,
-            icon_url=interaction.user.display_avatar.url
-        )
-        await interaction.response.send_message(interaction.user.mention, embed=embed, ephemeral=True)
-        return
-
     # 日本からのエントリー
     if locale == "ja":
-
-        # 1回目のエントリーの場合
-        if not any(role_check):
-            await interaction.response.send_modal(Modal_entry(interaction.user.display_name, category))
-            return
+        await interaction.response.send_modal(Modal_entry(interaction.user.display_name, category))
+        return
 
     # 以下モーダル送信しないのでdeferをかける
     await interaction.response.defer(ephemeral=True, thinking=True)
-    """
-    # 日本からの、2回目のエントリーの場合
-    if locale == "ja":
-        await entry_2nd(interaction, category)
-        return"""
 
     # 海外からのエントリー
     thread = await search_contact(member=interaction.user, create=True, locale=str(interaction.locale))
 
     # 各種言語の文言
-    available_langs = [
-        "ko", "zh-TW", "zh-CN",
-        "en-US", "en-GB", "es-ES", "pt-BR"
-    ]
-    # localeが利用可能言語に含まれていない場合は英語にする
-    if locale not in available_langs:
-        locale = "en-US"
     langs = {
         "en-US": f"Error: please contact us via {thread.jump_url}",
         "en-GB": f"Error: please contact us via {thread.jump_url}",
@@ -182,9 +169,14 @@ async def button_entry(interaction: Interaction):
         "zh-CN": f"错误：请点击 {thread.jump_url} 联系我们 ※此服务器仅以日英交流",
         "ko": f"문의는 {thread.jump_url} 로 보내주세요",
         "es-ES": f"Error: por favor contáctenos a través de {thread.jump_url}",
-        "pt-BR": f"Erro: entre em contato conosco através de {thread.jump_url}"
+        "pt-BR": f"Erro: entre em contato conosco através de {thread.jump_url}",
+        "fr": f"Erreur: veuillez nous contacter via {thread.jump_url} ※Ce serveur est uniquement pour les échanges en japonais et en anglais"
     }
-    description = langs[locale] + f"\nお手数ですが {thread.jump_url} までお問い合わせください。"
+    # 言語に対応する文言を取得（ない場合英語）
+    try:
+        description = langs[locale] + f"\nお手数ですが {thread.jump_url} までお問い合わせください。"
+    except KeyError:
+        description = langs["en-US"] + f"\nお手数ですが {thread.jump_url} までお問い合わせください。"
 
     # 一旦エラー文言を送信
     embed = Embed(
@@ -225,10 +217,21 @@ async def button_contact(interaction: Interaction):
 
 
 async def button_call_admin(interaction: Interaction):
-    await interaction.response.defer(thinking=True)
+    # ここで応答を済ませる
+    await interaction.response.send_message("処理中...", ephemeral=True)
 
     contact = interaction.client.get_channel(database.CHANNEL_CONTACT)
     admin = interaction.guild.get_role(database.ROLE_ADMIN)
+    contact_warning = database.CONTACT_WARNING
+
+    # リストに含まれるユーザーの場合、warning_before_contact関数を実行
+    if interaction.user.id in contact_warning:
+        status = await warning_before_contact(interaction.client, interaction.user)
+
+        # Falseの場合、処理中止
+        if status is False:
+            return
+
     # しゃべってよし
     await contact.set_permissions(interaction.user, send_messages_in_threads=True)
 
@@ -242,7 +245,7 @@ async def button_call_admin(interaction: Interaction):
         name=interaction.user.display_name,
         icon_url=interaction.user.display_avatar.url
     )
-    await interaction.followup.send(interaction.user.mention, embed=embed)
+    await interaction.channel.send(interaction.user.mention, embed=embed)
     await interaction.channel.send("↓↓↓ このチャットにご記入ください ↓↓↓")
 
     # メッセージが来たら運営へ通知
@@ -250,6 +253,8 @@ async def button_call_admin(interaction: Interaction):
         return m.channel == interaction.channel and m.author == interaction.user
 
     msg = await interaction.client.wait_for('message', check=check)
+
+    # 運営へ通知
     await msg.reply(
         f"{admin.mention}\n{interaction.user.display_name}さんからの問い合わせ",
         mention_author=False
@@ -257,6 +262,14 @@ async def button_call_admin(interaction: Interaction):
     # エントリー状況照会
     embed = await get_submission_embed(interaction.user)
     await interaction.channel.send(embed=embed)
+
+    # セレクトを送信
+    view = await get_view(info=True)
+    embed = Embed(
+        title="必ずご確認ください",
+        description="すでに発表済みの内容はこちらで確認できます。問い合わせ前に、もう一度確認してみてください。\n\n↓↓↓↓↓↓↓",
+    )
+    await msg.reply(embed=embed, view=view, mention_author=True)
     return
 
 
