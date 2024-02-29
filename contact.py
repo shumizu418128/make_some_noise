@@ -195,31 +195,41 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
         return
 
 
-# TODO: 第4回ビト森杯実装
+# TODO: 第4回ビト森杯実装（スプシ作成、そこに合わせる）
 async def get_submission_embed(member: Member):
     role_check = [
-        member.get_role(database.ROLE_LOOP),
-        member.get_role(database.ROLE_LOOP_RESERVE),
-        member.get_role(database.ROLE_OLEB)
+        any([
+            member.get_role(database.ROLE_LOOP),
+            member.get_role(database.ROLE_LOOP_RESERVE)
+        ]),
+        any([
+            member.get_role(database.ROLE_SOLO_A),
+            member.get_role(database.ROLE_SOLO_A_RESERVE)
+        ]),
+        any([
+            member.get_role(database.ROLE_SOLO_B),
+            member.get_role(database.ROLE_SOLO_B_RESERVE)
+        ]),
     ]
+    # TODO: スプシを作る（3部門の記録をどう管理するか）
     # Google spreadsheet worksheet読み込み
     worksheet = await database.get_worksheet("エントリー名簿")
 
-    # 異常なロール付与の場合
-    if role_check[0] and role_check[1]:
-
-        # bot用チャットにエラー通知
-        await debug_log(
-            function_name="get_submission_embed",
-            description="Error: ビト森杯・キャンセル待ち 重複ロール付与",
-            color=red,
-            member=member
-        )
+    # TODO: DBとroleの整合性チェックを行う
     # DBから取得
     cell_id = await worksheet.find(f'{member.id}')  # ユーザーIDで検索
 
+    # そもそも何にもエントリーしていない場合
+    if not any(role_check) and not bool(cell_id):
+        embed_entry_status = Embed(
+            title="エントリー状況照会",
+            description=f"{member.display_name}さんはエントリーしていません。",
+            color=yellow
+        )
+        return embed_entry_status
+
     # DB登録あり
-    if bool(cell_id):
+    if any(role_check) and bool(cell_id):
 
         # ユーザーIDの行の値を取得
         cell_values = await worksheet.row_values(cell_id.row)
@@ -239,64 +249,40 @@ async def get_submission_embed(member: Member):
         # エントリー状況照会のembedを作成
         embed_entry_status = Embed(
             title="エントリー状況照会",
-            description=f"- `名前:` {name}\n- `読み:` {read}\n- `ビト森杯出場可否:` {status_bitomori}\
-                \n- `OLEB参加状況:` {status_exhibition}\n- `デバイス:` {device}\n- `備考:` {note}\
-                \n- `受付時刻:` {time}",
+            description="以下の情報が、ビト森杯データベースに記録されています。",
             color=blue
         )
-        # 繰り上げ手続き中の場合(cell_values[-1]が5文字以下の場合は繰り上げ手続き中)
-        if len(cell_values[-1]) <= 5:
-            deadline = cell_values[-1]
-            embed_entry_status.description += f"\n\n繰り上げ手続き締め切り: `{deadline} 21:00`"
+        # TODO: エントリー状況を表示 (スプシに合わせる)
+        for data, data_name in zip([device, note, time], ["デバイス", "備考", "エントリー日時"]):
+            embed_entry_status.add_field(
+                name=data_name,
+                value=data
+            )
+        embed_entry_status.set_author(
+            name=f"{name}（{read}）",
+            icon_url=member.display_avatar.url
+        )
+        # TODO: キャンセル待ちの場合順番を表示
 
     # DB登録なし
     else:
-
-        # エントリーしていない場合
-        if any(role_check) is False:
-            embed_entry_status = Embed(
-                title="エントリー状況照会",
-                description=f"{member.display_name}さんはエントリーしていません。",
-                color=blue
-            )
-        # エントリーしているのにDB登録がない場合（エラー）
-        else:
-
-            # strにまとめる
-            description = ""
-            if role_check[0]:
-                description += "ビト森杯エントリー済み\n"
-            elif role_check[1]:
-                description += "ビト森杯キャンセル待ち登録済み\n"
-            if role_check[2]:
-                description += "OLEBエントリー済み"
-
-            # bot用チャットにエラー通知
-            await debug_log(
-                function_name="get_submission_embed",
-                description="Error: DB登録なし\n" + description,
-                color=red,
-                member=member
-            )
-            # とりあえずroleからエントリー状況を取得
-            embed_entry_status = Embed(
-                title="エントリー状況照会",
-                color=blue
-            )
-            embed_entry_status.description = description
-
-    embed_entry_status.timestamp = datetime.now(JST)
-    embed_entry_status.set_author(
-        name=member.display_name,
-        icon_url=member.display_avatar.url
-    )
+        embed_entry_status = Embed(
+            title="エントリー状況照会",
+            description="エントリー申請は確認できましたが、情報の取得に問題が発生しました。\n\n運営が対応します。しばらくお待ちください。\n🙇ご迷惑をおかけし、申し訳ございません🙇",
+            color=red
+        )
+        await debug_log(
+            function_name="get_submission_embed",
+            description="Error: DB・role同期ずれ",
+            color=red,
+            member=member
+        )
     return embed_entry_status
 
 
 async def debug_log(function_name: str, description: str, color: int, member: Member):
     # bot用チャット
     bot_channel = member.guild.get_channel(database.CHANNEL_BOT)
-
     tari3210 = member.guild.get_member(database.TARI3210)
 
     # ユーザーの問い合わせスレッドを取得
@@ -304,7 +290,7 @@ async def debug_log(function_name: str, description: str, color: int, member: Me
 
     thread_jump_url = ""
     if bool(thread):
-        thread_jump_url = thread.jump_url
+        thread_jump_url = "contact: " + thread.jump_url
 
     embed = Embed(
         title=function_name,
@@ -319,7 +305,7 @@ async def debug_log(function_name: str, description: str, color: int, member: Me
     embed.timestamp = datetime.now(JST)
 
     if color == red:
-        await bot_channel.send(f"{tari3210.mention}\n{member.id}", embed=embed)
+        await bot_channel.send(f"{tari3210.mention} ERROR\n{member.id}", embed=embed)
     else:
         await bot_channel.send(f"{member.id}", embed=embed)
     return

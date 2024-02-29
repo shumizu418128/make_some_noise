@@ -283,9 +283,15 @@ async def button_cancel(interaction: Interaction):
             interaction.user.get_role(database.ROLE_LOOP),
             interaction.user.get_role(database.ROLE_LOOP_RESERVE)
         ]),
-        interaction.user.get_role(database.ROLE_OLEB)
+        any([
+            interaction.user.get_role(database.ROLE_SOLO_A),
+            interaction.user.get_role(database.ROLE_SOLO_A_RESERVE),
+        ]),
+        any([
+            interaction.user.get_role(database.ROLE_SOLO_B),
+            interaction.user.get_role(database.ROLE_SOLO_B_RESERVE),
+        ])
     ]
-    emoji = ""
 
     # そもそもエントリーしてる？
     # どちらのロールも持っていない場合
@@ -302,35 +308,40 @@ async def button_cancel(interaction: Interaction):
         await interaction.channel.send(embed=embed)
         return
 
-    # エントリーカテゴリー 日本語、英語表記定義
-    if role_check[0]:  # ビト森杯
-        category = "bitomori"
-        category_ja = "ビト森杯"
-    if role_check[1]:  # エキシビション
-        category = "exhibition"
-        category_ja = "Online Loopstation Exhibition Battle"
+    # エントリーカテゴリー 表記定義
+    loop_emoji = await interaction.guild.fetch_emoji(database.EMOJI_LOOP_BUTTON)
+    category_name = ["loop", "soloA", "soloB"]
+    category_emoji = [loop_emoji, "🇦", "🅱️"]
 
-    # 両方にエントリーしている場合
-    if all(role_check):
+    # 複数部門にエントリーしている場合
+    if sum(role_check) >= 2:
 
         # キャンセルするカテゴリーを選択
         embed = Embed(
             title="エントリーキャンセル",
-            description="どちらのエントリーをキャンセルしますか？\n🏆 ビト森杯\
-                \n⚔️ Online Loopstation Exhibition Battle\n❌ このメッセージを削除する",
+            description="どの部門のエントリーをキャンセルしますか？\n❌ このメッセージを削除する",
             color=yellow
         )
+        for role, category in zip(role_check, category_name):
+            if role:
+                embed.description += f"\n {category}"
+
         embed.set_author(
             name=interaction.user.display_name,
             icon_url=interaction.user.display_avatar.url
         )
         notice = await interaction.channel.send(embed=embed)
-        await notice.add_reaction("🏆")
-        await notice.add_reaction("⚔️")
+
         await notice.add_reaction("❌")
 
+        # エントリー済みのカテゴリーをリアクションで出す
+        for role, emoji in zip(role_check, category_emoji):
+            if role:
+                await notice.add_reaction(emoji)
+
         def check(reaction, user):
-            return user == interaction.user and reaction.emoji in ["🏆", "⚔️", "❌"] and reaction.message == notice
+            # TODO: reaction.emojiがこれでいいのか確認 loop_emojiが検知できないかも
+            return user == interaction.user and reaction.emoji in [loop_emoji, "🇦", "🅱️", "❌"] and reaction.message == notice
 
         try:
             reaction, _ = await interaction.client.wait_for('reaction_add', check=check, timeout=60)
@@ -347,21 +358,14 @@ async def button_cancel(interaction: Interaction):
         # ❌ならさよなら
         if reaction.emoji == "❌":
             return
-        emoji = reaction.emoji
 
-        # エントリーカテゴリー 日本語、英語表記定義
-        if emoji == "🏆":  # ビト森杯
-            category = "bitomori"
-            category_ja = "ビト森杯"
-
-        if emoji == "⚔️":  # エキシビション
-            category = "exhibition"
-            category_ja = "Online Loopstation Exhibition Battle"
+        # TODO: reaction.emojiで正しく部門名取得できるか確認
+        category = category_emoji[reaction.emoji]
 
     # キャンセル意思の最終確認
     embed = Embed(
         title="エントリーキャンセル",
-        description=f"{category_ja}エントリーをキャンセルしますか？\n⭕ `OK`\n❌ このメッセージを削除する",
+        description=f"ビト森杯{category}部門 エントリーをキャンセルしますか？\n⭕ `はい、キャンセルします`\n❌ このメッセージを削除する",
         color=yellow
     )
     embed.set_author(
@@ -376,7 +380,7 @@ async def button_cancel(interaction: Interaction):
         return user == interaction.user and reaction.emoji in ["⭕", "❌"] and reaction.message == notice
 
     try:
-        reaction, _ = await interaction.client.wait_for('reaction_add', timeout=10, check=check)
+        reaction, _ = await interaction.client.wait_for('reaction_add', timeout=20, check=check)
 
     # 10秒で処理中止
     except TimeoutError:
