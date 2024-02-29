@@ -348,6 +348,8 @@ async def button_call_admin(interaction: Interaction):
         if "ビト森杯運営が対応しますので、しばらくお待ちください。" in response.text:
             break
 
+        await interaction.channel.send("↓↓↓ 返信をこのチャットにご記入ください ↓↓↓")
+
     # 運営へ通知
     await msg.reply(
         f"{admin.mention}\n{interaction.user.display_name}さんからの問い合わせ",
