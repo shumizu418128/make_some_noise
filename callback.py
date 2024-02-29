@@ -299,7 +299,7 @@ async def button_call_admin(interaction: Interaction):
     # まずはナレッジを教えて、エントリー状況を伝える
     msg = knowledge_base + status
     response = chat.send_message(msg)
-
+    # TODO: めちゃくちゃブロッキング処理使ってるので、非同期処理に変更する
     # ここでresponseが来るが、今回は無視
 
     # しゃべってよし
@@ -325,19 +325,27 @@ async def button_call_admin(interaction: Interaction):
 
         msg = await interaction.client.wait_for('message', check=check)
 
+        # TODO: めちゃくちゃブロッキング処理使ってるので、非同期処理に変更する
         # 受け取ったメッセージをGeminiに送信
         response = chat.send_message(msg.content)
 
         # 返事のembedを作成
         embed = Embed(
             title="AIによる自動返答",
-            description=response,
+            description=response.text,
             color=blue
         )
-        if "下にあるボタンからお手続きができます。" in response:
-            view = await get_view(entry=True, cancel=True, submission_content=True)
+        embed.set_footer(
+            text="第4回ビト森杯",
+            icon_url=interaction.guild.icon.url
+        )
+        await msg.reply(embed=embed, mention_author=True)
 
-        if "ビト森杯運営が対応しますので、しばらくお待ちください。" in response:
+        if "下にあるボタンからお手続きができます。" in response.text:
+            view = await get_view(entry=True, cancel=True, submission_content=True)
+            await interaction.channel.send(view=view)
+
+        if "ビト森杯運営が対応しますので、しばらくお待ちください。" in response.text:
             break
 
     # 運営へ通知
@@ -348,14 +356,6 @@ async def button_call_admin(interaction: Interaction):
     # エントリー状況照会
     embed = await get_submission_embed(interaction.user)
     await interaction.channel.send(embed=embed)
-
-    # セレクトを送信
-    view = await get_view(info=True)
-    embed = Embed(
-        title="必ずご確認ください",
-        description="すでに発表済みの内容はこちらで確認できます。問い合わせ前に、もう一度確認してみてください。\n\n↓↓↓↓↓↓↓",
-    )
-    await msg.reply(embed=embed, view=view, mention_author=True)
     return
 
 
