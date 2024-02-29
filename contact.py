@@ -1,4 +1,3 @@
-from asyncio import sleep
 from datetime import datetime, timedelta, timezone
 
 from discord import Client, Embed, File, Member
@@ -309,55 +308,3 @@ async def debug_log(function_name: str, description: str, color: int, member: Me
     else:
         await bot_channel.send(f"{member.id}", embed=embed)
     return
-
-
-async def warning_before_contact(client: Client, member: Member):
-    contact = await search_contact(member)
-
-    # 問い合わせ前にselectを送信
-    embed = Embed(
-        title="お問い合わせ内容を選択",
-        description="以下のセレクトメニューから、お問い合わせ内容に近いものを選択してください。",
-        color=yellow
-    )
-    view = await get_view(info=True)
-    await contact.send(member.mention, embed=embed, view=view)
-
-    def check(i):
-        return i.user == member and i.channel == contact and i.data["custom_id"] == "select_bitomori_info"
-
-    # ユーザーの選択を待つ
-    _ = await client.wait_for('interaction', check=check)
-
-    # 本当に問い合わせるか確認
-    embed = Embed(
-        title="お問い合わせの前に",
-        description="表示された画像に、お問い合わせ内容は記載されていましたか？\
-            \n\n⭕ 画像をみて解決した\n❌ このメッセージを削除する\n📩 運営にチャットで問い合わせる",
-        color=yellow
-    )
-    notice = await contact.send(embed=embed, view=view)
-
-    await sleep(2)
-    await notice.add_reaction("⭕")
-    await notice.add_reaction("❌")
-    await notice.add_reaction("📩")
-
-    def check(reaction, user):
-        return user == member and reaction.emoji in ["⭕", "❌", "📩"] and reaction.message == notice
-
-    try:
-        reaction, _ = await client.wait_for('reaction_add', check=check, timeout=60)
-
-    # タイムアウト
-    except TimeoutError:
-        await notice.delete()
-        return False
-
-    await notice.delete()
-
-    # 画像をみて解決した
-    if reaction.emoji in ["⭕", "❌"]:
-        return False
-
-    return True

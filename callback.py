@@ -1,11 +1,13 @@
+import os
 from datetime import datetime, timedelta, timezone
 
+import google.generativeai as genai
 from discord import Embed, Interaction
-from button_view import get_view
 
 import database
+from button_view import get_view
 from contact import (contact_start, debug_log, get_submission_embed,
-                     search_contact, warning_before_contact)
+                     search_contact)
 from database import get_worksheet
 from entry import Modal_entry, entry_cancel, process_entry
 
@@ -174,9 +176,11 @@ async def button_entry(interaction: Interaction):
     }
     # 言語に対応する文言を取得（ない場合英語）
     try:
-        description = langs[locale] + f"\nお手数ですが {thread.jump_url} までお問い合わせください。"
+        description = langs[locale] + \
+            f"\nお手数ですが {thread.jump_url} までお問い合わせください。"
     except KeyError:
-        description = langs["en-US"] + f"\nお手数ですが {thread.jump_url} までお問い合わせください。"
+        description = langs["en-US"] + \
+            f"\nお手数ですが {thread.jump_url} までお問い合わせください。"
 
     # 一旦エラー文言を送信
     embed = Embed(
@@ -222,15 +226,81 @@ async def button_call_admin(interaction: Interaction):
 
     contact = interaction.client.get_channel(database.CHANNEL_CONTACT)
     admin = interaction.guild.get_role(database.ROLE_ADMIN)
-    contact_warning = database.CONTACT_WARNING
 
-    # リストに含まれるユーザーの場合、warning_before_contact関数を実行
-    if interaction.user.id in contact_warning:
-        status = await warning_before_contact(interaction.client, interaction.user)
+    ###############################
+    # ここでGeminiに接続、まず会話させる
+    ###############################
 
-        # Falseの場合、処理中止
-        if status is False:
-            return
+    # Gemini初期設定
+    generation_config = genai.GenerationConfig(temperature=1)
+
+    safety_settings = [
+        {
+            "category": "HARM_CATEGORY_SEXUAL",
+            "threshold": "BLOCK_NONE",
+        },
+        {
+            "category": "HARM_CATEGORY_DANGEROUS",
+            "threshold": "BLOCK_NONE",
+        },
+        {
+            "category": "HARM_CATEGORY_HARASSMENT",
+            "threshold": "BLOCK_NONE",
+        },
+        {
+            "category": "HARM_CATEGORY_HATE_SPEECH",
+            "threshold": "BLOCK_NONE",
+        },
+        {
+            "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+            "threshold": "BLOCK_NONE",
+        },
+        {
+            "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+            "threshold": "BLOCK_NONE",
+        }
+    ]
+    genai.configure(api_key=os.environ['GEMINI_API_KEY'])
+    model = genai.GenerativeModel(
+        model_name='gemini-pro',
+        generation_config=generation_config,
+        safety_settings=safety_settings
+    )
+    # knowledge_base.txtを読み込む
+    async with open('knowledge_base.txt', 'r', encoding="utf-8") as f:
+        knowledge_base = await f.read()
+
+    # ビト森杯エントリー状況をGeminiに伝える
+    role_check = [
+        any([
+            interaction.user.get_role(database.ROLE_LOOP),
+            interaction.user.get_role(database.ROLE_LOOP_RESERVE)
+        ]),
+        any([
+            interaction.user.get_role(database.ROLE_SOLO_A),
+            interaction.user.get_role(database.ROLE_SOLO_A_RESERVE),
+        ]),
+        any([
+            interaction.user.get_role(database.ROLE_SOLO_B),
+            interaction.user.get_role(database.ROLE_SOLO_B_RESERVE),
+        ])
+    ]
+    category_name = ["ソロA", "ソロB", "Loopstation"]
+    status = f"\n\n\n{interaction.user.display_name}さんからお問い合わせがありました。"
+    for role, category in zip(role_check, category_name):
+        if role:
+            status += f"\n{interaction.user.display_name}さんはビト森杯{category}部門にエントリーしています。"
+    if not any(role_check):
+        status += f"\n{interaction.user.display_name}さんはビト森杯にエントリーしていません。"
+
+    # 会話ページを作成
+    chat = model.start_chat()
+
+    # まずはナレッジを教えて、エントリー状況を伝える
+    msg = knowledge_base + status
+    response = chat.send_message(msg)
+
+    # ここでresponseが来るが、今回は無視
 
     # しゃべってよし
     await contact.set_permissions(interaction.user, send_messages_in_threads=True)
@@ -248,11 +318,27 @@ async def button_call_admin(interaction: Interaction):
     await interaction.channel.send(interaction.user.mention, embed=embed)
     await interaction.channel.send("↓↓↓ このチャットにご記入ください ↓↓↓")
 
-    # メッセージが来たら運営へ通知
-    def check(m):
-        return m.channel == interaction.channel and m.author == interaction.user
+    while True:
+        # メッセージが来たら運営へ通知
+        def check(m):
+            return m.channel == interaction.channel and m.author == interaction.user
 
-    msg = await interaction.client.wait_for('message', check=check)
+        msg = await interaction.client.wait_for('message', check=check)
+
+        # 受け取ったメッセージをGeminiに送信
+        response = chat.send_message(msg.content)
+
+        # 返事のembedを作成
+        embed = Embed(
+            title="AIによる自動返答",
+            description=response,
+            color=blue
+        )
+        if "下にあるボタンからお手続きができます。" in response:
+            view = await get_view(entry=True, cancel=True, submission_content=True)
+
+        if "ビト森杯運営が対応しますので、しばらくお待ちください。" in response:
+            break
 
     # 運営へ通知
     await msg.reply(
