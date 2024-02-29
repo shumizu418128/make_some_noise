@@ -233,33 +233,7 @@ async def button_call_admin(interaction: Interaction):
 
     # Gemini初期設定
     generation_config = genai.GenerationConfig(temperature=1)
-
-    safety_settings = [
-        {
-            "category": "HARM_CATEGORY_SEXUAL",
-            "threshold": "BLOCK_NONE",
-        },
-        {
-            "category": "HARM_CATEGORY_DANGEROUS",
-            "threshold": "BLOCK_NONE",
-        },
-        {
-            "category": "HARM_CATEGORY_HARASSMENT",
-            "threshold": "BLOCK_NONE",
-        },
-        {
-            "category": "HARM_CATEGORY_HATE_SPEECH",
-            "threshold": "BLOCK_NONE",
-        },
-        {
-            "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-            "threshold": "BLOCK_NONE",
-        },
-        {
-            "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
-            "threshold": "BLOCK_NONE",
-        }
-    ]
+    safety_settings = database.SAFETY_SETTINGS
     genai.configure(api_key=os.environ['GEMINI_API_KEY'])
     model = genai.GenerativeModel(
         model_name='gemini-pro',
@@ -269,6 +243,7 @@ async def button_call_admin(interaction: Interaction):
     # knowledge_base.txtを読み込む
     async with open('knowledge_base.txt', 'r', encoding="utf-8") as f:
         knowledge_base = await f.read()
+    # 初期設定おわり
 
     # ビト森杯エントリー状況をGeminiに伝える
     role_check = [
@@ -302,9 +277,6 @@ async def button_call_admin(interaction: Interaction):
     # TODO: めちゃくちゃブロッキング処理使ってるので、非同期処理に変更する
     # ここでresponseが来るが、今回は無視
 
-    # しゃべってよし
-    await contact.set_permissions(interaction.user, send_messages_in_threads=True)
-
     # 要件を書くよう案内
     embed = Embed(
         title="このチャンネルにご用件をご記入ください",
@@ -318,12 +290,21 @@ async def button_call_admin(interaction: Interaction):
     await interaction.channel.send(interaction.user.mention, embed=embed)
     await interaction.channel.send("↓↓↓ このチャットにご記入ください ↓↓↓")
 
+    ###############################
+    # ここでGeminiとの会話無限ループ
+    ###############################
+
     while True:
-        # メッセージが来たら運営へ通知
+        # しゃべってよし
+        await contact.set_permissions(interaction.user, send_messages_in_threads=True)
+
         def check(m):
             return m.channel == interaction.channel and m.author == interaction.user
 
         msg = await interaction.client.wait_for('message', check=check)
+
+        # しゃべるな
+        await contact.set_permissions(interaction.user, send_messages_in_threads=False)
 
         # TODO: めちゃくちゃブロッキング処理使ってるので、非同期処理に変更する
         # 受け取ったメッセージをGeminiに送信
@@ -350,6 +331,10 @@ async def button_call_admin(interaction: Interaction):
 
         await interaction.channel.send("↓↓↓ 返信をこのチャットにご記入ください ↓↓↓")
 
+    ################################
+    # ここでGeminiとの会話終了 運営対応へ
+    ################################
+
     # 運営へ通知
     await msg.reply(
         f"{admin.mention}\n{interaction.user.display_name}さんからの問い合わせ",
@@ -358,6 +343,9 @@ async def button_call_admin(interaction: Interaction):
     # エントリー状況照会
     embed = await get_submission_embed(interaction.user)
     await interaction.channel.send(embed=embed)
+
+    # しゃべってよし
+    await contact.set_permissions(interaction.user, send_messages_in_threads=True)
     return
 
 
