@@ -301,7 +301,13 @@ async def button_call_admin(interaction: Interaction):
         def check(m):
             return m.channel == interaction.channel and m.author == interaction.user
 
-        msg = await interaction.client.wait_for('message', check=check)
+        try:
+            msg = await interaction.client.wait_for('message', check=check, timeout=600)
+
+        # 10分で処理中止
+        except TimeoutError:
+            await contact_start(client=interaction.client, member=interaction.user)
+            return
 
         # しゃべるな
         await contact.set_permissions(interaction.user, send_messages_in_threads=False)
