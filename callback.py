@@ -43,7 +43,7 @@ async def modal_callback(interaction: Interaction):
     # custom_id = name, read, device(Loopのみ), note
 
     # TODO: とりあえず仮で申請受付完了通知
-
+    # TODO: 申請結果は問合せスレッドで通知
     # TODO: process_entry関数に裏処理は投げる
     status = await process_entry(interaction.user, category, input_contents)
 
