@@ -1,10 +1,11 @@
 import os
+import random
 from asyncio import sleep
 from datetime import datetime, timedelta, timezone
-import random
 
 import google.generativeai as genai
-from discord import Embed, Interaction
+from discord import ButtonStyle, Embed, Interaction
+from discord.ui import Button, View
 
 import database
 from button_view import get_view
@@ -384,6 +385,35 @@ async def button_call_admin(interaction: Interaction):
             color=blue,
             member=interaction.user
         )
+        # 一応運営サポートを求めるボタンを用意
+        if "運営" in response.text:
+            button = Button(
+                style=ButtonStyle.red,
+                label="運営のサポートを求める",
+                emoji="📩"
+            )
+
+            async def callback(i: Interaction):
+                # ボタンを押した人が問い合わせ者か確認
+                if i.user.id == interaction.user.id:
+
+                    # 運営へ通知
+                    await msg.reply(
+                        f"{admin.mention}\n{interaction.user.display_name}さんからの問い合わせ",
+                        mention_author=False
+                    )
+                    # エントリー状況照会
+                    embed = await get_submission_embed(interaction.user)
+                    await interaction.channel.send(embed=embed)
+
+                    # しゃべってよし
+                    await contact.set_permissions(interaction.user, send_messages_in_threads=True)
+                    return
+
+            button.callback = callback
+            view = View(timeout=None)
+            view.add_item(button)
+            await interaction.channel.send(view=view)
 
     ################################
     # ここでGeminiとの会話終了 運営対応へ

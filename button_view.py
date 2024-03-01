@@ -88,8 +88,6 @@ async def get_view(
     call_admin: bool = False,
     submission_content: bool = False,
     cancel: bool = False,
-    entry_bitomori: bool = False,
-    entry_exhibition: bool = False,
     entry: bool = False,
     replace: bool = False,
     admin: bool = False,
@@ -104,7 +102,7 @@ async def get_view(
         emoji="📝"
     )
     button_call_admin = Button(
-        label="運営に問い合わせ",
+        label="チャットでお問い合わせ",
         style=ButtonStyle.primary,
         custom_id="button_call_admin",
         emoji="📩"
