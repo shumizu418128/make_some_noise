@@ -1,5 +1,7 @@
 import os
+from asyncio import sleep
 from datetime import datetime, timedelta, timezone
+import random
 
 import google.generativeai as genai
 from discord import Embed, Interaction
@@ -221,11 +223,21 @@ async def button_contact(interaction: Interaction):
 
 
 async def button_call_admin(interaction: Interaction):
-    # ここで応答を済ませる
-    await interaction.response.send_message("処理中...", ephemeral=True)
-
+    await interaction.response.defer(ephemeral=True, thinking=True)
     contact = interaction.client.get_channel(database.CHANNEL_CONTACT)
     admin = interaction.guild.get_role(database.ROLE_ADMIN)
+
+    # 問い合わせ準備中であることを通知
+    embed = Embed(
+        title="お問い合わせ対応準備中",
+        description="20秒ほどかかります。しばらくお待ちください。",
+        color=yellow
+    )
+    embed.set_author(
+        name=interaction.user.display_name,
+        icon_url=interaction.user.display_avatar.url
+    )
+    await interaction.channel.send(embed=embed)
 
     ###############################
     # ここでGeminiに接続、まず会話させる
@@ -243,28 +255,30 @@ async def button_call_admin(interaction: Interaction):
     # knowledge_base.txtを読み込む
     async with open('knowledge_base.txt', 'r', encoding="utf-8") as f:
         knowledge_base = await f.read()
+
     # 初期設定おわり
 
     # ビト森杯エントリー状況をGeminiに伝える
     role_check = [
-        any([
-            interaction.user.get_role(database.ROLE_LOOP),
-            interaction.user.get_role(database.ROLE_LOOP_RESERVE)
-        ]),
-        any([
-            interaction.user.get_role(database.ROLE_SOLO_A),
-            interaction.user.get_role(database.ROLE_SOLO_A_RESERVE),
-        ]),
-        any([
-            interaction.user.get_role(database.ROLE_SOLO_B),
-            interaction.user.get_role(database.ROLE_SOLO_B_RESERVE),
-        ])
+        interaction.user.get_role(database.ROLE_LOOP),
+        interaction.user.get_role(database.ROLE_LOOP_RESERVE),
+        interaction.user.get_role(database.ROLE_SOLO_A),
+        interaction.user.get_role(database.ROLE_SOLO_A_RESERVE),
+        interaction.user.get_role(database.ROLE_SOLO_B),
+        interaction.user.get_role(database.ROLE_SOLO_B_RESERVE),
     ]
-    category_name = ["ソロA", "ソロB", "Loopstation"]
+    category_name = [
+        "Loopstation部門",
+        "Loopstation部門(キャンセル待ち)",
+        "ソロA部門",
+        "ソロA部門(キャンセル待ち)",
+        "ソロB部門",
+        "ソロB部門(キャンセル待ち)"
+    ]
     status = f"\n\n\n{interaction.user.display_name}さんからお問い合わせがありました。"
     for role, category in zip(role_check, category_name):
         if role:
-            status += f"\n{interaction.user.display_name}さんはビト森杯{category}部門にエントリーしています。"
+            status += f"\n{interaction.user.display_name}さんはビト森杯{category}にエントリーしています。"
     if not any(role_check):
         status += f"\n{interaction.user.display_name}さんはビト森杯にエントリーしていません。"
 
@@ -273,28 +287,38 @@ async def button_call_admin(interaction: Interaction):
 
     # まずはナレッジを教えて、エントリー状況を伝える
     msg = knowledge_base + status
-    response = chat.send_message(msg)
-    # TODO: めちゃくちゃブロッキング処理使ってるので、非同期処理に変更する
-    # ここでresponseが来るが、今回は無視
+
+    while True:
+        try:
+            chat.send_message_async(msg)
+
+        # 送信失敗したら1秒待って再送
+        except Exception as e:
+            await sleep(1)
+            print(e)
+            continue
+        else:
+            break
 
     # 要件を書くよう案内
     embed = Embed(
-        title="このチャンネルにご用件をご記入ください",
-        description="運営が対応します",
+        title="お待たせしました！",
+        description="このチャンネルにご用件をご記入ください。",
         color=yellow
     )
     embed.set_author(
         name=interaction.user.display_name,
         icon_url=interaction.user.display_avatar.url
     )
-    await interaction.channel.send(interaction.user.mention, embed=embed)
-    await interaction.channel.send("↓↓↓ このチャットにご記入ください ↓↓↓")
+    await interaction.followup.send(interaction.user.mention, embed=embed)
 
     ###############################
     # ここでGeminiとの会話無限ループ
     ###############################
 
     while True:
+        await interaction.channel.send("↓↓↓ ご用件をご記入ください ↓↓↓")
+
         # しゃべってよし
         await contact.set_permissions(interaction.user, send_messages_in_threads=True)
 
@@ -302,9 +326,10 @@ async def button_call_admin(interaction: Interaction):
             return m.channel == interaction.channel and m.author == interaction.user
 
         try:
-            msg = await interaction.client.wait_for('message', check=check, timeout=600)
+            minute = 60
+            msg = await interaction.client.wait_for('message', check=check, timeout=60 * minute)
 
-        # 10分で処理中止
+        # 1時間で処理中止
         except TimeoutError:
             await contact_start(client=interaction.client, member=interaction.user)
             return
@@ -312,22 +337,39 @@ async def button_call_admin(interaction: Interaction):
         # しゃべるな
         await contact.set_permissions(interaction.user, send_messages_in_threads=False)
 
-        # TODO: めちゃくちゃブロッキング処理使ってるので、非同期処理に変更する
+        # msgにリアクション
+        try:
+            reaction = random.choice(interaction.guild.emojis)
+            await msg.add_reaction(reaction)
+        except Exception:
+            pass
+
         # 受け取ったメッセージをGeminiに送信
-        response = chat.send_message(msg.content)
+        while True:
+            try:
+                response = chat.send_message_async(msg.content)
+
+            # 送信失敗したら1秒待って再送
+            except Exception as e:
+                await sleep(1)
+                print(e)
+                continue
+            else:
+                break
 
         # 返事のembedを作成
         embed = Embed(
-            title="AIによる自動返答",
+            title="AIによる自動回答",
             description=response.text,
             color=blue
         )
-        embed.set_footer(
-            text="第4回ビト森杯",
+        embed.set_author(
+            name="第4回ビト森杯 AIサポート",
             icon_url=interaction.guild.icon.url
         )
         await msg.reply(embed=embed, mention_author=True)
 
+        # 回答に応じて処理を変える
         if "下にあるボタンからお手続きができます。" in response.text:
             view = await get_view(entry=True, cancel=True, submission_content=True)
             await interaction.channel.send(view=view)
@@ -335,7 +377,13 @@ async def button_call_admin(interaction: Interaction):
         if "ビト森杯運営が対応しますので、しばらくお待ちください。" in response.text:
             break
 
-        await interaction.channel.send("↓↓↓ 返信をこのチャットにご記入ください ↓↓↓")
+        # 運営に通知しない場合のみ、自動回答を記録
+        await debug_log(
+            function_name="button_call_admin",
+            description="AIによる自動回答",
+            color=blue,
+            member=interaction.user
+        )
 
     ################################
     # ここでGeminiとの会話終了 運営対応へ
