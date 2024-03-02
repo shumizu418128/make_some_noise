@@ -366,6 +366,10 @@ async def button_call_admin(interaction: Interaction):
         )
         embed.set_author(
             name="第4回ビト森杯 AIサポート",
+            icon_url=interaction.guild.me.display_avatar.url
+        )
+        embed.set_footer(
+            text="ほかにもご用件がありましたら、お気軽にこのチャットにご記入ください。",
             icon_url=interaction.guild.icon.url
         )
         await msg.reply(embed=embed, mention_author=True)
