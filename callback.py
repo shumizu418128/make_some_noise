@@ -4,7 +4,7 @@ from asyncio import sleep
 from datetime import datetime, timedelta, timezone
 
 import google.generativeai as genai
-from discord import ButtonStyle, Embed, Interaction
+from discord import ButtonStyle, Embed, File, Interaction
 from discord.ui import Button, View
 
 import database
@@ -228,38 +228,53 @@ async def button_call_admin(interaction: Interaction):
     contact = interaction.client.get_channel(database.CHANNEL_CONTACT)
     admin = interaction.guild.get_role(database.ROLE_ADMIN)
 
-    # 問い合わせ準備中であることを通知
+    ###############################
+    # 準備をする前に一回話を聞く
+    ###############################
+
+    # 用件を書くよう案内
     embed = Embed(
-        title="お問い合わせ対応準備中",
-        description="20秒ほどかかります。しばらくお待ちください。",
+        title="お問い合わせ",
+        description="このチャンネルにご用件をご記入ください。",
         color=yellow
     )
     embed.set_author(
         name=interaction.user.display_name,
         icon_url=interaction.user.display_avatar.url
     )
-    await interaction.channel.send(embed=embed)
+    await interaction.followup.send(interaction.user.mention, embed=embed)
+    await interaction.channel.send("↓↓↓ ご用件をご記入ください ↓↓↓")
+
+    # しゃべってよし
+    await contact.set_permissions(interaction.user, send_messages_in_threads=True)
+
+    def check(m):
+        return m.channel == interaction.channel and m.author == interaction.user
+
+    try:
+        minute = 60
+        msg = await interaction.client.wait_for('message', check=check, timeout=60 * minute)
+
+    # 1時間で処理中止
+    except TimeoutError:
+        await contact_start(client=interaction.client, member=interaction.user)
+        return
+
+    # しゃべるな
+    await contact.set_permissions(interaction.user, send_messages_in_threads=False)
+
+    # msgにリアクション できない場合は無視
+    try:
+        reaction = random.choice(interaction.guild.emojis)
+        await msg.add_reaction(reaction)
+    except Exception:
+        pass
 
     ###############################
     # ここでGeminiに接続、まず会話させる
     ###############################
 
-    # Gemini初期設定
-    generation_config = genai.GenerationConfig(temperature=1)
-    safety_settings = database.SAFETY_SETTINGS
-    genai.configure(api_key=os.environ['GEMINI_API_KEY'])
-    model = genai.GenerativeModel(
-        model_name='gemini-pro',
-        generation_config=generation_config,
-        safety_settings=safety_settings
-    )
-    # knowledge_base.txtを読み込む
-    async with open('knowledge_base.txt', 'r', encoding="utf-8") as f:
-        knowledge_base = await f.read()
-
-    # 初期設定おわり
-
-    # ビト森杯エントリー状況をGeminiに伝える
+    # ビト森杯エントリー状況をGeminiに伝えるための準備
     role_check = [
         interaction.user.get_role(database.ROLE_LOOP),
         interaction.user.get_role(database.ROLE_LOOP_RESERVE),
@@ -283,15 +298,27 @@ async def button_call_admin(interaction: Interaction):
     if not any(role_check):
         status += f"\n{interaction.user.display_name}さんはビト森杯にエントリーしていません。"
 
+    # Gemini初期設定
+    safety_settings = database.SAFETY_SETTINGS
+    genai.configure(api_key=os.environ['GEMINI_API_KEY'])
+    model = genai.GenerativeModel(
+        model_name='gemini-pro',
+        safety_settings=safety_settings
+    )
+    # knowledge_base.txtを読み込む
+    async with open('knowledge_base.txt', 'r', encoding="utf-8") as f:
+        knowledge_base = await f.read()
+
     # 会話ページを作成
     chat = model.start_chat()
 
     # まずはナレッジを教えて、エントリー状況を伝える
-    msg = knowledge_base + status
+    tuning = knowledge_base + status
 
+    # ナレッジ + エントリー状況を送信 できるまで繰り返す
     while True:
         try:
-            chat.send_message_async(msg)
+            chat.send_message_async(tuning)
 
         # 送信失敗したら1秒待って再送
         except Exception as e:
@@ -301,51 +328,14 @@ async def button_call_admin(interaction: Interaction):
         else:
             break
 
-    # 要件を書くよう案内
-    embed = Embed(
-        title="お待たせしました！",
-        description="このチャンネルにご用件をご記入ください。",
-        color=yellow
-    )
-    embed.set_author(
-        name=interaction.user.display_name,
-        icon_url=interaction.user.display_avatar.url
-    )
-    await interaction.followup.send(interaction.user.mention, embed=embed)
-
     ###############################
     # ここでGeminiとの会話無限ループ
     ###############################
 
     while True:
-        await interaction.channel.send("↓↓↓ ご用件をご記入ください ↓↓↓")
 
-        # しゃべってよし
-        await contact.set_permissions(interaction.user, send_messages_in_threads=True)
-
-        def check(m):
-            return m.channel == interaction.channel and m.author == interaction.user
-
-        try:
-            minute = 60
-            msg = await interaction.client.wait_for('message', check=check, timeout=60 * minute)
-
-        # 1時間で処理中止
-        except TimeoutError:
-            await contact_start(client=interaction.client, member=interaction.user)
-            return
-
-        # しゃべるな
-        await contact.set_permissions(interaction.user, send_messages_in_threads=False)
-
-        # msgにリアクション
-        try:
-            reaction = random.choice(interaction.guild.emojis)
-            await msg.add_reaction(reaction)
-        except Exception:
-            pass
-
-        # 受け取ったメッセージをGeminiに送信
+        # 受け取ったメッセージをGeminiに送信 できるまで繰り返す
+        # ここで使うmsgは260行付近で定義
         while True:
             try:
                 response = chat.send_message_async(msg.content)
@@ -358,10 +348,28 @@ async def button_call_admin(interaction: Interaction):
             else:
                 break
 
+        # 回答を分析
+        # 文字列を行ごとに分割
+        lines = response.text.splitlines()
+
+        # "参考画像"で始まる行を抽出し、元のリストから削除
+        image_name_list = [
+            line for line in lines if line.startswith("参考画像")
+        ]
+        response_text_lines = [
+            line for line in lines if not line.startswith("参考画像")
+        ]
+
+        # リストを文字列に変換
+        response_text = "\n".join(response_text_lines)
+
+        # AIが提示した参考画像をリストにまとめる
+        files = [File(image_name) for image_name in image_name_list]
+
         # 返事のembedを作成
         embed = Embed(
             title="AIによる自動回答",
-            description=response.text,
+            description=response_text,
             color=blue
         )
         embed.set_author(
@@ -372,14 +380,18 @@ async def button_call_admin(interaction: Interaction):
             text="ほかにもご用件がありましたら、お気軽にこのチャットにご記入ください。",
             icon_url=interaction.guild.icon.url
         )
-        await msg.reply(embed=embed, mention_author=True)
+        # 画像があれば添付
+        if bool(files):
+            await msg.reply(embed=embed, files=files, mention_author=True)
+        else:
+            await msg.reply(embed=embed, mention_author=True)
 
         # 回答に応じて処理を変える
-        if "下にあるボタンからお手続きができます。" in response.text:
+        if "下にあるボタンからお手続きができます。" in response_text:
             view = await get_view(entry=True, cancel=True, submission_content=True)
             await interaction.channel.send(view=view)
 
-        if "ビト森杯運営が対応しますので、しばらくお待ちください。" in response.text:
+        if "ビト森杯運営が対応しますので、しばらくお待ちください。" in response_text:
             break
 
         # 運営に通知しない場合のみ、自動回答を記録
@@ -390,7 +402,7 @@ async def button_call_admin(interaction: Interaction):
             member=interaction.user
         )
         # 一応運営サポートを求めるボタンを用意
-        if "運営" in response.text:
+        if "運営" in response_text:
             button = Button(
                 style=ButtonStyle.red,
                 label="運営のサポートを求める",
@@ -418,6 +430,37 @@ async def button_call_admin(interaction: Interaction):
             view = View(timeout=None)
             view.add_item(button)
             await interaction.channel.send(view=view)
+
+        ###############################
+        # まだ質問がある場合はループ
+        ###############################
+
+        await interaction.channel.send("↓↓↓ ご用件をご記入ください ↓↓↓")
+
+        # しゃべってよし
+        await contact.set_permissions(interaction.user, send_messages_in_threads=True)
+
+        def check(m):
+            return m.channel == interaction.channel and m.author == interaction.user
+
+        try:
+            minute = 60
+            msg = await interaction.client.wait_for('message', check=check, timeout=60 * minute)
+
+        # 1時間で処理中止
+        except TimeoutError:
+            await contact_start(client=interaction.client, member=interaction.user)
+            return
+
+        # しゃべるな
+        await contact.set_permissions(interaction.user, send_messages_in_threads=False)
+
+        # msgにリアクション できない場合は無視
+        try:
+            reaction = random.choice(interaction.guild.emojis)
+            await msg.add_reaction(reaction)
+        except Exception:
+            pass
 
     ################################
     # ここでGeminiとの会話終了 運営対応へ
