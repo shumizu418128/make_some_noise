@@ -366,6 +366,9 @@ async def button_call_admin(interaction: Interaction):
         # AIが提示した参考画像をリストにまとめる
         files = [File(image_name) for image_name in image_name_list]
 
+        if "zoom" in response_text.lower():
+            response_text += "ビト森杯、Zoomの使い方に関して正確なサポートを提供できません。[Zoomヘルプページ](https://support.zoom.com/hc/ja)などで、Zoomの操作方法を必ずご確認ください。"
+
         # 返事のembedを作成
         embed = Embed(
             title="AIによる自動回答",
