@@ -17,16 +17,10 @@ async def search_contact(member: Member, create: bool = False, locale: str = "ja
     # 問い合わせチャンネル
     contact = member.guild.get_channel(database.CHANNEL_CONTACT)
 
-    # 問い合わせスレッド一覧
-    threads = contact.threads
-
-    # スレッド名一覧 (member.id)_(locale)
-    thread_names = [thread.name.split("_")[0] for thread in threads]
-
-    # 問い合わせスレッドがすでにある場合
-    if str(member.id) in thread_names:
-        index = thread_names.index(str(member.id))
-        return threads[index]
+    # 問い合わせスレッドがすでにある場合、そのスレッドを返す
+    for thread in contact.threads:
+        if thread.name.startswith(str(member.id)):
+            return thread
 
     # 問い合わせスレッドがなく、作成しない場合
     if create is False:
