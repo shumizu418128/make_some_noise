@@ -1,5 +1,7 @@
-from discord import ButtonStyle, SelectOption
+from discord import ButtonStyle, Client, SelectOption
 from discord.ui import Button, Select, View
+
+import database
 
 # NOTE: ビト森杯運営機能搭載ファイル
 
@@ -85,6 +87,7 @@ class BitomoriInfoSelect(Select):
 
 # TODO: ZoomURLを表示するボタンを実装 (参加者のみ閲覧可能)
 async def get_view(
+    *client: Client,
     contact: bool = False,
     call_admin: bool = False,
     submission_content: bool = False,
@@ -94,6 +97,18 @@ async def get_view(
     admin: bool = False,
     info: bool = False
 ):
+    """
+    - `entry=True`の場合、`client`入力必須
+    - `client`は必ず最初に指定
+
+    >>> await get_view(client, entry=True)
+    """
+
+    if bool(client):
+        emoji_loop_button = client[0].get_emoji(database.EMOJI_LOOP_BUTTON)
+    elif entry:
+        raise ValueError("ビト森杯エントリーを表示するためにはclientを指定してください")
+
     view = View(timeout=None)
 
     button_contact = Button(
@@ -124,19 +139,19 @@ async def get_view(
         style=ButtonStyle.green,
         label="ビト森杯Loop エントリー",
         custom_id="button_entry_loop",
-        emoji="🏆"
+        emoji=emoji_loop_button
     )
     button_entry_soloA = Button(
         style=ButtonStyle.green,
         label="ビト森杯ソロA エントリー",
         custom_id="button_entry_soloA",
-        emoji="🏆"
+        emoji="🇦"
     )
     button_entry_soloB = Button(
         style=ButtonStyle.green,
         label="ビト森杯ソロB エントリー",
         custom_id="button_entry_soloB",
-        emoji="🏆"
+        emoji="🅱️"
     )
     """button_entry_exhibition = Button(
         style=ButtonStyle.green,
