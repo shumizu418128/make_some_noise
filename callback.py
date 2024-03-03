@@ -354,17 +354,17 @@ async def button_call_admin(interaction: Interaction):
 
         # "参考画像"で始まる行を抽出し、元のリストから削除
         image_name_list = [
-            line for line in lines if line.startswith("参考画像")
+            line.replace("参考画像 ", "") for line in lines if line.startswith("参考画像")
         ]
         response_text_lines = [
             line for line in lines if not line.startswith("参考画像")
         ]
-
         # リストを文字列に変換
         response_text = "\n".join(response_text_lines)
 
         # AIが提示した参考画像をリストにまとめる
-        files = [File(image_name) for image_name in image_name_list]
+        # 存在しないファイル名は無視
+        files = [File(image_name) for image_name in image_name_list if image_name in os.listdir()]
 
         if "zoom" in response_text.lower():
             response_text += "ビト森杯、Zoomの使い方に関して正確なサポートを提供できません。[Zoomヘルプページ](https://support.zoom.com/hc/ja)などで、Zoomの操作方法を必ずご確認ください。"
@@ -383,11 +383,8 @@ async def button_call_admin(interaction: Interaction):
             text="ほかにもご用件がありましたら、お気軽にこのチャットにご記入ください。",
             icon_url=interaction.guild.icon.url
         )
-        # 画像があれば添付
-        if bool(files):
-            await msg.reply(embed=embed, files=files, mention_author=True)
-        else:
-            await msg.reply(embed=embed, mention_author=True)
+        # 回答・画像を送信
+        await msg.reply(embed=embed, files=files, mention_author=True)
 
         # 回答に応じて処理を変える
         if "下にあるボタンからお手続きができます。" in response_text:

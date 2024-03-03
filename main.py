@@ -149,7 +149,8 @@ async def on_interaction(interaction: Interaction):
     if bool(thread) is False:
         embed.description += "\n\ncontact: なし"
 
-    await bot_channel.send(f"{interaction.user.id}", embed=embed)
+    # サイレントで送信 ユーザーに通知しない
+    await bot_channel.send(f"{interaction.user.id}", embed=embed, silent=True)
 """
 
 

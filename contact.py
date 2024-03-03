@@ -303,8 +303,11 @@ async def debug_log(function_name: str, description: str, color: int, member: Me
     )
     embed.timestamp = datetime.now(JST)
 
+    # エラーの場合
     if color == red:
         await bot_channel.send(f"{tari3210.mention} ERROR\n{member.id}", embed=embed)
+
+    # それ以外の場合サイレントで送信 ユーザーに通知しない
     else:
-        await bot_channel.send(f"{member.id}", embed=embed)
+        await bot_channel.send(f"{member.id}", embed=embed, silent=True)
     return
