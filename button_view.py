@@ -104,6 +104,7 @@ async def get_view(
     >>> await get_view(client, entry=True)
     """
 
+    emoji_loop_button = None
     if bool(client):
         emoji_loop_button = client[0].get_emoji(database.EMOJI_LOOP_BUTTON)
     elif entry:
@@ -153,12 +154,14 @@ async def get_view(
         custom_id="button_entry_soloB",
         emoji="🅱️"
     )
-    """button_entry_exhibition = Button(
+    """
+    button_entry_exhibition = Button(
         style=ButtonStyle.green,
         label="OLEBエントリー",
         custom_id="button_entry_exhibition",
         emoji="⚔️"
-    )"""
+    )
+    """
     button_accept_replace = Button(
         style=ButtonStyle.green,
         label="繰り上げを確定",
