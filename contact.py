@@ -52,7 +52,7 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
     await contact.set_permissions(member, send_messages_in_threads=False)
 
     # 問い合わせスレッドを取得 リダイレクトならスレッド作成
-    thread = await search_contact(member, create=entry_redirect)
+    thread = await search_contact(member, create=True)
 
     # スレッド名からlocaleを取得
     locale = thread.name.split("_")[1]
