@@ -29,6 +29,23 @@ async def advertise(client: Client):
             # gif
             await channel.send(file=File(f"battle_stadium_{random.randint(1, 3)}.gif"))
 
+    # ランダムに通話通知オンroleつけちゃうw
+    role = channel.guild.get_role(database.ROLE_CALL_NOTIFY)
+
+    # メンバーを10人選んでroleつける
+    members = role.guild.members
+    random.shuffle(members)
+
+    for member in members[:10]:
+
+        # 運営とbotは除外
+        if member.get_role(database.ROLE_ADMIN) is None and member.bot is False:
+            try:
+                await member.add_roles(role)
+            except Exception as e:
+                print(e)
+                pass
+
     ##############################
     # 以下無期限凍結
     ##############################
