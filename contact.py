@@ -14,6 +14,16 @@ JST = timezone(timedelta(hours=9))
 
 
 async def search_contact(member: Member, create: bool = False, locale: str = "ja"):
+    """
+    問い合わせスレッドを取得or作成
+    Args:
+        member (Member): 対象のメンバー
+        create (bool, optional): スレッドがない場合作るか？ Defaults to False.
+        locale (str, optional): メンバーの言語 Defaults to "ja".
+
+    Returns:
+        _type_: 作ったスレッド or 既存のスレッド or None
+    """
     # 問い合わせチャンネル
     contact = member.guild.get_channel(database.CHANNEL_CONTACT)
 

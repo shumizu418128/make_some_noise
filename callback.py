@@ -31,6 +31,17 @@ async def modal_callback(interaction: Interaction):
     await interaction.response.defer(ephemeral=True, thinking=True)
     tari3210 = interaction.guild.get_member(database.TARI3210)
 
+    # 問い合わせスレッドを作成
+    thread = await search_contact(member=interaction.user, create=True)
+
+    # いったん受付処理中の通知
+    embed = Embed(
+        title="入力内容確認中...",
+        description=f"エントリー受付処理中です。\nまもなく結果を {thread.jump_url} に送信します。しばらくお待ちください。",
+        color=blue
+    )
+    await interaction.followup.send(embed=embed, ephemeral=True)
+
     # loop, soloA, soloB どのモーダルか判定
     category = interaction.data["custom_id"].replace("modal_entry_", "")
 
@@ -47,30 +58,22 @@ async def modal_callback(interaction: Interaction):
     # TODO: process_entry関数に裏処理は投げる
     status = await process_entry(interaction.user, category, input_contents)
 
-    # ひらがなではない場合、エラー通知
-    if status == "Error: よみがなエラー":
+    # 申請結果のembed作成
+    embed = Embed(
+        title=status["title"],
+        color=status["color"]
+    )
+    # 提出内容の名前を定義
+    submission_names = ["名前", "よみがな", "備考"]
+    if category == "loop":
+        submission_names.insert(2, "Loopstationデバイス")
 
-        embed = Embed(
-            title="❌ Error ❌",
-            description="エントリーに失敗しました。\nよみがなは、**「ひらがな・伸ばし棒** `ー` **のみ」** で入力してください\
-                \n\n入力したよみがな：" + input_contents["read"],
-            color=red
-        )
-        embed.set_author(
-            name=input_contents["name"],
-            icon_url=interaction.user.display_avatar.url
-        )
-        await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
-        return
+    # 提出内容をembedに追加
+    for name, value in zip(submission_names, input_contents.values()):
+        embed.description += f"{name}: {value}\n"
 
-    # すでにエントリー済みの場合、エラー通知
-    if status == "Error: すでにエントリー済み":
-        await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
-        return
-
-    input_values = input_contents.values()
-
-    embed.description += "入力内容\n" + "\n".join(input_values)
+    if status["title"] == "キャンセル待ち登録完了":
+        embed.description += "\n" + status["description"]
 
     embed.set_author(
         name=input_contents["name"],
@@ -80,7 +83,6 @@ async def modal_callback(interaction: Interaction):
         text=f"Make Some Noise! 開発者: {tari3210.display_name}",
         icon_url=tari3210.display_avatar.url
     )
-
     # 申請結果のembed送信
     await interaction.followup.send(interaction.user.mention, embed=embed, ephemeral=True)
 

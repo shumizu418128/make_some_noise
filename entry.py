@@ -1,8 +1,10 @@
 import re
+from collections import Counter
 from datetime import timedelta, timezone
 
-from discord import Interaction, Member, TextStyle
+from discord import Embed, Interaction, Member, TextStyle
 from discord.ui import Modal, TextInput
+from contact import debug_log
 
 import database
 
@@ -56,13 +58,62 @@ class Modal_entry(Modal):  # self = Modal, category = soloA, soloB, loop
     # モーダル提出後の処理
     async def on_submit(self, interaction: Interaction):
         # TODO: なんかやらないと怒られるので適当に処理
-        # エントリー処理はprocess_entry関数で行う
-        # modal提出の対応はon_interactionにて行う
+        # modal提出の対応はon_interactionからmodal_callbackに移動して行う
+        # エントリー処理はprocess_entryで行う
+
+        tari3210 = interaction.guild.get_member(database.TARI3210)
+        bot_channel = interaction.guild.get_channel(database.CHANNEL_BOT)
+
+        # ここではDB記録内容のチェックのみ行う
+        # エントリーした部門のidを取得
+        role_ids = {
+            "loop": (database.ROLE_LOOP, database.ROLE_LOOP_RESERVE),
+            "soloA": (database.ROLE_SOLO_A, database.ROLE_SOLO_A_RESERVE),
+            "soloB": (database.ROLE_SOLO_B, database.ROLE_SOLO_B_RESERVE),
+        }
+        category = interaction.custom_id.split("_")[-1]
+
+        # categoryに対応するIDを取得
+        # 正しく取得できていない場合はValueErrorが発生する
+        id, id_reserve = role_ids.get(category)
+        role = interaction.guild.get_role(id)
+        role_reserve = interaction.guild.get_role(id_reserve)
+
+        # エントリーした人の情報を取得
+        # on_submitが受け取った名前
+        member_name = self.children[0].value
+
+        # 提出者のid
+        member_id = interaction.user.id
+
+        # on_submitが受け取った名前が、すでにいて
+        # かつ、idが違う場合はエラーを出力
+        for role_member in role.members + role_reserve.members:
+
+            if role_member.id != member_id and role_member.display_name == member_name:
+
+                # 名前が被っているエントリー者
+                member = interaction.guild.get_member(member_id)
+                embed = Embed(
+                    title="Modal_entry on_submit",
+                    description=f"Error: 同じ名前のエントリーを確認\n\n提出者: {member.mention}\n被った人: {role_member.mention}",
+                    color=red
+                )
+                await bot_channel.send(tari3210.mention, embed=embed)
         return
 
 
 # エントリー処理
 async def process_entry(member: Member, category: str, input_contents: dict):
+    """
+    Args:
+        `member (Member):` エントリーするメンバー
+        `category (str):` エントリーする部門
+        `input_contents (dict):` 提出された内容
+
+    Returns:
+        `"Error", "Warning", "Approved" (str):` 処理結果
+    """
     # エントリーした部門のidを取得
     role_ids = {
         "loop": (database.ROLE_LOOP, database.ROLE_LOOP_RESERVE),
@@ -83,11 +134,11 @@ async def process_entry(member: Member, category: str, input_contents: dict):
         member.get_role(id_reserve)
     ])
     if user_role_statuses:
-        return "Error: エントリー済み"
+        return {"color": red, "title": "Error: エントリー済み"}
 
     # よみがなのひらがな判定
     if not re_hiragana.fullmatch(input_contents["read"]):
-        return "Error: よみがなエラー"
+        return {"color": red, "title": "Error: よみがなエラー"}
 
     #########################
     # 以下エントリー処理
@@ -115,13 +166,18 @@ async def process_entry(member: Member, category: str, input_contents: dict):
     # ニックネームを更新
     await member.edit(nick=input_contents["name"])
 
+    # エントリー数が16人以上の場合 or キャンセル待ちにすでに人がいる場合、キャンセル待ちにする
     if any([len(role.members) >= 16, len(role_reserve.members) > 0]):
+
+        # キャンセル待ちの人数を取得
+        count = len(role_reserve.members) + 1
+
         await member.add_roles(role_reserve)
-        return "Approved: キャンセル待ち"
+        return {"color": green, "title": "キャンセル待ち登録完了", "description": f"キャンセル待ち {count}番目"}
 
     else:
         await member.add_roles(role)
-        return "Approved: エントリー完了"
+        return {"color": green, "title": "エントリー完了"}
 
 
 async def entry_cancel(member: Member, category: str):
