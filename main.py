@@ -9,7 +9,7 @@ from discord.errors import ClientException
 
 from advertise import advertise
 from battle_stadium import battle, start
-import database
+
 """
 from button_admin_callback import (button_admin_cancel,
                                    button_admin_create_thread,
