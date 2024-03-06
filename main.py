@@ -1,7 +1,6 @@
 import os
 from asyncio import sleep
 from datetime import datetime, timedelta, timezone
-import random
 
 import discord
 from discord import Client, Embed, Intents, Member, Message, VoiceState
