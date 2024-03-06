@@ -1,10 +1,8 @@
 import re
-from collections import Counter
 from datetime import timedelta, timezone
 
 from discord import Embed, Interaction, Member, TextStyle
 from discord.ui import Modal, TextInput
-from contact import debug_log
 
 import database
 
