@@ -43,25 +43,6 @@ async def on_ready():  # 起動時に動作する処理
     # daily_work_PM10.start(client)  # ビト森杯定期作業 22:00
     # daily_work_AM9.start(client)  # ビト森杯定期作業 09:00
 
-    channel = client.get_channel(database.CHANNEL_GENERAL)
-
-    # ランダムに通話通知オンroleつけちゃうw
-    role = channel.guild.get_role(database.ROLE_CALL_NOTIFY)
-
-    # メンバーを10人選んでroleつける
-    members = list(role.guild.members)
-    random.shuffle(members)
-
-    for member in members[:10]:
-
-        # 運営とbotは除外
-        if member.get_role(database.ROLE_ADMIN) is None and member.bot is False:
-            try:
-                await member.add_roles(role)
-            except Exception as e:
-                print(e)
-                pass
-
 
 # TODO: 第4回ビト森杯実装
 # A, B, Loop部門のエントリー受付
