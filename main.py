@@ -49,7 +49,7 @@ async def on_ready():  # 起動時に動作する処理
     role = channel.guild.get_role(database.ROLE_CALL_NOTIFY)
 
     # メンバーを10人選んでroleつける
-    members = role.guild.members
+    members = list(role.guild.members)
     random.shuffle(members)
 
     for member in members[:10]:
