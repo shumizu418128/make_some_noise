@@ -61,19 +61,17 @@ async def modal_callback(interaction: Interaction):
     # 申請結果のembed作成
     embed = Embed(
         title=status["title"],
+        description=status["description"] + "\n\n[入力内容]",
         color=status["color"]
     )
     # 提出内容の名前を定義
     submission_names = ["名前", "よみがな", "備考"]
     if category == "loop":
-        submission_names.insert(2, "Loopstationデバイス")
+        submission_names.insert(2, "デバイス")
 
     # 提出内容をembedに追加
     for name, value in zip(submission_names, input_contents.values()):
-        embed.description += f"{name}: {value}\n"
-
-    if status["title"] == "キャンセル待ち登録完了":
-        embed.description += "\n" + status["description"]
+        embed.add_field(name=name, value=value)
 
     embed.set_author(
         name=input_contents["name"],

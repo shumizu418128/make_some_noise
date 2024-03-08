@@ -55,14 +55,10 @@ class Modal_entry(Modal):  # self = Modal, category = soloA, soloB, loop
 
     # モーダル提出後の処理
     async def on_submit(self, interaction: Interaction):
-        # TODO: なんかやらないと怒られるので適当に処理
-        # modal提出の対応はon_interactionからmodal_callbackに移動して行う
-        # エントリー処理はprocess_entryで行う
 
         tari3210 = interaction.guild.get_member(database.TARI3210)
         bot_channel = interaction.guild.get_channel(database.CHANNEL_BOT)
 
-        # ここではDB記録内容のチェックのみ行う
         # エントリーした部門のidを取得
         role_ids = {
             "loop": (database.ROLE_LOOP, database.ROLE_LOOP_RESERVE),
@@ -70,31 +66,54 @@ class Modal_entry(Modal):  # self = Modal, category = soloA, soloB, loop
             "soloB": (database.ROLE_SOLO_B, database.ROLE_SOLO_B_RESERVE),
         }
         category = interaction.custom_id.split("_")[-1]
-
-        # categoryに対応するIDを取得
-        # 正しく取得できていない場合はValueErrorが発生する
         id, id_reserve = role_ids.get(category)
+
         role = interaction.guild.get_role(id)
         role_reserve = interaction.guild.get_role(id_reserve)
 
-        # エントリーした人の情報を取得
-        # on_submitが受け取った名前
-        member_name = self.children[0].value
+        # process_entryの処理完了を待って、正しく処理されたか確認
+        # roleの追加を確認するため、member_updateイベントを待つ
+        def check(before, after):
+            role_check_before = any([
+                before.get_role(id),
+                before.get_role(id_reserve)
+            ])
+            role_check_after = any([
+                after.get_role(id),
+                after.get_role(id_reserve)
+            ])
+            return after.id == interaction.user.id and role_check_after > role_check_before
 
-        # 提出者のid
+        try:
+            _, after = await interaction.client.wait_for("member_update", check=check, timeout=180)
+
+        # 3分経ってもエントリーが完了しない場合一応報告
+        except TimeoutError:
+            embed = Embed(
+                title="Modal_entry on_submit",
+                description="Error: member_updateキャッチ失敗\n※Modal提出を拒否している場合、異常なし",
+                color=red
+            )
+            embed.set_author(
+                name=interaction.user.display_name,
+                icon_url=interaction.user.display_avatar.url
+            )
+            await bot_channel.send(tari3210.mention, embed=embed)
+            return
+
+        # エントリーした人の情報を取得
+        # 提出者の名前、id
+        member_name = after.display_name
         member_id = interaction.user.id
 
-        # on_submitが受け取った名前が、すでにいて
-        # かつ、idが違う場合はエラーを出力
         for role_member in role.members + role_reserve.members:
 
+            # 名前がすでに登録済みで、かつidが違う場合はエラーを出力
             if role_member.id != member_id and role_member.display_name == member_name:
 
-                # 名前が被っているエントリー者
-                member = interaction.guild.get_member(member_id)
                 embed = Embed(
                     title="Modal_entry on_submit",
-                    description=f"Error: 同じ名前のエントリーを確認\n\n提出者: {member.mention}\n被った人: {role_member.mention}",
+                    description=f"Error: 同じ名前のエントリーを確認\n\n提出者: {after.mention}\n被った人: {role_member.mention}",
                     color=red
                 )
                 await bot_channel.send(tari3210.mention, embed=embed)
@@ -107,10 +126,16 @@ async def process_entry(member: Member, category: str, input_contents: dict):
     Args:
         `member (Member):` エントリーするメンバー
         `category (str):` エントリーする部門
-        `input_contents (dict):` 提出された内容
+        `input_contents (dict):` 提出内容
+        >>> input_contents = {
+            "name": "名前",
+            "read": "よみがな",
+            "device": "Loopstationデバイス", # loop部門のみ
+            "note": "備考"
+        }
 
     Returns:
-        `"Error", "Warning", "Approved" (str):` 処理結果
+        `color, title, description (dict[str]):` 処理結果
     """
     # エントリーした部門のidを取得
     role_ids = {
@@ -132,11 +157,11 @@ async def process_entry(member: Member, category: str, input_contents: dict):
         member.get_role(id_reserve)
     ])
     if user_role_statuses:
-        return {"color": red, "title": "Error: エントリー済み"}
+        return {"color": red, "title": "❌Error❌", "description": "すでにエントリー済みです"}
 
     # よみがなのひらがな判定
     if not re_hiragana.fullmatch(input_contents["read"]):
-        return {"color": red, "title": "Error: よみがなエラー"}
+        return {"color": red, "title": "❌Error❌", "description": "よみがなは ひらがな・伸ばし棒`ー`・スペース のみで入力してください"}
 
     #########################
     # 以下エントリー処理
@@ -171,14 +196,22 @@ async def process_entry(member: Member, category: str, input_contents: dict):
         count = len(role_reserve.members) + 1
 
         await member.add_roles(role_reserve)
-        return {"color": green, "title": "キャンセル待ち登録完了", "description": f"キャンセル待ち {count}番目"}
+        return {"color": green, "title": "キャンセル待ち登録完了", "description": f"キャンセル待ち {count}番目\n🙇ご参加ありがとうございます！🙇"}
 
     else:
         await member.add_roles(role)
-        return {"color": green, "title": "エントリー完了"}
+        return {"color": green, "title": "エントリー完了", "description": "🙇ご参加ありがとうございます！🙇"}
 
 
 async def entry_cancel(member: Member, category: str):
+    """
+    Args:
+        `member (Member):` キャンセルするメンバー
+        `category (str):` キャンセルする部門
+
+    Returns:
+        `None or "Error"`
+    """
     # ビト森杯
     role = member.guild.get_role(database.ROLE_LOOP)
 
