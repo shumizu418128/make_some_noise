@@ -196,7 +196,16 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
 
             await member.add_roles(vc_role)
     except Exception:
-        return
+        pass
+
+    # チャンネルから退出したのにvc_roleを持っている人がいるんで、roleを削除
+    for member in vc_role.members:
+        if member.voice is None:
+            try:
+                await member.remove_roles(vc_role)
+            except Exception:
+                pass
+    return
 
 
 @client.event
