@@ -367,7 +367,7 @@ async def button_call_admin(interaction: Interaction):
         files = [File(image_name) for image_name in image_name_list if image_name in os.listdir()]
 
         if "zoom" in response_text.lower():
-            response_text += "ビト森杯、Zoomの使い方に関して正確なサポートを提供できません。[Zoomヘルプページ](https://support.zoom.com/hc/ja)などで、Zoomの操作方法を必ずご確認ください。"
+            response_text += "原則、Zoomの使い方に関しては、正確なサポートを提供できません。[Zoomヘルプページ](https://support.zoom.com/hc/ja)などで、Zoomの操作方法を必ずご確認ください。"
 
         # 返事のembedを作成
         embed = Embed(
