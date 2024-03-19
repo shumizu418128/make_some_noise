@@ -162,7 +162,6 @@ async def on_interaction(interaction: Interaction):
 
     # サイレントで送信 ユーザーに通知しない
     await bot_channel.send(f"{interaction.user.id}", embed=embed, silent=True)
-"""
 
 
 @client.event
@@ -259,6 +258,7 @@ async def on_member_join(member: Member):
     if bool(next_event):
         await sleep(1)
         await channel.send(next_event.url)
+"""
 
 
 @client.event
@@ -271,6 +271,12 @@ async def on_message(message: Message):
     """if not message.content.startswith("s."):
         await natural_language(message)
         return"""
+
+    if message.content == "l.test":
+        # テスト用コマンドを書く
+
+        await message.channel.send(f"{str(client.user)}\n{discord.__version__}")
+        return
 
     if message.content == "s.test":
         await message.channel.send(f"{str(client.user)}\n{discord.__version__}")
