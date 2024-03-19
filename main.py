@@ -1,13 +1,12 @@
 import asyncio
 import json
 import os
-from asyncio import sleep
 from datetime import datetime, timedelta, timezone
 
 import discord
 from advertise import advertise
 from battle_stadium import battle, start
-from discord import Client, Embed, Intents, Member, Message, VoiceState
+from discord import Client, Intents, Message
 from discord.errors import ClientException
 
 """
@@ -23,10 +22,8 @@ from daily_work import daily_work_AM9, daily_work_PM10
 
 import aiofiles
 import database
-from gbb import countdown
 from keep_alive import keep_alive
 # from natural_language import natural_language
-from search_next_event import search_next_event
 
 
 # NOTE: ビト森杯運営機能搭載ファイル
