@@ -1,13 +1,14 @@
+import asyncio
+import json
 import os
 from asyncio import sleep
 from datetime import datetime, timedelta, timezone
 
 import discord
-from discord import Client, Embed, Intents, Member, Message, VoiceState
-from discord.errors import ClientException
-
 from advertise import advertise
 from battle_stadium import battle, start
+from discord import Client, Embed, Intents, Member, Message, VoiceState
+from discord.errors import ClientException
 
 """
 from button_admin_callback import (button_admin_cancel,
@@ -19,14 +20,25 @@ from button_callback import (button_call_admin, button_cancel, button_contact,
 from button_view import get_view
 from daily_work import daily_work_AM9, daily_work_PM10
 """
+
+import aiofiles
 import database
 from gbb import countdown
 from keep_alive import keep_alive
-from natural_language import natural_language
+# from natural_language import natural_language
 from search_next_event import search_next_event
 
+
 # NOTE: ビト森杯運営機能搭載ファイル
-TOKEN = os.environ['DISCORD_BOT_TOKEN']
+async def load_token():
+    async with aiofiles.open("secret.json", "r") as f:
+        data = await f.read()
+    data = json.loads(data)
+    TOKEN = data["TOKEN"]
+    return TOKEN
+
+# 非同期関数を呼び出す
+TOKEN = asyncio.run(load_token())
 intents = Intents.all()  # デフォルトのIntentsオブジェクトを生成
 intents.typing = False  # typingを受け取らないように
 client = Client(intents=intents)
@@ -256,23 +268,23 @@ async def on_message(message: Message):
         return"""
 
     # s.から始まらない場合(コマンドではない場合)
-    if not message.content.startswith("s."):
+    """if not message.content.startswith("s."):
         await natural_language(message)
-        return
+        return"""
 
     if message.content == "s.test":
         await message.channel.send(f"{str(client.user)}\n{discord.__version__}")
         return
 
     # vcのroleメンバーを削除
-    if message.content == "s.clear":
+    if message.content == "l.clear":
         vc_role = message.guild.get_role(database.ROLE_VC)
         for member in vc_role.members:
             await member.remove_roles(vc_role)
         return
 
     # VS参加・退出
-    if message.content == "s.join":
+    if message.content == "l.join":
         await message.delete(delay=1)
         if message.author.voice is None:
             await message.channel.send("VCチャンネルに接続してから、もう一度お試しください。")
@@ -286,7 +298,7 @@ async def on_message(message: Message):
             await message.channel.send("接続しました。")
             return
 
-    if message.content == "s.leave":
+    if message.content == "l.leave":
         await message.delete(delay=1)
         if message.guild.voice_client is None:
             await message.channel.send("接続していません。")
@@ -299,11 +311,11 @@ async def on_message(message: Message):
     # バトスタコマンド
     ##############################
 
-    if message.content.startswith("s.battle"):
+    if message.content.startswith("l.battle"):
         await battle(message.content, client)
         return
 
-    if message.content == "s.start":
+    if message.content == "l.start":
         await start(client)
         return
 """
