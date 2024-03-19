@@ -205,6 +205,27 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
                 await member.remove_roles(vc_role)
             except Exception:
                 pass
+
+    # チャンネルにいる人のうち、vc_roleを持っていない人がいたら、roleを付与
+    try:
+        if bool(before.channel) and bool(before.channel.members):
+
+            for member in before.channel.members:
+                role_check = member.get_role(vc_role.id)
+
+                if bool(role_check) is False and member.id != database.TARI3210 and bool(member.voice):
+                    await member.add_roles(vc_role)
+
+        if bool(after.channel) and bool(after.channel.members):
+
+            for member in after.channel.members:
+                role_check = member.get_role(vc_role.id)
+
+                if bool(role_check) is False and member.id != database.TARI3210 and bool(member.voice):
+                    await member.add_roles(vc_role)
+
+    except Exception:
+        pass
     return
 
 
