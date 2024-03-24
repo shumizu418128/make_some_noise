@@ -68,7 +68,16 @@ async def on_interaction(interaction: Interaction):
         # ロールを持っていない場合、ロールを付与
         else:
             await interaction.user.add_roles(role)
-            await interaction.response.send_message(f"{interaction.user.display_name}さんに、通話開始 お知らせロールを付与しました。", ephemeral=True)
+            embed = Embed(
+                title="ようこそ！",
+                description=f"{interaction.user.display_name}さんに、通話開始 お知らせロールを付与しました。\nぜひ一緒にBeatboxを楽しみましょう！",
+                color=0xFFA500
+            )
+            embed.set_footer(
+                text="We love beatbox, We are beatbox family\nあつまれ！ビートボックスの森",
+                icon_url=interaction.guild.icon.url
+            )
+            await interaction.response.send_message(embed=embed, ephemeral=True)
     """
     bot_channel = interaction.guild.get_channel(database.CHANNEL_BOT)
 
