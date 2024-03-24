@@ -279,14 +279,14 @@ async def on_message(message: Message):
             description="誰かがボイスチャンネルに入ったときに通知ほしい人は下のボタンを押してください。\n通知ボタンを押すと誰かがボイスチャンネルに入ったときに通知が来るよ！\nビートボックス出来ないよー聞き専だよーって人でも大丈夫！チェックいれて！さ、早く！\nもし通知うるさいなーって思ったら、下のボタンをもう1回押すとロールが外れるよ！",
             color=0x00bfff
         )
-        button_contact = Button(
+        button = Button(
             label="通話開始 お知らせロール",
             style=ButtonStyle.primary,
             custom_id="button_notify_voice",
             emoji="🔔"
         )
         view = View(timeout=None)
-        await view.add_item(button_contact)
+        view.add_item(button)
         general = message.guild.get_channel(database.CHANNEL_GENERAL)
         await general.send(embed=embed, view=view)
         return
