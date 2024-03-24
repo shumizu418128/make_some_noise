@@ -273,7 +273,7 @@ async def on_message(message: Message):
         return"""
 
     # 通話開始時、通知ロールの宣伝を行う
-    if message.channel.id == database.CHANNEL_CALL_NOTIFY:
+    if message.channel.id == database.CHANNEL_CALL_NOTIFY or message.content == "s.notify":
         embed = Embed(
             title="通話開始 お知らせ機能",
             description="誰かがボイスチャンネルに入ったときに通知ほしい人は下のボタンを押してください。\n通知ボタンを押すと誰かがボイスチャンネルに入ったときに通知が来るよ！\nビートボックス出来ないよー聞き専だよーって人でも大丈夫！チェックいれて！さ、早く！\nもし通知うるさいなーって思ったら、下のボタンをもう1回押すとロールが外れるよ！",
