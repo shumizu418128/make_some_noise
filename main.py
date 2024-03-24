@@ -63,12 +63,12 @@ async def on_interaction(interaction: Interaction):
         # ロールを持っている場合、ロールを削除
         if role_check:
             await interaction.user.remove_roles(role)
-            await interaction.response.send_message("通話開始 お知らせロールを外しました。")
+            await interaction.response.send_message(f"{interaction.user.display_name}さんに、通話開始 お知らせロールを外しました。", ephemeral=True)
 
         # ロールを持っていない場合、ロールを付与
         else:
             await interaction.user.add_roles(role)
-            await interaction.response.send_message("通話開始 お知らせロールを付与しました。")
+            await interaction.response.send_message(f"{interaction.user.display_name}さんに、通話開始 お知らせロールを付与しました。", ephemeral=True)
     """
     bot_channel = interaction.guild.get_channel(database.CHANNEL_BOT)
 
