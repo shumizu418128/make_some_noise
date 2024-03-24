@@ -288,6 +288,9 @@ async def on_message(message: Message):
         view = View(timeout=None)
         view.add_item(button)
         general = message.guild.get_channel(database.CHANNEL_GENERAL)
+        if message.content == "s.notify":
+            await message.delete(delay=1)
+            await message.channel.send(embed=embed, view=view)
         await general.send(embed=embed, view=view)
         return
 
