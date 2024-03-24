@@ -2,8 +2,10 @@ import random
 # from asyncio import sleep
 from datetime import time, timedelta, timezone  # , datetime
 
-from discord import Client, File  # , Embed
+from discord import ButtonStyle, Client, Embed, File
 from discord.ext import tasks
+from discord.ui import Button, View
+
 import database
 # from button_view import get_view
 # from battle_stadium import start
@@ -28,6 +30,22 @@ async def advertise(client: Client):
 
             # gif
             await channel.send(file=File(f"battle_stadium_{random.randint(1, 3)}.gif"))
+
+    # 通話開始通知ロールの宣伝
+    embed = Embed(
+        title="通話開始 お知らせ機能",
+        description="誰かがボイスチャンネルに入ったときに通知ほしい人は下のボタンを押してください。\n通知ボタンを押すと誰かがボイスチャンネルに入ったときに通知が来るよ！\nビートボックス出来ないよー聞き専だよーって人でも大丈夫！チェックいれて！さ、早く！\nもし通知うるさいなーって思ったら、下のボタンをもう1回押すとロールが外れるよ！",
+        color=0x00bfff
+    )
+    button_contact = Button(
+        label="通話開始 お知らせロール",
+        style=ButtonStyle.primary,
+        custom_id="button_notify_voice",
+        emoji="🔔"
+    )
+    view = View(timeout=None)
+    await view.add_item(button_contact)
+    await channel.send(embed=embed, view=view)
 
     ##############################
     # 以下無期限凍結

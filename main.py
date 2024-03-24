@@ -3,8 +3,10 @@ from asyncio import sleep
 from datetime import datetime, timedelta, timezone
 
 import discord
-from discord import Client, Embed, Intents, Member, Message, VoiceState
+from discord import (ButtonStyle, Client, Embed, Intents, Interaction, Member,
+                     Message, VoiceState)
 from discord.errors import ClientException
+from discord.ui import Button, View
 
 from advertise import advertise
 from battle_stadium import battle, start
@@ -46,14 +48,29 @@ async def on_ready():  # 起動時に動作する処理
 # TODO: 第4回ビト森杯実装
 # A, B, Loop部門のエントリー受付
 # モーダルの処理を追加
-"""@client.event
+@client.event
 async def on_interaction(interaction: Interaction):
-    bot_channel = interaction.guild.get_channel(database.CHANNEL_BOT)
     custom_id = interaction.data["custom_id"]
 
     # ボタンのカスタムIDに_がない場合、custom_id未設定のためreturn
     if "_" not in custom_id:
         return
+
+    if custom_id == "button_notify_voice":
+        role = interaction.guild.get_role(database.ROLE_CALL_NOTIFY)
+        role_check = interaction.user.get_role(role.id)
+
+        # ロールを持っている場合、ロールを削除
+        if role_check:
+            await interaction.user.remove_roles(role)
+            await interaction.response.send_message("通話開始 お知らせロールを外しました。")
+
+        # ロールを持っていない場合、ロールを付与
+        else:
+            await interaction.user.add_roles(role)
+            await interaction.response.send_message("通話開始 お知らせロールを付与しました。")
+    """
+    bot_channel = interaction.guild.get_channel(database.CHANNEL_BOT)
 
     # セレクトメニューの場合
     # いったん凍結
@@ -150,7 +167,7 @@ async def on_interaction(interaction: Interaction):
 
     # サイレントで送信 ユーザーに通知しない
     await bot_channel.send(f"{interaction.user.id}", embed=embed, silent=True)
-"""
+    """
 
 
 @client.event
@@ -255,6 +272,25 @@ async def on_message(message: Message):
     """if message.author.bot or message.content.startswith("l.") or message.channel.id in [930767329137143839, 930839018671837184]:
         return"""
 
+    # 通話開始時、通知ロールの宣伝を行う
+    if message.channel.id == database.CHANNEL_CALL_NOTIFY:
+        embed = Embed(
+            title="通話開始 お知らせ機能",
+            description="誰かがボイスチャンネルに入ったときに通知ほしい人は下のボタンを押してください。\n通知ボタンを押すと誰かがボイスチャンネルに入ったときに通知が来るよ！\nビートボックス出来ないよー聞き専だよーって人でも大丈夫！チェックいれて！さ、早く！\nもし通知うるさいなーって思ったら、下のボタンをもう1回押すとロールが外れるよ！",
+            color=0x00bfff
+        )
+        button_contact = Button(
+            label="通話開始 お知らせロール",
+            style=ButtonStyle.primary,
+            custom_id="button_notify_voice",
+            emoji="🔔"
+        )
+        view = View(timeout=None)
+        await view.add_item(button_contact)
+        general = message.guild.get_channel(database.CHANNEL_GENERAL)
+        await general.send(embed=embed, view=view)
+        return
+
     # s.から始まらない場合(コマンドではない場合)
     if not message.content.startswith("s."):
         await natural_language(message)
@@ -262,13 +298,6 @@ async def on_message(message: Message):
 
     if message.content == "s.test":
         await message.channel.send(f"{str(client.user)}\n{discord.__version__}")
-        return
-
-    # vcのroleメンバーを削除
-    if message.content == "s.clear":
-        vc_role = message.guild.get_role(database.ROLE_VC)
-        for member in vc_role.members:
-            await member.remove_roles(vc_role)
         return
 
     # VS参加・退出
