@@ -291,6 +291,7 @@ async def on_message(message: Message):
         if message.content == "s.notify":
             await message.delete(delay=1)
             await message.channel.send(embed=embed, view=view)
+            return
         await general.send(embed=embed, view=view)
         return
 
