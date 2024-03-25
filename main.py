@@ -3,10 +3,9 @@ from asyncio import sleep
 from datetime import datetime, timedelta, timezone
 
 import discord
-from discord import (ButtonStyle, Client, Embed, Intents, Interaction, Member,
-                     Message, VoiceState)
+from discord import (Client, Embed, Intents, Interaction, Member, Message,
+                     VoiceState)
 from discord.errors import ClientException
-from discord.ui import Button, View
 
 from advertise import advertise
 from battle_stadium import battle, start
