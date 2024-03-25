@@ -45,7 +45,9 @@ async def advertise(client: Client):
     )
     view = View(timeout=None)
     view.add_item(button)
-    await channel.send(embed=embed, view=view)
+
+    if random.randint(1, 5) == 1:  # 1/5の確率で宣伝
+        await channel.send(embed=embed, view=view)
 
     ##############################
     # 以下無期限凍結
