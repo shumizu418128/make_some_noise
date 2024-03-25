@@ -281,29 +281,6 @@ async def on_message(message: Message):
     """if message.author.bot or message.content.startswith("l.") or message.channel.id in [930767329137143839, 930839018671837184]:
         return"""
 
-    # 通話開始時、通知ロールの宣伝を行う
-    if message.channel.id == database.CHANNEL_CALL_NOTIFY or message.content == "s.notify":
-        embed = Embed(
-            title="通話開始 お知らせ機能",
-            description="誰かがボイスチャンネルに入ったときに通知ほしい人は下のボタンを押してください。\n通知ボタンを押すと誰かがボイスチャンネルに入ったときに通知が来るよ！\nビートボックス出来ないよー聞き専だよーって人でも大丈夫！ボタン押して！さ、早く！\nもし通知うるさいなーって思ったら、下のボタンをもう1回押すとロールが外れるよ！",
-            color=0x00bfff
-        )
-        button = Button(
-            label="通話開始 お知らせロール",
-            style=ButtonStyle.primary,
-            custom_id="button_notify_voice",
-            emoji="🔔"
-        )
-        view = View(timeout=None)
-        view.add_item(button)
-        general = message.guild.get_channel(database.CHANNEL_GENERAL)
-        if message.content == "s.notify":
-            await message.delete(delay=1)
-            await message.channel.send(embed=embed, view=view)
-            return
-        await general.send(embed=embed, view=view)
-        return
-
     # s.から始まらない場合(コマンドではない場合)
     if not message.content.startswith("s."):
         await natural_language(message)
