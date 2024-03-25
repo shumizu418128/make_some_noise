@@ -1,6 +1,6 @@
 import random
 # from asyncio import sleep
-from datetime import time, timedelta, timezone  # , datetime
+from datetime import time, timedelta, timezone, datetime
 
 from discord import ButtonStyle, Client, Embed, File
 from discord.ext import tasks
@@ -46,7 +46,9 @@ async def advertise(client: Client):
     view = View(timeout=None)
     view.add_item(button)
 
-    if random.randint(1, 5) == 1:  # 1/5の確率で宣伝
+    # 毎週土曜のみ宣伝
+    dt_now = datetime.now(JST)
+    if dt_now.weekday() == 5:
         await channel.send(embed=embed, view=view)
 
     ##############################
