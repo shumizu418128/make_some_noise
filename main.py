@@ -220,6 +220,11 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
                 await after.channel.send(f"{member.mention} チャットはこちら chat is here", delete_after=60)
 
             await member.add_roles(vc_role)
+
+        # チャンネルが満員になった場合
+        if len(after.channel.members) == after.channel.user_limit:
+            await after.channel.send(f"{vc_role.mention} このチャンネルが満員になりました。\n人数制限解除のため、カメラをオンにしている方はオフにしてください。")
+
     except Exception:
         pass
 
