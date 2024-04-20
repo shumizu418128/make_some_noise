@@ -3,7 +3,7 @@ from asyncio import sleep
 from datetime import datetime, timedelta, timezone
 
 import discord
-from discord import (Client, Embed, Intents, Interaction, Member, Message,
+from discord import (ChannelType, Client, Embed, Intents, Interaction, Member, Message, Thread,
                      VoiceState)
 from discord.errors import ClientException
 
@@ -222,8 +222,13 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
             await member.add_roles(vc_role)
 
         # チャンネルが満員になった場合
-        if len(after.channel.members) == after.channel.user_limit:
-            await after.channel.send(f"{vc_role.mention} このチャンネルが満員になりました。\n人数制限解除のため、カメラをオンにしている方はオフにしてください。")
+        if len(after.channel.members) == 25:
+
+            # 誰かがカメラをオンにしている場合、通知
+            for member in after.channel.members:
+                if member.voice.self_video is True:
+                    await after.channel.send(f"{vc_role.mention} このチャンネルが満員になりました。\n人数制限解除のため、カメラをオンにしている方はオフにしてください。")
+                    break
 
     except Exception:
         pass
@@ -260,6 +265,22 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
 
 
 @client.event
+async def on_thread_create(thread: Thread):
+    if thread.parent.type == ChannelType.forum:
+        general = thread.guild.get_channel(database.CHANNEL_GENERAL)
+        embed = Embed(
+            title="新しいスレッドが作成されました",
+            description=f"フォーラムチャンネル：{thread.parent.jump_url}\nスレッド：{thread.jump_url}",
+            color=0x00bfff
+        )
+        embed.set_footer(
+            text="ぜひフォーラムチャンネルにも遊びに来てください！",
+            icon_url=thread.guild.icon.url
+        )
+        await general.send(embed=embed, silent=True)
+
+
+@client.event
 async def on_member_join(member: Member):
     channel = client.get_channel(database.CHANNEL_GENERAL)
     await sleep(2)
@@ -271,12 +292,15 @@ async def on_member_join(member: Member):
     embed.add_field(name="swissbeatbox 公式instagram",
                     value="https://www.instagram.com/swissbeatbox/")
     text = await countdown()  # GBBまでのカウントダウン
-    embed.set_footer(text=text)
+    embed.set_footer(
+        text=text,
+        icon_url=member.guild.icon.url
+    )
     await channel.send(f"{member.mention}\nあつまれ！ビートボックスの森 へようこそ！", embeds=[embed_discord, embed])
     next_event = await search_next_event(channel.guild.scheduled_events)
     if bool(next_event):
         await sleep(1)
-        await channel.send(next_event.url)
+        await channel.send(next_event.url, silent=True)
 
 
 @client.event
