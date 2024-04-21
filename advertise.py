@@ -23,7 +23,7 @@ async def advertise(client: Client):
     # 次のイベント
     next_event = await search_next_event(channel.guild.scheduled_events)
     if bool(next_event):
-        await channel.send(next_event.url)  # 次のイベントのURL送信
+        await channel.send(next_event.url, silent=True)  # 次のイベントのURL送信
 
         # バトスタの場合
         if next_event.name == "BATTLE STADIUM":
@@ -49,7 +49,7 @@ async def advertise(client: Client):
     # 毎週土曜のみ宣伝
     dt_now = datetime.now(JST)
     if dt_now.weekday() == 5:
-        await channel.send(embed=embed, view=view)
+        await channel.send(embed=embed, view=view, silent=True)
 
     ##############################
     # 以下無期限凍結
