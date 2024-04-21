@@ -269,12 +269,12 @@ async def on_thread_create(thread: Thread):
     if thread.parent.type == ChannelType.forum:
         general = thread.guild.get_channel(database.CHANNEL_GENERAL)
         embed = Embed(
-            title="新しいスレッドが作成されました",
-            description=f"フォーラムチャンネル：{thread.parent.jump_url}\nスレッド：{thread.jump_url}",
+            title="質問きてた！ 👇",
+            description=f"チャンネル：{thread.parent.jump_url}\n質問：{thread.jump_url}",
             color=0x00bfff
         )
         embed.set_footer(
-            text="ぜひフォーラムチャンネルにも遊びに来てください！",
+            text="ビト森無料相談～♪",
             icon_url=thread.guild.icon.url
         )
         await general.send(embed=embed, silent=True)
