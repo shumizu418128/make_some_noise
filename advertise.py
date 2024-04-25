@@ -30,26 +30,49 @@ async def advertise(client: Client):
 
             # gif
             await channel.send(file=File(f"battle_stadium_{random.randint(1, 3)}.gif"))
+            return
+            # バトスタ通知を送ったらここで終了
 
-    # 通話開始通知ロールの宣伝
-    embed = Embed(
-        title="通話開始 お知らせ機能",
-        description="誰かがボイスチャンネルに入ったときに通知ほしい人は下のボタンを押してください。\n通知ボタンを押すと誰かがボイスチャンネルに入ったときに通知が来るよ！\nビートボックス出来ないよー聞き専だよーって人でも大丈夫！ボタン押して！さ、早く！\nもし通知うるさいなーって思ったら、下のボタンをもう1回押すとロールが外れるよ！",
-        color=0x00bfff
-    )
-    button = Button(
-        label="通話開始 お知らせロール",
-        style=ButtonStyle.primary,
-        custom_id="button_notify_voice",
-        emoji="🔔"
-    )
-    view = View(timeout=None)
-    view.add_item(button)
+    # generalの最新メッセージがbotのメッセージなら終了
+    async for message in channel.history(limit=1):
+        if message.author.bot:
+            return
 
-    # 毎週土曜のみ宣伝
+    # 毎週土曜のみ通話開始通知ロールの宣伝
     dt_now = datetime.now(JST)
-    if dt_now.weekday() == 5:
+    if dt_now.weekday() in [2, 5]:
+
+        embed = Embed(
+            title="通話開始 お知らせ機能",
+            description="誰かがボイスチャンネルに入ったときに通知ほしい人は下のボタンを押してください。\n通知ボタンを押すと誰かがボイスチャンネルに入ったときに通知が来るよ！\nビートボックス出来ないよー聞き専だよーって人でも大丈夫！ボタン押して！さ、早く！\nもし通知うるさいなーって思ったら、下のボタンをもう1回押すとロールが外れるよ！",
+            color=0x00bfff
+        )
+        button = Button(
+            label="通話開始 お知らせロール",
+            style=ButtonStyle.primary,
+            custom_id="button_notify_voice",
+            emoji="🔔"
+        )
+        view = View(timeout=None)
+        view.add_item(button)
+
         await channel.send(embed=embed, view=view, silent=True)
+
+    # 他はフォーラムの宣伝
+    else:
+        forum_solo = client.get_channel(database.FORUM_SOLO)
+        forum_loop = client.get_channel(database.FORUM_LOOP)
+
+        embed = Embed(
+            title="質問きてた！ 👇",
+            description=f"{forum_loop.jump_url}\n{forum_solo.jump_url}\n\nどんどん質問してね！",
+            color=0x00bfff
+        )
+        embed.set_footer(
+            text="ビト森無料相談～♪",
+            icon_url=channel.guild.icon.url
+        )
+        await channel.send(embed=embed, silent=True)
 
     ##############################
     # 以下無期限凍結
