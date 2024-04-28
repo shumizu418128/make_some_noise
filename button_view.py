@@ -95,7 +95,8 @@ async def get_view(
     entry: bool = False,
     replace: bool = False,
     admin: bool = False,
-    info: bool = False
+    info: bool = False,
+    zoom: bool = False
 ):
     """
     - `entry=True`の場合、`client`入力必須
@@ -168,6 +169,12 @@ async def get_view(
         custom_id="button_accept_replace",
         emoji="✅"
     )
+    button_zoom = Button(
+        style=ButtonStyle.primary,
+        label="当日Zoom参加URL",
+        custom_id="button_zoom",
+        emoji="🔗"
+    )
     # 問い合わせスレッド作成
     if contact:
         view.add_item(button_contact)
@@ -198,6 +205,9 @@ async def get_view(
         view.add_item(button_accept_replace)
         view.add_item(button_cancel)
         view.add_item(button_call_admin)
+
+    if zoom:
+        view.add_item(button_zoom)
 
     ######################
     # 運営用ボタン

@@ -53,7 +53,6 @@ async def modal_callback(interaction: Interaction):
     }
     # custom_id = name, read, device(Loopのみ), note
 
-    # TODO: とりあえず仮で申請受付完了通知
     # TODO: 申請結果は問合せスレッドで通知
     # TODO: process_entry関数に裏処理は投げる
     status = await process_entry(interaction.user, category, input_contents)
@@ -67,7 +66,7 @@ async def modal_callback(interaction: Interaction):
     # 提出内容の名前を定義
     submission_names = ["名前", "よみがな", "備考"]
     if category == "loop":
-        submission_names.insert(2, "デバイス")
+        submission_names = ["名前", "よみがな", "デバイス", "備考"]
 
     # 提出内容をembedに追加
     for name, value in zip(submission_names, input_contents.values()):
@@ -123,8 +122,14 @@ async def button_entry(interaction: Interaction):
         interaction.user.get_role(id),
         interaction.user.get_role(id_reserve)
     ]
-    # エントリー済みの場合、エラー通知
+    # エントリー済みの場合
     if any(user_role_statuses):
+
+        # ここで繰り上げ手続き中かを確認
+        if user_role_statuses[1]:
+            # 繰り上げ手続き中の場合、繰り上げボタンを再度送信
+            return
+
         embed = Embed(
             title="エントリー済み",
             description=f"ビト森杯{category}部門\nすでにエントリー済みです。",
@@ -135,12 +140,6 @@ async def button_entry(interaction: Interaction):
             icon_url=interaction.user.display_avatar.url
         )
         await interaction.response.send_message(interaction.user.mention, embed=embed, ephemeral=True)
-
-        # TODO: 繰り上げ出場手続き中の場合、繰り上げ手続きを促す
-        if user_role_statuses[1]:
-            # ここで繰り上げ手続き中かを確認
-            # 繰り上げ手続き中の場合、繰り上げボタンを再度送信
-            return
 
         # 繰り上げ出場手続き中ではない場合、キャンセルの案内をする
         # とりあえずcontact_start関数に投げる
@@ -698,3 +697,24 @@ async def button_accept_replace(interaction: Interaction):
     # 問い合わせを用意
     await contact_start(client=interaction.client, member=member, entry_redirect=True)
     return
+
+
+async def button_zoom(interaction: Interaction):
+    role_check = any([
+        interaction.user.get_role(database.ROLE_SOLO_A),
+        interaction.user.get_role(database.ROLE_SOLO_A_RESERVE),
+        interaction.user.get_role(database.ROLE_SOLO_B),
+        interaction.user.get_role(database.ROLE_SOLO_B_RESERVE),
+        interaction.user.get_role(database.ROLE_LOOP),
+        interaction.user.get_role(database.ROLE_LOOP_RESERVE)
+    ])
+    if role_check:
+
+        # TODO: ここで当日のみZoomのURLを返信
+        embed = Embed(
+            title="当日Zoom参加URL",
+            description="当日公開",
+            color=blue
+        )
+        await interaction.response.send_message(embed=embed, ephemeral=True)
+        return
