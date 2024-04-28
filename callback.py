@@ -265,8 +265,7 @@ async def button_call_admin(interaction: Interaction):
 
     # msgにリアクション できない場合は無視
     try:
-        reaction = random.choice(interaction.guild.emojis)
-        await msg.add_reaction(reaction)
+        await msg.add_reaction("✅")
     except Exception:
         pass
 
