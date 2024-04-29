@@ -710,10 +710,10 @@ async def button_zoom(interaction: Interaction):
     ])
     if role_check:
 
-        # TODO: ここで当日のみZoomのURLを返信
+        # TODO: ここで前日・当日のみZoomのURLを返信
         embed = Embed(
             title="当日Zoom参加URL",
-            description="当日公開",
+            description="本番の前日に公開",
             color=blue
         )
         await interaction.response.send_message(embed=embed, ephemeral=True)
