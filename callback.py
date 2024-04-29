@@ -127,7 +127,7 @@ async def button_entry(interaction: Interaction):
 
         # ここで繰り上げ手続き中かを確認
         if user_role_statuses[1]:
-            # 繰り上げ手続き中の場合、繰り上げボタンを再度送信
+            # TODO: 繰り上げ手続き中の場合、繰り上げボタンを再度送信
             return
 
         embed = Embed(
@@ -141,7 +141,7 @@ async def button_entry(interaction: Interaction):
         )
         await interaction.response.send_message(interaction.user.mention, embed=embed, ephemeral=True)
 
-        # 繰り上げ出場手続き中ではない場合、キャンセルの案内をする
+        # TODO: 繰り上げ出場手続き中ではない場合、キャンセルの案内をする
         # とりあえずcontact_start関数に投げる
         await contact_start(client=interaction.client, member=interaction.user)
         return

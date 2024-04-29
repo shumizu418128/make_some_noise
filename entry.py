@@ -203,6 +203,7 @@ async def process_entry(member: Member, category: str, input_contents: dict):
         return {"color": green, "title": "エントリー完了", "description": "🙇ご参加ありがとうございます！🙇"}
 
 
+# TODO; 第4回ビト森杯実装
 async def entry_cancel(member: Member, category: str):
     """
     Args:

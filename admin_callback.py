@@ -17,6 +17,7 @@ red = 0xff0000
 blue = 0x00bfff
 
 
+# TODO: 第4回ビト森杯実装
 async def button_admin_entry(interaction: Interaction):
 
     # 応答タイミングが状況に応じて違うので、ここで応答を済ませる
@@ -211,6 +212,7 @@ async def button_admin_entry(interaction: Interaction):
         return
 
 
+# TODO; 第4回ビト森杯実装
 async def button_admin_cancel(interaction: Interaction):
 
     # 応答タイミングが状況に応じて違うので、ここで応答を済ませる

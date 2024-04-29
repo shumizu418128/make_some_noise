@@ -41,6 +41,7 @@ async def search_contact(member: Member, create: bool = False, locale: str = "ja
     return thread
 
 
+# TODO; 第4回ビト森杯実装
 async def contact_start(client: Client, member: Member, entry_redirect: bool = False):
     # 問い合わせチャンネル
     contact = member.guild.get_channel(database.CHANNEL_CONTACT)
