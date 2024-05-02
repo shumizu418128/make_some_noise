@@ -3,10 +3,10 @@ import random
 from asyncio import sleep
 from datetime import datetime, timedelta, timezone
 
-import google.generativeai as genai
 from discord import ButtonStyle, Embed, File, Interaction
 from discord.ui import Button, View
 
+import gemini
 import database
 from button_view import get_view
 from contact import (contact_start, debug_log, get_submission_embed,
@@ -28,6 +28,12 @@ blue = 0x00bfff
 
 
 async def modal_callback(interaction: Interaction):
+    """参加申請モーダルのコールバック関数
+
+    Args:
+        interaction (Interaction): 申請者のInteractionオブジェクト
+    """
+
     await interaction.response.defer(ephemeral=True, thinking=True)
     tari3210 = interaction.guild.get_member(database.TARI3210)
 
@@ -86,6 +92,11 @@ async def modal_callback(interaction: Interaction):
 
 # TODO: 繰り上げ出場もここで処理できるようにする
 async def button_entry(interaction: Interaction):
+    """エントリーボタンのコールバック関数
+
+    Args:
+        interaction (Interaction): 該当者のInteractionオブジェクト
+    """
 
     # エントリー開始時刻を定義 1月6日 22:00
     dt_now = datetime.now(JST)
@@ -225,7 +236,6 @@ async def button_contact(interaction: Interaction):
 async def button_call_admin(interaction: Interaction):
     await interaction.response.defer(ephemeral=True, thinking=True)
     contact = interaction.client.get_channel(database.CHANNEL_CONTACT)
-    admin = interaction.guild.get_role(database.ROLE_ADMIN)
 
     ###############################
     # 準備をする前に一回話を聞く
@@ -262,12 +272,6 @@ async def button_call_admin(interaction: Interaction):
     # しゃべるな
     await contact.set_permissions(interaction.user, send_messages_in_threads=False)
 
-    # msgにリアクション できない場合は無視
-    try:
-        await msg.add_reaction("✅")
-    except Exception:
-        pass
-
     ###############################
     # ここでGeminiに接続、まず会話させる
     ###############################
@@ -296,35 +300,22 @@ async def button_call_admin(interaction: Interaction):
     if not any(role_check):
         status += f"\n{interaction.user.display_name}さんはビト森杯にエントリーしていません。"
 
-    # Gemini初期設定
-    safety_settings = database.SAFETY_SETTINGS
-    genai.configure(api_key=os.environ['GEMINI_API_KEY'])
-    model = genai.GenerativeModel(
-        model_name='gemini-pro',
-        safety_settings=safety_settings
-    )
     # knowledge_base.txtを読み込む
     async with open('knowledge_base.txt', 'r', encoding="utf-8") as f:
         knowledge_base = await f.read()
 
     # 会話ページを作成
-    chat = model.start_chat()
+    chat = await gemini.setup()
 
     # まずはナレッジを教えて、エントリー状況を伝える
     tuning = knowledge_base + status
 
-    # ナレッジ + エントリー状況を送信 できるまで繰り返す
-    while True:
-        try:
-            chat.send_message_async(tuning)
+    # ナレッジ + エントリー状況を送信
+    response = await gemini.send_message(chat, tuning)
 
-        # 送信失敗したら1秒待って再送
-        except Exception as e:
-            await sleep(1)
-            print(e)
-            continue
-        else:
-            break
+    # 送信失敗したら終了
+    if response is None:
+        return
 
     ###############################
     # ここでGeminiとの会話無限ループ
@@ -332,19 +323,13 @@ async def button_call_admin(interaction: Interaction):
 
     while True:
 
-        # 受け取ったメッセージをGeminiに送信 できるまで繰り返す
+        # 受け取ったメッセージをGeminiに送信
         # ここで使うmsgは260行付近で定義
-        while True:
-            try:
-                response = chat.send_message_async(msg.content)
+        response = await gemini.send_message(chat, msg)
 
-            # 送信失敗したら1秒待って再送
-            except Exception as e:
-                await sleep(1)
-                print(e)
-                continue
-            else:
-                break
+        # 送信失敗したら終了
+        if response is None:
+            return
 
         # 回答を分析
         # 文字列を行ごとに分割
@@ -408,21 +393,8 @@ async def button_call_admin(interaction: Interaction):
             )
 
             async def callback(i: Interaction):
-                # ボタンを押した人が問い合わせ者か確認
                 if i.user.id == interaction.user.id:
-
-                    # 運営へ通知
-                    await msg.reply(
-                        f"{admin.mention}\n{interaction.user.display_name}さんからの問い合わせ",
-                        mention_author=False
-                    )
-                    # エントリー状況照会
-                    embed = await get_submission_embed(interaction.user)
-                    await interaction.channel.send(embed=embed)
-
-                    # しゃべってよし
-                    await contact.set_permissions(interaction.user, send_messages_in_threads=True)
-                    return
+                    await gemini.call_admin(msg, interaction=i)
 
             button.callback = callback
             view = View(timeout=None)
@@ -453,28 +425,12 @@ async def button_call_admin(interaction: Interaction):
         # しゃべるな
         await contact.set_permissions(interaction.user, send_messages_in_threads=False)
 
-        # msgにリアクション できない場合は無視
-        try:
-            reaction = random.choice(interaction.guild.emojis)
-            await msg.add_reaction(reaction)
-        except Exception:
-            pass
-
     ################################
     # ここでGeminiとの会話終了 運営対応へ
     ################################
 
     # 運営へ通知
-    await msg.reply(
-        f"{admin.mention}\n{interaction.user.display_name}さんからの問い合わせ",
-        mention_author=False
-    )
-    # エントリー状況照会
-    embed = await get_submission_embed(interaction.user)
-    await interaction.channel.send(embed=embed)
-
-    # しゃべってよし
-    await contact.set_permissions(interaction.user, send_messages_in_threads=True)
+    await gemini.call_admin(msg)
     return
 
 

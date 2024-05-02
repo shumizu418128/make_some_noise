@@ -201,6 +201,14 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
 
 # TODO: 第4回ビト森杯実装（スプシ作成、そこに合わせる）
 async def get_submission_embed(member: Member):
+    """エントリー状況を取得
+
+    Args:
+        member (Member): 該当者のMember
+
+    Returns:
+        embed: Embed: エントリー状況のEmbed
+    """
     role_check = [
         any([
             member.get_role(database.ROLE_LOOP),
@@ -285,6 +293,14 @@ async def get_submission_embed(member: Member):
 
 
 async def debug_log(function_name: str, description: str, color: int, member: Member):
+    """bot用チャットにデバッグログを送信
+
+    Args:
+        function_name (str): 実行している関数名
+        description (str): 内容
+        color (int): 色（赤ならエラーとして扱う）
+        member (Member): 該当メンバー
+    """
     # bot用チャット
     bot_channel = member.guild.get_channel(database.CHANNEL_BOT)
     tari3210 = member.guild.get_member(database.TARI3210)
