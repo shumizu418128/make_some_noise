@@ -178,6 +178,7 @@ def get_credits():
                 'https://www.googleapis.com/auth/spreadsheets'])
 
 
+# TODO: sheet_keyいらなくね？
 async def get_worksheet(sheet_key: str, name: str):
     gc = gspread_asyncio.AsyncioGspreadClientManager(get_credits)
     agc = await gc.authorize()
