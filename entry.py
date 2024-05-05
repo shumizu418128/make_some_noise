@@ -22,8 +22,13 @@ modal提出の対応はon_interactionにて行う
 """
 
 
-class Modal_entry(Modal):  # self = Modal, category = soloA, soloB, loop
+class Modal_entry(Modal):
     def __init__(self, display_name: str, category: str):
+        """
+        self = Modal
+
+        category = soloA, soloB, loop
+        """
         super().__init__(
             title=f"エントリー受付 {category}", custom_id=f"modal_entry_{category}")
 
@@ -54,7 +59,9 @@ class Modal_entry(Modal):  # self = Modal, category = soloA, soloB, loop
         ))
 
     # モーダル提出後の処理
+    # エントリー処理は行わず、処理が正常に行われたか確認
     async def on_submit(self, interaction: Interaction):
+        custom_id = interaction.data["custom_id"]
 
         tari3210 = interaction.guild.get_member(database.TARI3210)
         bot_channel = interaction.guild.get_channel(database.CHANNEL_BOT)
@@ -65,7 +72,7 @@ class Modal_entry(Modal):  # self = Modal, category = soloA, soloB, loop
             "soloA": (database.ROLE_SOLO_A, database.ROLE_SOLO_A_RESERVE),
             "soloB": (database.ROLE_SOLO_B, database.ROLE_SOLO_B_RESERVE),
         }
-        category = interaction.custom_id.split("_")[-1]
+        category = custom_id.split("_")[-1]
         id, id_reserve = role_ids.get(category)
 
         role = interaction.guild.get_role(id)
