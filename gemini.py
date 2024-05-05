@@ -72,14 +72,16 @@ async def send_message(chat: genai.ChatSession, message: Message):
 
     # 20回送信しても失敗したら、運営対応に切り替えてNoneを返す
     else:
-        await call_admin(message)
+        await call_admin(message, fail=True)
         return None
 
 
-async def call_admin(message: Message, *, interaction=Interaction):
+async def call_admin(message: Message, interaction: Interaction = None, fail: bool = False):
     """
     Gemini対応を終了し、運営に通知する関数
     message: Message
+    interaction: Interaction (default: None) interactionがある場合はinteractionを返信先にする
+    fail: bool (default: False) AIとの通信に失敗した場合True
     return: None
     """
     admin = message.guild.get_member(database.ROLE_ADMIN)
@@ -102,10 +104,11 @@ async def call_admin(message: Message, *, interaction=Interaction):
     # しゃべってよし
     await contact.set_permissions(message.author, send_messages_in_threads=True)
 
-    await debug_log(
-        "fail_response",
-        "AIとの通信に失敗しました",
-        0xff0000,
-        message.author
-    )
+    if fail:
+        await debug_log(
+            "gemini.call_admin",
+            "geminiとの通信に失敗",
+            0xff0000,
+            message.author
+        )
     return
