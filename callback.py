@@ -4,8 +4,8 @@ from datetime import datetime, timedelta, timezone
 from discord import ButtonStyle, Embed, File, Interaction
 from discord.ui import Button, View
 
-import gemini
 import database
+import gemini
 from button_view import get_view
 from contact import (contact_start, debug_log, get_submission_embed,
                      search_contact)
@@ -134,14 +134,9 @@ async def button_entry(interaction: Interaction):
     # エントリー済みの場合
     if any(user_role_statuses):
 
-        # ここで繰り上げ手続き中かを確認
-        if user_role_statuses[1]:
-            # TODO: 繰り上げ手続き中の場合、繰り上げボタンを再度送信
-            return
-
         embed = Embed(
             title="エントリー済み",
-            description=f"ビト森杯{category}部門\nすでにエントリー済みです。",
+            description=f"ビト森杯{category}部門\nすでにエントリー済みです。\n\nキャンセル・繰り上げ出場はお問い合わせからお願いします。",
             color=red
         )
         embed.set_author(
@@ -150,8 +145,6 @@ async def button_entry(interaction: Interaction):
         )
         await interaction.response.send_message(interaction.user.mention, embed=embed, ephemeral=True)
 
-        # TODO: 繰り上げ出場手続き中ではない場合、キャンセルの案内をする
-        # とりあえずcontact_start関数に投げる
         await contact_start(client=interaction.client, member=interaction.user)
         return
 
@@ -345,7 +338,8 @@ async def button_call_admin(interaction: Interaction):
 
         # AIが提示した参考画像をリストにまとめる
         # 存在しないファイル名は無視
-        files = [File(image_name) for image_name in image_name_list if image_name in os.listdir()]
+        files = [File(image_name)
+                 for image_name in image_name_list if image_name in os.listdir()]
 
         if "zoom" in response_text.lower():
             response_text += "原則、Zoomの使い方に関しては、正確なサポートを提供できません。[Zoomヘルプページ](https://support.zoom.com/hc/ja)などで、Zoomの操作方法を必ずご確認ください。"

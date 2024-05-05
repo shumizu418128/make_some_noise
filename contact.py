@@ -107,6 +107,8 @@ async def contact_start(client: Client, member: Member, entry_redirect: bool = F
         view = await get_view(info=True)
         await thread.send("以下のセレクトメニューからも詳細情報を確認できます。", view=view)
 
+        # TODO: 繰り上げ手続き待機中の場合、繰り上げ出場ボタンを表示
+
         await debug_log(
             function_name="contact_start",
             description="お問い合わせ開始",

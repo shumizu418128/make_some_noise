@@ -85,7 +85,6 @@ class BitomoriInfoSelect(Select):
         )
 
 
-# TODO: ZoomURLを表示するボタンを実装 (参加者のみ閲覧可能)
 async def get_view(
     *client: Client,
     contact: bool = False,
@@ -201,11 +200,13 @@ async def get_view(
     """if entry_exhibition or entry:
         view.add_item(button_entry_exhibition)"""
 
+    # 繰り上げ出場
     if replace:
         view.add_item(button_accept_replace)
         view.add_item(button_cancel)
         view.add_item(button_call_admin)
 
+    # Zoom参加URL
     if zoom:
         view.add_item(button_zoom)
 
