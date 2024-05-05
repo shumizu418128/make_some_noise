@@ -639,11 +639,9 @@ async def button_accept_replace(interaction: Interaction):
         color=blue,
         member=interaction.user
     )
-    # memberを再取得
-    member = interaction.guild.get_member(interaction.user.id)
 
     # 問い合わせを用意
-    await contact_start(client=interaction.client, member=member, entry_redirect=True)
+    await contact_start(client=interaction.client, member=interaction.user, entry_redirect=True)
     return
 
 

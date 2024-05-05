@@ -44,15 +44,16 @@ async def search_contact(member: Member, create: bool = False, locale: str = "ja
 # TODO; 第4回ビト森杯実装
 async def contact_start(client: Client, member: Member, entry_redirect: bool = False):
     # 問い合わせチャンネル
-    contact = member.guild.get_channel(database.CHANNEL_CONTACT)
-
     # ビト森杯お知らせチャンネル
-    announce = member.guild.get_channel(database.CHANNEL_BITOMORI_ANNOUNCE)
-
     # ビト森杯運営
+    # tari3210
+    contact = member.guild.get_channel(database.CHANNEL_CONTACT)
+    announce = member.guild.get_channel(database.CHANNEL_BITOMORI_ANNOUNCE)
     admin = member.guild.get_role(database.ROLE_ADMIN)
-
     tari3210 = member.guild.get_member(database.TARI3210)
+
+    # memberが旧データになっている場合があるので、最新のデータを取得
+    member = member.guild.get_member(member.id)
 
     role_check = [
         member.get_role(database.ROLE_LOOP),
