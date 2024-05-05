@@ -6,13 +6,40 @@ from discord import Interaction, Message
 import google.generativeai as genai
 
 
+safety_settings = [
+    {
+        "category": "HARM_CATEGORY_SEXUAL",
+        "threshold": "BLOCK_NONE",
+    },
+    {
+        "category": "HARM_CATEGORY_DANGEROUS",
+        "threshold": "BLOCK_NONE",
+    },
+    {
+        "category": "HARM_CATEGORY_HARASSMENT",
+        "threshold": "BLOCK_NONE",
+    },
+    {
+        "category": "HARM_CATEGORY_HATE_SPEECH",
+        "threshold": "BLOCK_NONE",
+    },
+    {
+        "category": "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+        "threshold": "BLOCK_NONE",
+    },
+    {
+        "category": "HARM_CATEGORY_DANGEROUS_CONTENT",
+        "threshold": "BLOCK_NONE",
+    }
+]
+
+
 async def setup():
     """
     Geminiの初期設定を行う関数
     return: chat
     """
 
-    safety_settings = database.SAFETY_SETTINGS
     genai.configure(api_key=os.environ['GEMINI_API_KEY'])
     model = genai.GenerativeModel(
         model_name='gemini-pro',
