@@ -144,6 +144,9 @@ async def process_entry(member: Member, category: str, input_contents: dict):
     Returns:
         `color, title, description (dict[str]):` 処理結果
     """
+    # 一応最新のmember情報を取得
+    member = member.guild.get_member(member.id)
+
     # エントリーした部門のidを取得
     role_ids = {
         "loop": (database.ROLE_LOOP, database.ROLE_LOOP_RESERVE),
@@ -221,13 +224,14 @@ async def entry_cancel(member: Member, category: str):
         `None or "Error"`
     """
     # ビト森杯
-    role = member.guild.get_role(database.ROLE_LOOP)
-
     # キャンセル待ち ビト森杯
-    role_reserve = member.guild.get_role(database.ROLE_LOOP_RESERVE)
-
     # エキシビション
+    role = member.guild.get_role(database.ROLE_LOOP)
+    role_reserve = member.guild.get_role(database.ROLE_LOOP_RESERVE)
     role_exhibition = member.guild.get_role(database.ROLE_OLEB)
+
+    # 一応最新のmember情報を取得
+    member = member.guild.get_member(member.id)
 
     role_check = [
         member.get_role(database.ROLE_LOOP),

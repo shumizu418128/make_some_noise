@@ -212,6 +212,9 @@ async def get_submission_embed(member: Member):
     Returns:
         embed: Embed: エントリー状況のEmbed
     """
+    # 一応最新のmember情報を取得
+    member = member.guild.get_member(member.id)
+
     role_check = [
         any([
             member.get_role(database.ROLE_LOOP),
