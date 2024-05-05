@@ -341,9 +341,6 @@ async def button_call_admin(interaction: Interaction):
         files = [File(image_name)
                  for image_name in image_name_list if image_name in os.listdir()]
 
-        if "zoom" in response_text.lower():
-            response_text += "原則、Zoomの使い方に関しては、正確なサポートを提供できません。[Zoomヘルプページ](https://support.zoom.com/hc/ja)などで、Zoomの操作方法を必ずご確認ください。"
-
         # 返事のembedを作成
         embed = Embed(
             title="AIによる自動回答",
@@ -361,6 +358,12 @@ async def button_call_admin(interaction: Interaction):
         # 回答・画像を送信
         await msg.reply(embed=embed, files=files, mention_author=True)
 
+        # Zoomはサポート対象外
+        if "zoom" in response_text.lower():
+            await msg.reply(
+                "ビト森杯運営は、Zoomの使い方に関して、正確なサポートを提供できません。必ずご自身で、Zoomの操作方法をご確認ください。\n[Zoomヘルプページ](https://support.zoom.com/hc/ja)",
+                mention_author=True
+            )
         # 回答に応じて処理を変える
         if "下にあるボタンからお手続きができます。" in response_text:
             view = await get_view(entry=True, cancel=True, submission_content=True)
