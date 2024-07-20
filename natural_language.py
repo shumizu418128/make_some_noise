@@ -37,8 +37,8 @@ async def natural_language(message: Message):
         title="GBBの最新情報はこちら",
         description=">>> 以下のサイトにお探しの情報がない場合、\n__**未発表 もしくは 未定（そもそも決定すらしていない）**__\n可能性が非常に高いです。", color=0xF0632F)
     embed.add_field(name="GBBINFO-JPN 日本非公式情報サイト",
-                    value="https://gbbinfo-jpn.jimdofree.com/")
-    embed.add_field(name="swissbeatbox 公式instagram",
+                    value="https://gbbinfo-jpn.onrender.com/")
+    embed.add_field(name="swissbeatbox official instagram",
                     value="https://www.instagram.com/swissbeatbox/")
     text = await countdown()
     embed.set_footer(text=text)
@@ -70,7 +70,7 @@ async def natural_language(message: Message):
         for word in ["gbb", "wildcard", "ワイカ", "ワイルドカード", "結果", "出場", "通過", "チケット", "ルール", "審査員", "ジャッジ", "日本人", "辞退", "キャンセル", "シード"]:
             if word in message.content.lower():
                 if any(["?" in message.content, "？" in message.content]):
-                    await message.reply("**GBB最新情報をお探しですか？**\n## ぜひこちらのサイトをご覧ください！\n\n[GBBINFO-JPN 日本非公式情報サイト](https://gbbinfo-jpn.jimdofree.com/)")
+                    await message.reply("**GBB最新情報をお探しですか？**\n## ぜひこちらのサイトをご覧ください！\n\n[GBBINFO-JPN 日本非公式情報サイト](https://gbbinfo-jpn.onrender.com/)")
                     await message.reply(embed=embed)
                 else:
                     await message.channel.send(embed=embed)

@@ -3,8 +3,8 @@ from asyncio import sleep
 from datetime import datetime, timedelta, timezone
 
 import discord
-from discord import (ChannelType, Client, Embed, Intents, Interaction, Member, Message, Thread,
-                     VoiceState)
+from discord import (ChannelType, Client, Embed, Intents, Interaction, Member,
+                     Message, Thread, VoiceState)
 from discord.errors import ClientException
 
 from advertise import advertise
@@ -69,7 +69,8 @@ async def on_interaction(interaction: Interaction):
             await interaction.user.add_roles(role)
             embed = Embed(
                 title="ようこそ！",
-                description=f"{interaction.user.display_name}さんに、通話開始 お知らせロールを付与しました。\nぜひ一緒にBeatboxを楽しみましょう！",
+                description=f"{
+                    interaction.user.display_name}さんに、通話開始 お知らせロールを付与しました。\nぜひ一緒にBeatboxを楽しみましょう！",
                 color=0xFFA500
             )
             embed.set_footer(
@@ -270,7 +271,8 @@ async def on_thread_create(thread: Thread):
         general = thread.guild.get_channel(database.CHANNEL_GENERAL)
         embed = Embed(
             title="質問きてた！ 👇",
-            description=f"チャンネル：{thread.parent.jump_url}\n質問：{thread.jump_url}",
+            description=f"チャンネル：{thread.parent.jump_url}\n質問：{
+                thread.jump_url}",
             color=0x00bfff
         )
         embed.set_footer(
@@ -288,7 +290,7 @@ async def on_member_join(member: Member):
         title="Discordの使い方", description="https://note.com/me1o_crew/n/nf2971acd1f1a")
     embed = Embed(title="GBBの最新情報はこちら", color=0xF0632F)
     embed.add_field(name="GBBINFO-JPN 日本非公式情報サイト",
-                    value="https://gbbinfo-jpn.jimdofree.com/")
+                    value="https://gbbinfo-jpn.onrender.com/")
     embed.add_field(name="swissbeatbox 公式instagram",
                     value="https://www.instagram.com/swissbeatbox/")
     text = await countdown()  # GBBまでのカウントダウン

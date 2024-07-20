@@ -38,20 +38,24 @@ async def countdown():
 
 async def send_gbbinfo(message: Message):
 
+    # yearを取得
+    dt_now = datetime.now(JST)
+    year = dt_now.year
+
     # ジャッジ一覧
     if "judge" in message.content:
-        url = "https://gbbinfo-jpn.jimdofree.com/20240121/#p06"  # ジャッジ一覧のURL
+        url = f"https://gbbinfo-jpn.onrender.com/{year}/rule"  # ジャッジ一覧のURL
         await message.channel.send(f"[GBBジャッジ一覧はこちら]({url})")
         return
 
     # Wildcard結果
     if "wc" in message.content:
-        url = "https://gbbinfo-jpn.jimdofree.com/20240121-2/"  # Wildcard結果のURL
+        url = f"https://gbbinfo-jpn.onrender.com/{year}/participants"  # Wildcard結果のURL
         await message.channel.send(f"[GBB Wildcard結果はこちら]({url})")
         return
 
     # Wildcardルール
     if "rule" in message.content:
-        url = "https://gbbinfo-jpn.jimdofree.com/20240121/"  # WildcardルールのURL
+        url = f"https://gbbinfo-jpn.onrender.com/{year}/rule"  # WildcardルールのURL
         await message.channel.send(f"[GBB Wildcardルールはこちら]({url})")
         return
