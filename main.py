@@ -69,8 +69,7 @@ async def on_interaction(interaction: Interaction):
             await interaction.user.add_roles(role)
             embed = Embed(
                 title="ようこそ！",
-                description=f"{
-                    interaction.user.display_name}さんに、通話開始 お知らせロールを付与しました。\nぜひ一緒にBeatboxを楽しみましょう！",
+                description=f"{interaction.user.display_name}さんに、通話開始 お知らせロールを付与しました。\nぜひ一緒にBeatboxを楽しみましょう！",
                 color=0xFFA500
             )
             embed.set_footer(
