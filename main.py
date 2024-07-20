@@ -270,8 +270,7 @@ async def on_thread_create(thread: Thread):
         general = thread.guild.get_channel(database.CHANNEL_GENERAL)
         embed = Embed(
             title="質問きてた！ 👇",
-            description=f"チャンネル：{thread.parent.jump_url}\n質問：{
-                thread.jump_url}",
+            description=f"チャンネル：{thread.parent.jump_url}\n質問：{thread.jump_url}",
             color=0x00bfff
         )
         embed.set_footer(
