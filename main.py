@@ -289,7 +289,7 @@ async def on_member_join(member: Member):
     embed = Embed(title="GBBの最新情報はこちら", color=0xF0632F)
     embed.add_field(name="GBBINFO-JPN 日本非公式情報サイト",
                     value="https://gbbinfo-jpn.onrender.com/")
-    embed.add_field(name="swissbeatbox 公式instagram",
+    embed.add_field(name="swissbeatbox official instagram",
                     value="https://www.instagram.com/swissbeatbox/")
     text = await countdown()  # GBBまでのカウントダウン
     embed.set_footer(
