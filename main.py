@@ -216,9 +216,6 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
 
                 await after.channel.send(content, embed=embed, delete_after=60)
 
-            else:
-                await after.channel.send(f"{member.mention} チャットはこちら chat is here", delete_after=60)
-
             await member.add_roles(vc_role)
 
         # チャンネルが満員になった場合
