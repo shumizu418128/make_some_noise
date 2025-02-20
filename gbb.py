@@ -8,12 +8,12 @@ JST = timezone(timedelta(hours=9))
 async def countdown():
 
     # GBB開始日時
-    # 2024/11/1 0:00
-    dt_gbb_start = datetime(2024, 11, 1, 0, 0)
+    # 2025/10/31 14:00
+    dt_gbb_start = datetime(2025, 10, 31, 14, 0)
 
     # GBB終了日時
-    # 2024/11/4 0:00
-    dt_gbb_end = datetime(2024, 11, 4)
+    # 2025/11/3 0:00
+    dt_gbb_end = datetime(2025, 11, 3)
 
     dt_gbb_start = dt_gbb_start.replace(tzinfo=JST)  # JSTに変換
     dt_gbb_end = dt_gbb_end.replace(tzinfo=JST)  # JSTに変換
