@@ -44,7 +44,7 @@ async def natural_language(message: Message):
     embed.set_footer(text=text)
 
     # テキストチャンネルの場合
-    if message.channel.type in [ChannelType.text, ChannelType.forum, ChannelType.public_thread]:
+    if message.channel.type in [ChannelType.text, ChannelType.forum, ChannelType.public_thread, ChannelType.voice]:
         emoji = random.choice(message.guild.emojis)
 
         # Yuiにはbrezを
