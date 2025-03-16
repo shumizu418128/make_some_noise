@@ -204,7 +204,7 @@ async def on_voice_state_update(member: Member, before: VoiceState, after: Voice
                 icon_url=member.guild.icon.url
             )
             if after.channel.id == database.VC_REALTIME:  # リアタイ部屋
-                content = f"{member.mention} チャットはこちら chat is here"
+                content = f"チャットはこちら chat is here"
 
                 # マイクオンの場合、通知する
                 if after.self_mute is False:
